@@ -43,7 +43,8 @@ if ($Setup) {
         Write-Host "Creating Python virtual environment..." -ForegroundColor Yellow
         python -m venv backend\venv
         Write-Success "Virtual environment created"
-    } else {
+    }
+    else {
         Write-Success "Virtual environment already exists"
     }
     
