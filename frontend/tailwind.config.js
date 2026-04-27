@@ -8,23 +8,33 @@ module.exports = {
   theme: {
     extend: {
       colors: {
+        /* ── Brand palette ── */
         brand: {
-          50:  '#f0fdf4',
-          100: '#dcfce7',
-          200: '#bbf7d0',
-          300: '#86efac',
-          400: '#4ade80',
-          500: '#22c55e',
-          600: '#16a34a',
-          700: '#15803d',
-          800: '#166534',
-          900: '#14532d',
+          50:  '#ECFDF5',
+          100: '#D1FAE5',
+          200: '#A7F3D0',
+          300: '#6EE7B7',
+          400: '#34D399',
+          500: '#10B981',   /* Emerald Accent */
+          600: '#059669',
+          700: '#0F6B4F',   /* Deep Green */
+          800: '#065F46',
+          900: '#064E3B',
+        },
+        /* ── Surface palette ── */
+        surface: {
+          900: '#0B0F14',   /* Dark Background */
+          800: '#0D1117',
+          700: '#121821',   /* Card Background */
+          600: '#161E2A',
+          500: '#1A2535',   /* Border */
+          400: '#243347',
         },
       },
       fontFamily: {
-        sans: ['var(--font-inter)', 'system-ui', 'sans-serif'],
-        display: ['var(--font-syne)', 'sans-serif'],
-        mono: ['var(--font-jetbrains)', 'monospace'],
+        sans:    ['var(--font-inter)', 'system-ui', 'sans-serif'],
+        display: ['var(--font-syne)',  'sans-serif'],
+        mono:    ['var(--font-jetbrains)', 'monospace'],
       },
     },
   },

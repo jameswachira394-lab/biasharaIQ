@@ -14,7 +14,7 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en" className={`${inter.variable} ${syne.variable} ${jetbrains.variable}`}>
-      <body className="bg-[#080c14] text-slate-100 antialiased">
+      <body className="bg-[#0B0F14] text-[#E5E7EB] antialiased">
         <AuthProvider>
           {children}
         </AuthProvider>

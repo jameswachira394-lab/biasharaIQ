@@ -10,12 +10,12 @@ import { useState } from 'react'
 import clsx from 'clsx'
 
 const NAV_ITEMS = [
-  { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
+  { href: '/dashboard',    label: 'Dashboard',    icon: LayoutDashboard },
   { href: '/transactions', label: 'Transactions', icon: ArrowLeftRight },
-  { href: '/insights', label: 'Insights', icon: Lightbulb },
-  { href: '/ai', label: 'AI Advisor', icon: Bot },
-  { href: '/reports', label: 'Reports', icon: BarChart3 },
-  { href: '/settings', label: 'Settings', icon: Settings },
+  { href: '/insights',     label: 'Insights',     icon: Lightbulb },
+  { href: '/ai',           label: 'AI Advisor',   icon: Bot },
+  { href: '/reports',      label: 'Reports',      icon: BarChart3 },
+  { href: '/settings',     label: 'Settings',     icon: Settings },
 ]
 
 export default function Sidebar() {
@@ -26,18 +26,18 @@ export default function Sidebar() {
   const NavContent = () => (
     <>
       {/* Logo */}
-      <div className="px-5 py-5 border-b border-[#1e2d3d]">
+      <div className="px-5 py-5 border-b border-[#1A2535]">
         <div className="flex items-center gap-2.5">
-          <div className="w-8 h-8 rounded-lg bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center flex-shrink-0">
-            <TrendingUp size={16} className="text-emerald-400" />
+          <div className="w-8 h-8 rounded-lg bg-[#0F6B4F]/20 border border-[#0F6B4F]/40 flex items-center justify-center flex-shrink-0">
+            <TrendingUp size={16} className="text-[#10B981]" />
           </div>
-          <span className="font-display font-bold text-lg tracking-tight">
+          <span className="font-display font-bold text-lg tracking-tight text-[#E5E7EB]">
             Biashara<span className="gradient-text">IQ</span>
           </span>
         </div>
         {user && (
           <div className="mt-3">
-            <p className="text-xs text-slate-500 truncate">{user.business_name}</p>
+            <p className="text-xs text-[#9CA3AF] truncate">{user.business_name}</p>
           </div>
         )}
       </div>
@@ -54,14 +54,16 @@ export default function Sidebar() {
               className={clsx(
                 'flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all',
                 active
-                  ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20'
-                  : 'text-slate-400 hover:text-slate-200 hover:bg-white/5'
+                  ? 'bg-[#0F6B4F]/15 text-[#10B981] border border-[#0F6B4F]/30'
+                  : 'text-[#9CA3AF] hover:text-[#E5E7EB] hover:bg-white/[0.04]'
               )}
             >
               <Icon size={17} />
               {label}
               {href === '/ai' && (
-                <span className="ml-auto text-[10px] bg-emerald-500/20 text-emerald-400 px-1.5 py-0.5 rounded-full font-semibold">AI</span>
+                <span className="ml-auto text-[10px] bg-[#0F6B4F]/25 text-[#10B981] px-1.5 py-0.5 rounded-full font-semibold border border-[#0F6B4F]/30">
+                  AI
+                </span>
               )}
             </Link>
           )
@@ -69,16 +71,16 @@ export default function Sidebar() {
       </nav>
 
       {/* Bottom */}
-      <div className="px-3 py-4 border-t border-[#1e2d3d]">
+      <div className="px-3 py-4 border-t border-[#1A2535]">
         {user && (
           <div className="px-3 mb-2">
-            <p className="text-xs font-medium text-slate-300 truncate">{user.owner_name || user.email}</p>
-            <p className="text-xs text-slate-600 truncate">{user.email}</p>
+            <p className="text-xs font-medium text-[#E5E7EB] truncate">{user.owner_name || user.email}</p>
+            <p className="text-xs text-[#4B5563] truncate">{user.email}</p>
           </div>
         )}
         <button
           onClick={logout}
-          className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-500 hover:text-red-400 hover:bg-red-500/5 transition-all w-full"
+          className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-[#9CA3AF] hover:text-red-400 hover:bg-red-500/5 transition-all w-full"
         >
           <LogOut size={17} />
           Sign Out
@@ -90,21 +92,21 @@ export default function Sidebar() {
   return (
     <>
       {/* Desktop sidebar */}
-      <aside className="hidden md:flex flex-col w-56 min-h-screen bg-[#0d1420] border-r border-[#1e2d3d] fixed left-0 top-0 bottom-0 z-30">
+      <aside className="hidden md:flex flex-col w-56 min-h-screen bg-[#121821] border-r border-[#1A2535] fixed left-0 top-0 bottom-0 z-30">
         <NavContent />
       </aside>
 
       {/* Mobile header */}
-      <div className="md:hidden fixed top-0 left-0 right-0 z-40 bg-[#0d1420] border-b border-[#1e2d3d] px-4 h-14 flex items-center justify-between">
+      <div className="md:hidden fixed top-0 left-0 right-0 z-40 bg-[#121821] border-b border-[#1A2535] px-4 h-14 flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <div className="w-7 h-7 rounded-lg bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center">
-            <TrendingUp size={14} className="text-emerald-400" />
+          <div className="w-7 h-7 rounded-lg bg-[#0F6B4F]/20 border border-[#0F6B4F]/40 flex items-center justify-center">
+            <TrendingUp size={14} className="text-[#10B981]" />
           </div>
-          <span className="font-display font-bold text-lg tracking-tight">
+          <span className="font-display font-bold text-lg tracking-tight text-[#E5E7EB]">
             Biashara<span className="gradient-text">IQ</span>
           </span>
         </div>
-        <button onClick={() => setMobileOpen(!mobileOpen)} className="text-slate-400 hover:text-slate-200 p-1">
+        <button onClick={() => setMobileOpen(!mobileOpen)} className="text-[#9CA3AF] hover:text-[#E5E7EB] p-1">
           {mobileOpen ? <X size={20} /> : <Menu size={20} />}
         </button>
       </div>
@@ -112,8 +114,8 @@ export default function Sidebar() {
       {/* Mobile drawer */}
       {mobileOpen && (
         <div className="md:hidden fixed inset-0 z-50">
-          <div className="absolute inset-0 bg-black/60" onClick={() => setMobileOpen(false)} />
-          <aside className="absolute left-0 top-0 bottom-0 w-64 bg-[#0d1420] border-r border-[#1e2d3d] flex flex-col">
+          <div className="absolute inset-0 bg-black/70" onClick={() => setMobileOpen(false)} />
+          <aside className="absolute left-0 top-0 bottom-0 w-64 bg-[#121821] border-r border-[#1A2535] flex flex-col">
             <NavContent />
           </aside>
         </div>

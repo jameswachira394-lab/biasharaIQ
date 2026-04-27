@@ -2,9 +2,9 @@
 import clsx from 'clsx'
 
 const LEVELS = {
-  safe:     { label: 'Safe',     bg: 'bg-emerald-500/10', border: 'border-emerald-500/25', text: 'text-emerald-400', bar: 'bg-emerald-500', dot: 'bg-emerald-400' },
-  warning:  { label: 'Warning',  bg: 'bg-amber-500/10',   border: 'border-amber-500/25',   text: 'text-amber-400',   bar: 'bg-amber-500',   dot: 'bg-amber-400' },
-  critical: { label: 'Critical', bg: 'bg-red-500/10',     border: 'border-red-500/25',     text: 'text-red-400',     bar: 'bg-red-500',     dot: 'bg-red-400' },
+  safe:     { label: 'Safe',     bg: 'bg-[#0F6B4F]/10', border: 'border-[#0F6B4F]/30', text: 'text-[#10B981]', bar: 'bg-[#10B981]', dot: 'bg-[#10B981]' },
+  warning:  { label: 'Warning',  bg: 'bg-amber-500/10',  border: 'border-amber-500/25',  text: 'text-amber-400',   bar: 'bg-amber-500',   dot: 'bg-amber-400' },
+  critical: { label: 'Critical', bg: 'bg-red-500/10',    border: 'border-red-500/25',    text: 'text-red-400',     bar: 'bg-red-500',     dot: 'bg-red-400'   },
 }
 
 export default function CashFlowIndicator({ survivalDays, riskLevel, dailyRate, message }) {
