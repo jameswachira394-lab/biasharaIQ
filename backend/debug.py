@@ -16,7 +16,7 @@ print("=" * 60)
 # 1. Environment Check
 print("\n✓ ENVIRONMENT VARIABLES")
 print("-" * 60)
-required_vars = ['DATABASE_URL', 'SECRET_KEY', 'ALGORITHM', 'ANTHROPIC_API_KEY']
+required_vars = ['DATABASE_URL', 'SECRET_KEY', 'ALGORITHM', 'DEEPSEEK_API_KEY']
 for var in required_vars:
     value = os.getenv(var, "NOT SET")
     masked = value[:20] + "..." if len(value) > 20 else value
@@ -123,7 +123,7 @@ try:
     import passlib
     import bcrypt
     import jose
-    import anthropic
+    import openai
     
     deps = [
         ("FastAPI", fastapi.__version__),

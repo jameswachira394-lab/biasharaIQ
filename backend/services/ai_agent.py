@@ -1,4 +1,4 @@
-import anthropic
+from openai import OpenAI
 import os
 from sqlalchemy.orm import Session
 from services.financial_engine import FinancialEngine
@@ -7,7 +7,7 @@ from models.models import Transaction
 from datetime import datetime, timedelta
 import json
 
-client = anthropic.Anthropic(api_key=os.getenv("ANTHROPIC_API_KEY"))
+client = OpenAI(api_key=os.getenv("DEEPSEEK_API_KEY"), base_url="https://api.deepseek.com/v1")
 
 
 def build_financial_context(db: Session, user_id: int, business_name: str) -> str:
@@ -100,16 +100,17 @@ CRITICAL RULES:
 
 Remember: You are their financial advisor, not a chatbot. Every insight must be grounded in their actual numbers above."""
 
-    messages = []
+    messages = [
+        {"role": "system", "content": system_prompt}
+    ]
     if conversation_history:
         messages.extend(conversation_history)
     messages.append({"role": "user", "content": user_message})
 
-    response = client.messages.create(
-        model="claude-sonnet-4-5",
+    response = client.chat.completions.create(
+        model="deepseek-chat",
         max_tokens=1000,
-        system=system_prompt,
         messages=messages
     )
 
-    return response.content[0].text
+    return response.choices[0].message.content
