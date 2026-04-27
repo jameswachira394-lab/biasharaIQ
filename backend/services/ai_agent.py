@@ -1,4 +1,5 @@
-from openai import OpenAI
+from google import genai
+from google.genai import types
 import os
 from sqlalchemy.orm import Session
 from services.financial_engine import FinancialEngine
@@ -7,7 +8,7 @@ from models.models import Transaction
 from datetime import datetime, timedelta
 import json
 
-client = OpenAI(api_key=os.getenv("DEEPSEEK_API_KEY"), base_url="https://api.deepseek.com/v1")
+client = genai.Client(api_key=os.getenv("GEMINI_API_KEY"))
 
 
 def build_financial_context(db: Session, user_id: int, business_name: str) -> str:
@@ -100,17 +101,21 @@ CRITICAL RULES:
 
 Remember: You are their financial advisor, not a chatbot. Every insight must be grounded in their actual numbers above."""
 
-    messages = [
-        {"role": "system", "content": system_prompt}
-    ]
+    contents = []
     if conversation_history:
-        messages.extend(conversation_history)
-    messages.append({"role": "user", "content": user_message})
+        for msg in conversation_history:
+            role = "user" if msg["role"] == "user" else "model"
+            contents.append({"role": role, "parts": [{"text": msg["content"]}]})
+    
+    contents.append({"role": "user", "parts": [{"text": user_message}]})
 
-    response = client.chat.completions.create(
-        model="deepseek-chat",
-        max_tokens=1000,
-        messages=messages
+    response = client.models.generate_content(
+        model="gemini-2.5-flash",
+        contents=contents,
+        config=types.GenerateContentConfig(
+            system_instruction=system_prompt,
+            max_output_tokens=1000,
+        )
     )
 
-    return response.choices[0].message.content
+    return response.text
