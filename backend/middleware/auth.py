@@ -8,9 +8,9 @@ from models.database import get_db
 from models.models import User
 import os
 
-SECRET_KEY = os.getenv("JWT_SECRET", "biasharaiq-super-secret-key-2024")
-ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = 60 * 24 * 7  # 7 days
+SECRET_KEY = os.getenv("SECRET_KEY", "biasharaiq-super-secret-key-2024")
+ALGORITHM = os.getenv("ALGORITHM", "HS256")
+ACCESS_TOKEN_EXPIRE_MINUTES = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", 60 * 24 * 7))  # 7 days
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 bearer_scheme = HTTPBearer()
