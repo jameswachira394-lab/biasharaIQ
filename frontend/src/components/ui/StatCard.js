@@ -26,7 +26,7 @@ export default function StatCard({ label, value, sub, icon, trend, color = 'emer
         )}
       </div>
       {trend !== undefined && (
-        <div className={clsx('mt-2 text-xs font-medium', trend >= 0 ? 'text-emerald-400' : 'text-red-400')}>
+        <div className={clsx('mt-2 text-xs font-medium', trend >= 0 ? 'text-[#10B981]' : 'text-red-400')}>
           {trend >= 0 ? '↑' : '↓'} {Math.abs(trend)}% vs last month
         </div>
       )}

@@ -16,8 +16,8 @@ export default function AppLayout({ children }) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="flex items-center gap-3">
-          <div className="w-6 h-6 rounded-full border-2 border-emerald-500 border-t-transparent animate-spin" />
-          <span className="text-slate-400 text-sm">Loading...</span>
+          <div className="w-6 h-6 rounded-full border-2 border-[#0F6B4F] border-t-transparent animate-spin" />
+          <span className="text-[#9CA3AF] text-sm">Loading...</span>
         </div>
       </div>
     )

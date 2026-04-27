@@ -65,24 +65,24 @@ export default function SettingsPage() {
     <AppLayout>
       <div className="space-y-6 stagger-children max-w-2xl">
         <div>
-          <h1 className="font-display font-bold text-2xl text-slate-100">Settings</h1>
-          <p className="text-slate-500 text-sm mt-0.5">Manage your business profile and categories</p>
+          <h1 className="font-display font-bold text-2xl text-[#E5E7EB]">Settings</h1>
+          <p className="text-[#9CA3AF] text-sm mt-0.5">Manage your business profile and categories</p>
         </div>
 
         {toast && (
           <div className={clsx('flex items-center gap-2 p-3 rounded-lg border text-sm animate-fade-in',
-            toast.type === 'success' ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400' : 'bg-red-500/10 border-red-500/20 text-red-400')}>
+            toast.type === 'success' ? 'bg-[#0F6B4F]/10 border-[#0F6B4F]/20 text-[#10B981]' : 'bg-red-500/10 border-red-500/20 text-red-400')}>
             {toast.type === 'success' ? <CheckCircle size={15} /> : <AlertCircle size={15} />}
             {toast.msg}
           </div>
         )}
 
         {/* Tabs */}
-        <div className="flex gap-1 p-1 bg-[#0d1420] rounded-lg border border-[#1e2d3d] w-fit">
+        <div className="flex gap-1 p-1 bg-[#121821] rounded-lg border border-[#1A2535] w-fit">
           {TABS.map(({ id, label, icon: Icon }) => (
             <button key={id} onClick={() => setTab(id)}
               className={clsx('flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium transition-all',
-                tab === id ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' : 'text-slate-500 hover:text-slate-300')}>
+                tab === id ? 'bg-[#0F6B4F]/10 text-[#10B981] border border-[#0F6B4F]/20' : 'text-[#9CA3AF] hover:text-[#E5E7EB]')}>
               <Icon size={14} /> {label}
             </button>
           ))}
@@ -90,30 +90,30 @@ export default function SettingsPage() {
 
         {tab === 'profile' && (
           <div className="card p-6">
-            <h2 className="font-display font-semibold text-slate-200 mb-5">Business Profile</h2>
+            <h2 className="font-display font-semibold text-[#E5E7EB] mb-5">Business Profile</h2>
             <form onSubmit={saveProfile} className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs text-slate-400 mb-1.5">Business Name</label>
+                  <label className="block text-xs text-[#9CA3AF] mb-1.5">Business Name</label>
                   <input className="input-dark" value={profile.business_name || ''} onChange={e => setProfile(p => ({ ...p, business_name: e.target.value }))} />
                 </div>
                 <div>
-                  <label className="block text-xs text-slate-400 mb-1.5">Owner Name</label>
+                  <label className="block text-xs text-[#9CA3AF] mb-1.5">Owner Name</label>
                   <input className="input-dark" value={profile.owner_name || ''} onChange={e => setProfile(p => ({ ...p, owner_name: e.target.value }))} />
                 </div>
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs text-slate-400 mb-1.5">Phone</label>
+                  <label className="block text-xs text-[#9CA3AF] mb-1.5">Phone</label>
                   <input className="input-dark" value={profile.phone || ''} onChange={e => setProfile(p => ({ ...p, phone: e.target.value }))} placeholder="+254..." />
                 </div>
                 <div>
-                  <label className="block text-xs text-slate-400 mb-1.5">Business Type</label>
+                  <label className="block text-xs text-[#9CA3AF] mb-1.5">Business Type</label>
                   <input className="input-dark" value={profile.business_type || ''} onChange={e => setProfile(p => ({ ...p, business_type: e.target.value }))} placeholder="e.g. Retail" />
                 </div>
               </div>
               <div className="pt-1">
-                <label className="block text-xs text-slate-500 mb-1">Email (read-only)</label>
+                <label className="block text-xs text-[#9CA3AF] mb-1">Email (read-only)</label>
                 <input className="input-dark opacity-50" value={user?.email || ''} disabled />
               </div>
               <button type="submit" className="btn-primary" disabled={saving}>
@@ -125,7 +125,7 @@ export default function SettingsPage() {
 
         {tab === 'categories' && (
           <div className="card p-6">
-            <h2 className="font-display font-semibold text-slate-200 mb-5">Categories</h2>
+            <h2 className="font-display font-semibold text-[#E5E7EB] mb-5">Categories</h2>
 
             {/* Add category */}
             <form onSubmit={addCategory} className="flex gap-2 mb-5">
@@ -140,13 +140,13 @@ export default function SettingsPage() {
             {/* Income categories */}
             {['income', 'expense'].map(type => (
               <div key={type} className="mb-4">
-                <h3 className={clsx('text-xs font-semibold uppercase tracking-wide mb-2', type === 'income' ? 'text-emerald-400' : 'text-red-400')}>
+                <h3 className={clsx('text-xs font-semibold uppercase tracking-wide mb-2', type === 'income' ? 'text-[#10B981]' : 'text-red-400')}>
                   {type === 'income' ? '↑ Money In' : '↓ Money Out'} Categories
                 </h3>
                 <div className="flex flex-wrap gap-2">
                   {categories.filter(c => c.type === type).map(cat => (
                     <div key={cat.id} className={clsx('flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs border',
-                      type === 'income' ? 'bg-emerald-500/5 border-emerald-500/15 text-emerald-300' : 'bg-red-500/5 border-red-500/15 text-red-300')}>
+                      type === 'income' ? 'bg-[#0F6B4F]/5 border-[#0F6B4F]/15 text-[#10B981]' : 'bg-red-500/5 border-red-500/15 text-red-300')}>
                       {cat.name}
                       {!cat.is_default && (
                         <button onClick={() => deleteCategory(cat.id)} className="hover:text-red-400 ml-1 opacity-60 hover:opacity-100">
@@ -156,7 +156,7 @@ export default function SettingsPage() {
                     </div>
                   ))}
                   {categories.filter(c => c.type === type).length === 0 && (
-                    <span className="text-xs text-slate-600">None yet</span>
+                    <span className="text-xs text-[#4B5563]">None yet</span>
                   )}
                 </div>
               </div>

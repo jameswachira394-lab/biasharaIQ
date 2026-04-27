@@ -41,12 +41,12 @@ export default function QuickAddTransaction({ onAdded, categories = [] }) {
 
   return (
     <div className="card p-5">
-      <h2 className="font-display font-semibold text-slate-200 text-sm uppercase tracking-wide mb-4">
+      <h2 className="font-display font-semibold text-[#E5E7EB] text-sm uppercase tracking-wide mb-4">
         Quick Add Transaction
       </h2>
 
       {/* Type toggle */}
-      <div className="grid grid-cols-2 gap-2 p-1 bg-[#0d1420] rounded-lg border border-[#1e2d3d] mb-4">
+      <div className="grid grid-cols-2 gap-2 p-1 bg-[#121821] rounded-lg border border-[#1A2535] mb-4">
         {[
           { id: 'income',  label: 'Money In',  Icon: TrendingUp  },
           { id: 'expense', label: 'Money Out', Icon: TrendingDown },
@@ -56,8 +56,8 @@ export default function QuickAddTransaction({ onAdded, categories = [] }) {
             className={clsx(
               'py-2 rounded-md text-sm font-medium transition-all flex items-center justify-center gap-2',
               type === id
-                ? id === 'income' ? 'bg-emerald-500/15 text-emerald-400 border border-emerald-500/25' : 'bg-red-500/15 text-red-400 border border-red-500/25'
-                : 'text-slate-500 hover:text-slate-300'
+                ? id === 'income' ? 'bg-[#0F6B4F]/15 text-[#10B981] border border-[#0F6B4F]/25' : 'bg-red-500/15 text-red-400 border border-red-500/25'
+                : 'text-[#9CA3AF] hover:text-[#E5E7EB]'
             )}>
             <Icon size={13} /> {label}
           </button>

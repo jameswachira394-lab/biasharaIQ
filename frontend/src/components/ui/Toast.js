@@ -11,7 +11,7 @@ const ICONS = {
 }
 
 const STYLES = {
-  success: 'bg-emerald-500/10 border-emerald-500/25 text-emerald-300',
+  success: 'bg-[#0F6B4F]/10 border-[#0F6B4F]/25 text-[#10B981]',
   error:   'bg-red-500/10 border-red-500/25 text-red-300',
   warning: 'bg-amber-500/10 border-amber-500/25 text-amber-300',
   info:    'bg-blue-500/10 border-blue-500/25 text-blue-300',

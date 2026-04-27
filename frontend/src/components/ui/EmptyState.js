@@ -17,8 +17,8 @@ export default function EmptyState({
           {icon}
         </div>
       )}
-      <h3 className="font-display font-semibold text-slate-300 mb-1">{title}</h3>
-      {description && <p className="text-slate-500 text-sm max-w-sm">{description}</p>}
+      <h3 className="font-display font-semibold text-[#E5E7EB] mb-1">{title}</h3>
+      {description && <p className="text-[#9CA3AF] text-sm max-w-sm">{description}</p>}
       {actionHref && actionLabel && (
         <Link href={actionHref} className="btn-primary mt-5 text-sm">
           {actionLabel}

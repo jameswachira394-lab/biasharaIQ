@@ -47,8 +47,8 @@ export default function InsightsPage() {
       <div className="space-y-6 stagger-children">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="font-display font-bold text-2xl text-slate-100">Financial Insights</h1>
-            <p className="text-slate-500 text-sm mt-0.5">Rule-based analysis of your business health</p>
+            <h1 className="font-display font-bold text-2xl text-[#E5E7EB]">Financial Insights</h1>
+            <p className="text-[#9CA3AF] text-sm mt-0.5">Rule-based analysis of your business health</p>
           </div>
           <button onClick={() => load(true)} disabled={refreshing} className="btn-secondary p-2">
             <RefreshCw size={15} className={refreshing ? 'animate-spin' : ''} />
@@ -56,14 +56,14 @@ export default function InsightsPage() {
         </div>
 
         {loading ? (
-          <div className="flex items-center justify-center h-40 text-slate-500 text-sm">
-            <div className="w-4 h-4 border-2 border-emerald-500 border-t-transparent rounded-full animate-spin mr-2" /> Analyzing your finances...
+          <div className="flex items-center justify-center h-40 text-[#9CA3AF] text-sm">
+            <div className="w-4 h-4 border-2 border-[#0F6B4F] border-t-transparent rounded-full animate-spin mr-2" /> Analyzing your finances...
           </div>
         ) : insights.length === 0 ? (
           <div className="card p-12 text-center">
-            <Lightbulb size={32} className="text-slate-600 mx-auto mb-3" />
-            <p className="text-slate-400 font-medium">No insights yet</p>
-            <p className="text-slate-600 text-sm mt-1">Add transactions to start receiving financial insights</p>
+            <Lightbulb size={32} className="text-[#4B5563] mx-auto mb-3" />
+            <p className="text-[#9CA3AF] font-medium">No insights yet</p>
+            <p className="text-[#4B5563] text-sm mt-1">Add transactions to start receiving financial insights</p>
           </div>
         ) : (
           <div className="space-y-6">
@@ -73,10 +73,10 @@ export default function InsightsPage() {
           </div>
         )}
 
-        <div className="card p-4 border-dashed border-[#1e2d3d]">
-          <p className="text-xs text-slate-600 text-center">
+        <div className="card p-4 border-dashed border-[#1A2535]">
+          <p className="text-xs text-[#4B5563] text-center">
             Insights are generated from your actual transaction data using rule-based analysis.
-            For AI-powered advice, visit the <a href="/ai" className="text-emerald-500 hover:text-emerald-400">AI Advisor</a>.
+            For AI-powered advice, visit the <a href="/ai" className="text-[#0F6B4F] hover:text-[#10B981]">AI Advisor</a>.
           </p>
         </div>
       </div>

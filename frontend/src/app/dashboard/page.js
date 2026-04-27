@@ -24,12 +24,12 @@ const COLORS = ['#22c55e','#06b6d4','#f59e0b','#8b5cf6','#ef4444','#ec4899']
 const CustomTooltip = ({ active, payload, label }) => {
   if (!active || !payload?.length) return null
   return (
-    <div className="bg-[#111827] border border-[#1e2d3d] rounded-lg p-3 text-xs shadow-xl">
-      <p className="text-slate-400 mb-2">{label}</p>
+    <div className="bg-[#121821] border border-[#1A2535] rounded-lg p-3 text-xs shadow-xl">
+      <p className="text-[#9CA3AF] mb-2">{label}</p>
       {payload.map((p, i) => (
         <div key={i} className="flex items-center gap-2">
           <div className="w-2 h-2 rounded-full" style={{ background: p.color }} />
-          <span className="text-slate-300">{p.name}:</span>
+          <span className="text-[#E5E7EB]">{p.name}:</span>
           <span className="font-mono font-semibold" style={{ color: p.color }}>
             KES {Number(p.value).toLocaleString()}
           </span>
@@ -86,10 +86,10 @@ export default function DashboardPage() {
         {/* Header */}
         <div className="flex items-start justify-between">
           <div>
-            <h1 className="font-display font-bold text-2xl text-slate-100">
+            <h1 className="font-display font-bold text-2xl text-[#E5E7EB]">
               {user?.business_name || 'Dashboard'}
             </h1>
-            <p className="text-slate-500 text-sm mt-0.5">
+            <p className="text-[#9CA3AF] text-sm mt-0.5">
               {new Date().toLocaleDateString('en-KE', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
             </p>
           </div>
@@ -162,7 +162,7 @@ export default function DashboardPage() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Trend chart */}
           <div className="card p-5 lg:col-span-2">
-            <h2 className="font-display font-semibold text-slate-200 mb-4 text-sm uppercase tracking-wide">
+            <h2 className="font-display font-semibold text-[#E5E7EB] mb-4 text-sm uppercase tracking-wide">
               8-Week Income vs Expenses
             </h2>
             {weekly_trend?.length > 0 ? (
@@ -178,7 +178,7 @@ export default function DashboardPage() {
                       <stop offset="95%" stopColor="#ef4444" stopOpacity={0} />
                     </linearGradient>
                   </defs>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#1e2d3d" />
+                  <CartesianGrid strokeDasharray="3 3" stroke="#1A2535" />
                   <XAxis dataKey="week" tick={{ fill: '#475569', fontSize: 11 }} axisLine={false} tickLine={false} />
                   <YAxis tick={{ fill: '#475569', fontSize: 11 }} axisLine={false} tickLine={false} tickFormatter={v => `${(v / 1000).toFixed(0)}K`} />
                   <Tooltip content={<CustomTooltip />} />
@@ -187,9 +187,9 @@ export default function DashboardPage() {
                 </AreaChart>
               </ResponsiveContainer>
             ) : (
-              <div className="h-52 flex flex-col items-center justify-center text-slate-600 text-sm gap-2">
+              <div className="h-52 flex flex-col items-center justify-center text-[#4B5563] text-sm gap-2">
                 <p>No transaction data yet</p>
-                <Link href="/transactions" className="text-emerald-500 hover:text-emerald-400 text-xs">
+                <Link href="/transactions" className="text-[#0F6B4F] hover:text-[#10B981] text-xs">
                   Add your first transaction →
                 </Link>
               </div>
@@ -198,7 +198,7 @@ export default function DashboardPage() {
 
           {/* Expense pie */}
           <div className="card p-5">
-            <h2 className="font-display font-semibold text-slate-200 mb-4 text-sm uppercase tracking-wide">
+            <h2 className="font-display font-semibold text-[#E5E7EB] mb-4 text-sm uppercase tracking-wide">
               Expenses by Category
             </h2>
             {m.expense_breakdown?.length > 0 ? (
@@ -213,7 +213,7 @@ export default function DashboardPage() {
                     </Pie>
                     <Tooltip
                       formatter={v => [`KES ${v.toLocaleString()}`, '']}
-                      contentStyle={{ background: '#111827', border: '1px solid #1e2d3d', borderRadius: 8, fontSize: 11 }}
+                      contentStyle={{ background: '#121821', border: '1px solid #1A2535', borderRadius: 8, fontSize: 11 }}
                     />
                   </PieChart>
                 </ResponsiveContainer>
@@ -222,15 +222,15 @@ export default function DashboardPage() {
                     <div key={i} className="flex items-center justify-between text-xs">
                       <div className="flex items-center gap-1.5">
                         <div className="w-2 h-2 rounded-full flex-shrink-0" style={{ background: COLORS[i % COLORS.length] }} />
-                        <span className="text-slate-400 truncate max-w-[110px]">{item.category}</span>
+                        <span className="text-[#9CA3AF] truncate max-w-[110px]">{item.category}</span>
                       </div>
-                      <span className="text-slate-300 font-mono font-medium tabular-nums">{item.percentage}%</span>
+                      <span className="text-[#E5E7EB] font-mono font-medium tabular-nums">{item.percentage}%</span>
                     </div>
                   ))}
                 </div>
               </>
             ) : (
-              <div className="h-48 flex items-center justify-center text-slate-600 text-sm">No expense data yet</div>
+              <div className="h-48 flex items-center justify-center text-[#4B5563] text-sm">No expense data yet</div>
             )}
           </div>
         </div>
@@ -252,10 +252,10 @@ export default function DashboardPage() {
         {insights?.length > 0 && (
           <div className="card p-5">
             <div className="flex items-center justify-between mb-4">
-              <h2 className="font-display font-semibold text-slate-200 text-sm uppercase tracking-wide">
+              <h2 className="font-display font-semibold text-[#E5E7EB] text-sm uppercase tracking-wide">
                 System Insights
               </h2>
-              <Link href="/insights" className="text-xs text-emerald-400 hover:text-emerald-300">
+              <Link href="/insights" className="text-xs text-[#10B981] hover:text-[#10B981]">
                 View all →
               </Link>
             </div>
@@ -271,14 +271,14 @@ export default function DashboardPage() {
         )}
 
         {/* AI CTA */}
-        <div className="card p-5 border-dashed border-[#2d4a6a] bg-gradient-to-r from-blue-500/5 to-transparent">
+        <div className="card p-5 border-dashed border-[#0F6B4F] bg-gradient-to-r from-blue-500/5 to-transparent">
           <div className="flex items-center gap-4">
             <div className="w-10 h-10 rounded-xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center flex-shrink-0">
               <Bot size={18} className="text-blue-400" />
             </div>
             <div className="flex-1">
-              <p className="font-display font-semibold text-slate-200 text-sm">Ask the AI Advisor</p>
-              <p className="text-xs text-slate-500 mt-0.5">
+              <p className="font-display font-semibold text-[#E5E7EB] text-sm">Ask the AI Advisor</p>
+              <p className="text-xs text-[#9CA3AF] mt-0.5">
                 "Why am I losing money?" — Get answers based on your real data
               </p>
             </div>
@@ -290,21 +290,21 @@ export default function DashboardPage() {
 
         {/* All-time totals */}
         <div className="card p-5">
-          <h2 className="font-display font-semibold text-slate-200 text-sm uppercase tracking-wide mb-4">
+          <h2 className="font-display font-semibold text-[#E5E7EB] text-sm uppercase tracking-wide mb-4">
             All-Time Summary
           </h2>
           <div className="grid grid-cols-3 gap-4 text-center">
             <div>
-              <p className="text-xs text-slate-500 mb-1">Total Money In</p>
-              <p className="font-display font-bold text-emerald-400">{formatCurrency(m.all_time?.income)}</p>
+              <p className="text-xs text-[#9CA3AF] mb-1">Total Money In</p>
+              <p className="font-display font-bold text-[#10B981]">{formatCurrency(m.all_time?.income)}</p>
             </div>
             <div>
-              <p className="text-xs text-slate-500 mb-1">Total Money Out</p>
+              <p className="text-xs text-[#9CA3AF] mb-1">Total Money Out</p>
               <p className="font-display font-bold text-red-400">{formatCurrency(m.all_time?.expenses)}</p>
             </div>
             <div>
-              <p className="text-xs text-slate-500 mb-1">Net Profit</p>
-              <p className={`font-display font-bold ${(m.all_time?.profit || 0) >= 0 ? 'text-emerald-400' : 'text-red-400'}`}>
+              <p className="text-xs text-[#9CA3AF] mb-1">Net Profit</p>
+              <p className={`font-display font-bold ${(m.all_time?.profit || 0) >= 0 ? 'text-[#10B981]' : 'text-red-400'}`}>
                 {formatCurrency(m.all_time?.profit)}
               </p>
             </div>

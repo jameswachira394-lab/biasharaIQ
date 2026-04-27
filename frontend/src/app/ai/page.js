@@ -19,13 +19,13 @@ function Message({ msg }) {
   return (
     <div className={clsx('flex gap-3 animate-fade-in', isUser ? 'flex-row-reverse' : 'flex-row')}>
       <div className={clsx('w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 mt-0.5',
-        isUser ? 'bg-emerald-500/15 border border-emerald-500/25' : 'bg-blue-500/15 border border-blue-500/25')}>
-        {isUser ? <User size={14} className="text-emerald-400" /> : <Bot size={14} className="text-blue-400" />}
+        isUser ? 'bg-[#0F6B4F]/15 border border-[#0F6B4F]/25' : 'bg-blue-500/15 border border-blue-500/25')}>
+        {isUser ? <User size={14} className="text-[#10B981]" /> : <Bot size={14} className="text-blue-400" />}
       </div>
       <div className={clsx('max-w-[80%] px-4 py-3 rounded-2xl text-sm leading-relaxed',
         isUser
-          ? 'bg-emerald-500/10 border border-emerald-500/15 text-emerald-50 rounded-tr-sm'
-          : 'bg-[#111827] border border-[#1e2d3d] text-slate-200 rounded-tl-sm')}>
+          ? 'bg-[#0F6B4F]/10 border border-[#0F6B4F]/15 text-emerald-50 rounded-tr-sm'
+          : 'bg-[#121821] border border-[#1A2535] text-[#E5E7EB] rounded-tl-sm')}>
         {msg.content}
       </div>
     </div>
@@ -79,10 +79,10 @@ export default function AIPage() {
               <div className="w-7 h-7 rounded-lg bg-blue-500/15 border border-blue-500/25 flex items-center justify-center">
                 <Bot size={14} className="text-blue-400" />
               </div>
-              <h1 className="font-display font-bold text-2xl text-slate-100">AI Advisor</h1>
-              <span className="text-xs bg-emerald-500/15 text-emerald-400 px-2 py-0.5 rounded-full border border-emerald-500/25 font-semibold">LIVE DATA</span>
+              <h1 className="font-display font-bold text-2xl text-[#E5E7EB]">AI Advisor</h1>
+              <span className="text-xs bg-[#0F6B4F]/15 text-[#10B981] px-2 py-0.5 rounded-full border border-[#0F6B4F]/25 font-semibold">LIVE DATA</span>
             </div>
-            <p className="text-slate-500 text-sm mt-0.5 ml-9">Ask anything about your finances. Answers are based on your real data.</p>
+            <p className="text-[#9CA3AF] text-sm mt-0.5 ml-9">Ask anything about your finances. Answers are based on your real data.</p>
           </div>
           {messages.length > 0 && (
             <button onClick={reset} className="btn-secondary text-xs py-1.5 px-3 flex items-center gap-1.5">
@@ -98,14 +98,14 @@ export default function AIPage() {
               <div className="w-14 h-14 rounded-2xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center mb-4">
                 <Sparkles size={24} className="text-blue-400" />
               </div>
-              <h3 className="font-display font-semibold text-slate-300 mb-1">BiasharaIQ AI Advisor</h3>
-              <p className="text-slate-500 text-sm mb-6 max-w-sm">
+              <h3 className="font-display font-semibold text-[#E5E7EB] mb-1">BiasharaIQ AI Advisor</h3>
+              <p className="text-[#9CA3AF] text-sm mb-6 max-w-sm">
                 I analyze your actual business data to give you specific, actionable financial advice — not generic tips.
               </p>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 w-full max-w-lg">
                 {STARTER_QUESTIONS.map((q) => (
                   <button key={q} onClick={() => send(q)}
-                    className="text-left text-xs p-3 rounded-lg bg-[#0d1420] border border-[#1e2d3d] hover:border-[#2d4a6a] text-slate-400 hover:text-slate-300 transition-all">
+                    className="text-left text-xs p-3 rounded-lg bg-[#121821] border border-[#1A2535] hover:border-[#0F6B4F] text-[#9CA3AF] hover:text-[#E5E7EB] transition-all">
                     {q}
                   </button>
                 ))}
@@ -119,7 +119,7 @@ export default function AIPage() {
                   <div className="w-8 h-8 rounded-lg bg-blue-500/15 border border-blue-500/25 flex items-center justify-center flex-shrink-0">
                     <Bot size={14} className="text-blue-400" />
                   </div>
-                  <div className="bg-[#111827] border border-[#1e2d3d] px-4 py-3 rounded-2xl rounded-tl-sm">
+                  <div className="bg-[#121821] border border-[#1A2535] px-4 py-3 rounded-2xl rounded-tl-sm">
                     <div className="flex items-center gap-1.5">
                       {[0, 150, 300].map(d => (
                         <div key={d} className="w-1.5 h-1.5 rounded-full bg-blue-400 animate-pulse-soft" style={{ animationDelay: `${d}ms` }} />
@@ -156,7 +156,7 @@ export default function AIPage() {
             <Send size={16} />
           </button>
         </div>
-        <p className="text-xs text-slate-600 text-center mt-2">
+        <p className="text-xs text-[#4B5563] text-center mt-2">
           Responses are grounded in your actual transaction data. No hallucinations.
         </p>
       </div>
