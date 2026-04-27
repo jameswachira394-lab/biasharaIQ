@@ -157,6 +157,7 @@ class FinancialEngine:
                 "profit": balance,
             },
             "this_month": {
+                "month": now.strftime("%B %Y"),
                 "income": month_income,
                 "expenses": month_expenses,
                 "profit": month_profit,

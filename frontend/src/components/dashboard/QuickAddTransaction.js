@@ -1,6 +1,6 @@
 'use client'
 import { useState } from 'react'
-import { transactionsApi, categoriesApi } from '@/utils/api'
+import { transactionsApi } from '@/utils/api'
 import { TrendingUp, TrendingDown, Plus } from 'lucide-react'
 import clsx from 'clsx'
 

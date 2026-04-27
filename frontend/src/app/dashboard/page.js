@@ -1,5 +1,5 @@
 'use client'
-import { useState, useCallback } from 'react'
+import { useState, useEffect } from 'react'
 import { useDashboard } from '@/hooks/useDashboard'
 import { useCategories } from '@/hooks/useCategories'
 import { formatCurrency, getSeverityColor } from '@/utils/format'
@@ -17,7 +17,7 @@ import {
 } from 'recharts'
 import { RefreshCw, TrendingUp, TrendingDown, DollarSign, Activity, AlertTriangle, Bot } from 'lucide-react'
 import Link from 'next/link'
-import { useState as useLocalState, useEffect } from 'react'
+
 
 const COLORS = ['#22c55e','#06b6d4','#f59e0b','#8b5cf6','#ef4444','#ec4899']
 

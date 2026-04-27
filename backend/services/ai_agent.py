@@ -106,7 +106,7 @@ Remember: You are their financial advisor, not a chatbot. Every insight must be 
     messages.append({"role": "user", "content": user_message})
 
     response = client.messages.create(
-        model="claude-sonnet-4-20250514",
+        model="claude-sonnet-4-5",
         max_tokens=1000,
         system=system_prompt,
         messages=messages

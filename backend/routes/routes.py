@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, Query
+from fastapi import APIRouter, Depends, Query, HTTPException
 from sqlalchemy.orm import Session
 from pydantic import BaseModel
 from typing import Optional, List
@@ -182,7 +182,7 @@ def delete_category(
         Category.is_default == False
     ).first()
     if not cat:
-        raise Exception("Category not found or cannot delete default category")
+        raise HTTPException(status_code=404, detail="Category not found or cannot delete a default category")
     db.delete(cat)
     db.commit()
     return {"message": "Deleted"}

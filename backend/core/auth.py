@@ -44,7 +44,7 @@ def get_current_user(
     credentials: HTTPAuthorizationCredentials = Depends(security),
     db: Session = Depends(get_db),
 ):
-    from models.user import User
+    from models.models import User
 
     payload = decode_token(credentials.credentials)
     user_id: str = payload.get("sub")

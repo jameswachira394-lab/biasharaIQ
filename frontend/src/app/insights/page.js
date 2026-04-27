@@ -1,5 +1,5 @@
 'use client'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { insightsApi } from '@/utils/api'
 import { getSeverityColor } from '@/utils/format'
 import AppLayout from '@/components/ui/AppLayout'
@@ -10,16 +10,16 @@ export default function InsightsPage() {
   const [loading, setLoading] = useState(true)
   const [refreshing, setRefreshing] = useState(false)
 
-  const load = async (refresh = false) => {
+  const load = useCallback(async (refresh = false) => {
     if (refresh) setRefreshing(true)
     try {
       const res = await insightsApi.get()
       setInsights(res.data || [])
     } catch {}
     finally { setLoading(false); setRefreshing(false) }
-  }
+  }, [])
 
-  useEffect(() => { load() }, [])
+  useEffect(() => { load() }, [load])
 
   const bySeverity = {
     critical: insights.filter(i => i.severity === 'critical'),
