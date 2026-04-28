@@ -83,14 +83,22 @@ def chat(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):
-    response = chat_with_ai_agent(
-        db=db,
-        user_id=current_user.id,
-        business_name=current_user.business_name,
-        user_message=req.message,
-        conversation_history=req.history
-    )
-    return {"response": response}
+    try:
+        response = chat_with_ai_agent(
+            db=db,
+            user_id=current_user.id,
+            business_name=current_user.business_name,
+            user_message=req.message,
+            conversation_history=req.history
+        )
+        return {"response": response}
+    except ValueError as e:
+        if "API key" in str(e):
+            return {"error": "API key not configured. Please set GEMINI_API_KEY in environment variables."}, 500
+        raise
+    except Exception as e:
+        print(f"AI Chat Error: {str(e)}")
+        return {"error": f"Failed to get AI response: {str(e)}"}, 500
 
 
 # ──────────────────────────────────────────────
