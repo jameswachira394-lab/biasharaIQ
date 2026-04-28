@@ -35,8 +35,7 @@ def get_dashboard(
     }
 
 
-# ──────────────────────────────────────────────
-# Insights
+
 # ──────────────────────────────────────────────
 insights_router = APIRouter(prefix="/insights", tags=["insights"])
 
