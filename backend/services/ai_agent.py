@@ -1,4 +1,5 @@
-import google.generativeai as genai
+from google import genai
+from google.genai import types
 import os
 from sqlalchemy.orm import Session
 from services.financial_engine import FinancialEngine
@@ -7,12 +8,12 @@ from models.models import Transaction
 from datetime import datetime, timedelta
 import json
 
-# Configure Gemini API
+# Configure Gemini API using the new google-genai SDK
 api_key = os.getenv("GEMINI_API_KEY")
 if not api_key:
     raise ValueError("GEMINI_API_KEY not found in environment variables")
 
-genai.configure(api_key=api_key)
+client = genai.Client(api_key=api_key)
 
 
 def build_financial_context(db: Session, user_id: int, business_name: str) -> str:
@@ -83,7 +84,6 @@ def chat_with_ai_agent(
 ) -> str:
     """
     BiasharaIQ AI Agent - responds based purely on the user's real financial data.
-    No hallucinations. No generic advice. Data-driven only.
     """
     financial_context = build_financial_context(db, user_id, business_name)
 
@@ -109,12 +109,26 @@ Remember: You are their financial advisor, not a chatbot. Every insight must be 
     if conversation_history:
         for msg in conversation_history:
             role = "user" if msg["role"] == "user" else "model"
-            contents.append({"role": role, "parts": [{"text": msg["content"]}]})
+            contents.append(types.Content(role=role, parts=[types.Part.from_text(text=msg["content"])]))
     
-    contents.append({"role": "user", "parts": [{"text": user_message}]})
+    contents.append(types.Content(role="user", parts=[types.Part.from_text(text=user_message)]))
 
-    model = genai.GenerativeModel("gemini-2.0-flash", system_instruction=system_prompt)
-    
-    response = model.generate_content(contents)
+    try:
+        response = client.models.generate_content(
+            model="gemini-2.0-flash",
+            contents=contents,
+            config=types.GenerateContentConfig(
+                system_instruction=system_prompt,
+                temperature=0.2,
+            )
+        )
+        return response.text
+    except Exception as e:
+        error_msg = str(e)
+        if "429" in error_msg or "quota" in error_msg.lower():
+            raise Exception("AI Quota exceeded. Please try again later or upgrade your Gemini plan.") from e
+        elif "401" in error_msg or "403" in error_msg:
+            raise Exception("Invalid API Key configuration. Please check your GEMINI_API_KEY.") from e
+        else:
+            raise Exception(f"AI Service Error: {error_msg}") from e
 
-    return response.text

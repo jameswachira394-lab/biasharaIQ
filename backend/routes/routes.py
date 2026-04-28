@@ -94,11 +94,12 @@ def chat(
         return {"response": response}
     except ValueError as e:
         if "API key" in str(e):
-            return {"error": "API key not configured. Please set GEMINI_API_KEY in environment variables."}, 500
+            return {"error": str(e)}, 500
         raise
     except Exception as e:
         print(f"AI Chat Error: {str(e)}")
-        return {"error": f"Failed to get AI response: {str(e)}"}, 500
+        # If it's a known error from our ai_agent.py, it will have a clear message
+        return {"error": str(e)}, 500
 
 
 # ──────────────────────────────────────────────
