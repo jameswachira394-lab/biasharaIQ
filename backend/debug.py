@@ -9,7 +9,6 @@ print("=" * 60)
 print("BIASHARAIQ SYSTEM DEBUG")
 print("=" * 60)
 
-# 1. Environment Check
 print("\n[INFO] ENVIRONMENT VARIABLES")
 print("-" * 60)
 required_vars = ['DATABASE_URL', 'SECRET_KEY', 'ALGORITHM', 'GEMINI_API_KEY']
@@ -19,7 +18,7 @@ for var in required_vars:
     status = "[OK]" if value != "NOT SET" else "[FAIL]"
     print(f"{status} {var}: {masked}")
 
-# 2. Database Connection Check
+
 print("\n[INFO] DATABASE CONNECTION")
 print("-" * 60)
 try:
