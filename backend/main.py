@@ -1,4 +1,4 @@
-# main.py - FastAPI application entry point for BiasharaIQ backend
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from dotenv import load_dotenv
@@ -15,7 +15,7 @@ from routes.routes import (
     reports_router, categories_router, profile_router
 )
 
-# Create all database tables
+
 Base.metadata.create_all(bind=engine)
 
 app = FastAPI(
