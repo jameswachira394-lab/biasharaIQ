@@ -1,8 +1,4 @@
-#!/usr/bin/env python
-"""
-Comprehensive system debug script for BiasharaIQ
-Tests all components and identifies issues
-"""
+
 import os
 import sys
 from dotenv import load_dotenv
