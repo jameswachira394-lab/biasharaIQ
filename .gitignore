@@ -15,11 +15,12 @@ env/
 .pytest_cache/
 .mypy_cache/
 
-# Environment variables
+# Environment variables - PRODUCTION SECRETS
 .env
 .env.local
 .env.production
 .env.staging
+.env.*.local
 
 # Node / Next.js
 node_modules/
@@ -27,11 +28,13 @@ node_modules/
 .vercel/
 out/
 *.tsbuildinfo
+.turbo/
 
 # Databases
 *.db
 *.sqlite
 *.sqlite3
+pgdata/
 
 # IDE
 .vscode/
@@ -41,13 +44,30 @@ out/
 .DS_Store
 Thumbs.db
 
-# Logs
+# Logs and monitoring
 *.log
 logs/
 npm-debug.log*
+yarn-error.log*
+.pytest_cache/
+coverage/
 
 # Docker volumes
 pgdata/
+pgdata_prod/
+
+# Backups and temp
+backups/
+*.backup
+*.tmp
+*.pem
+*.key
+*.crt
+
+# Misc
+.env.*.backup
+docker-compose.override.yml
+
 
 # Test coverage
 htmlcov/

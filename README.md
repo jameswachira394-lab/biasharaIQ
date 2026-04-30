@@ -4,7 +4,15 @@ A financial intelligence + decision system for real-world small businesses in Ke
 
 ---
 
-## Windows Quick Start
+## 🚀 Quick Links
+
+- **Development**: See [Quick Start](#quick-start) below
+- **Production**: See [PRODUCTION_DEPLOYMENT.md](docs/PRODUCTION_DEPLOYMENT.md)
+- **API Docs**: Full API documentation in [API.md](docs/API.md)
+
+---
+
+## Quick Start
 
 ### Step 1 – Install PostgreSQL
 Download and install from: https://www.postgresql.org/download/windows/
@@ -144,3 +152,133 @@ biasharaiq/
 - **Database**: PostgreSQL + SQLAlchemy ORM
 - **Auth**: JWT (bcrypt password hashing)
 - **AI**: Anthropic Claude API (claude-sonnet-4)
+
+---
+
+## 🏭 Production Deployment
+
+### One-Command Docker Deployment
+
+```bash
+# Copy environment file and update with production secrets
+cp .env.example .env
+# Edit .env with your production values
+
+# Start production services
+docker-compose -f docker-compose.prod.yml up -d
+
+# Verify deployment
+curl http://localhost:8000/health
+
+# View logs
+docker-compose -f docker-compose.prod.yml logs -f backend
+```
+
+### Production Features Included
+
+✅ **Security**
+- CORS whitelist (no wildcards in production)
+- Security headers (X-Frame-Options, HSTS, etc.)
+- Non-root Docker user
+- JWT authentication
+
+✅ **Performance**
+- Database connection pooling (configurable)
+- Gunicorn + Uvicorn workers
+- Optimized Docker images
+- Response time monitoring
+
+✅ **Reliability**
+- Health checks with database verification
+- Automatic restart policies
+- Request/response logging
+- Error tracking integration (Sentry)
+- Database backup strategy
+
+✅ **Scalability**
+- Docker Compose for multi-container orchestration
+- Kubernetes manifests available
+- Load balancer ready
+- Configurable pool sizes
+
+### Deployment Guides
+
+- **Docker Compose** (Self-hosted): [PRODUCTION_DEPLOYMENT.md](docs/PRODUCTION_DEPLOYMENT.md#option-a-docker-compose-self-hosted)
+- **Kubernetes**: [PRODUCTION_DEPLOYMENT.md](docs/PRODUCTION_DEPLOYMENT.md#option-b-kubernetes)
+- **Render.com** (Free Tier): [render.yaml](render.yaml)
+- **AWS EC2 + RDS**: [PRODUCTION_DEPLOYMENT.md](docs/PRODUCTION_DEPLOYMENT.md#option-d-aws-ec2--rds)
+
+### Pre-Deployment Checklist
+
+```bash
+# Run health checks
+./health_check.sh http://localhost:8000  # Linux/Mac
+.\health_check.ps1 -EnvironmentUrl "http://localhost:8000"  # Windows
+```
+
+See [PRODUCTION_DEPLOYMENT.md](docs/PRODUCTION_DEPLOYMENT.md) for complete deployment guide.
+
+---
+
+## 🛠 Development
+
+### Environment Variables
+
+All environment variables are documented in `.env.example`. Create a `.env` file:
+
+```bash
+cp .env.example .env
+# Edit with your values
+```
+
+### API Documentation
+
+Once running, visit: http://localhost:8000/docs
+
+### Testing
+
+```bash
+# Backend tests
+cd backend
+pytest
+
+# Frontend tests  
+cd frontend
+npm test
+```
+
+---
+
+## 📚 Documentation
+
+- [API Documentation](docs/API.md)
+- [Production Deployment](docs/PRODUCTION_DEPLOYMENT.md)
+- [Development Deployment](docs/DEPLOYMENT.md)
+
+---
+
+## 🤝 Contributing
+
+1. Create a feature branch: `git checkout -b feature/your-feature`
+2. Commit changes: `git commit -am 'Add feature'`
+3. Push to branch: `git push origin feature/your-feature`
+4. Submit a pull request
+
+---
+
+## 📝 License
+
+This project is licensed under the MIT License - see the LICENSE file for details.
+
+---
+
+## 🙋 Support
+
+For issues and questions:
+- GitHub Issues: [Create an issue](https://github.com/yourusername/biasharaiq/issues)
+- Documentation: [docs/](docs/)
+
+---
+
+**Version**: 1.0.0  
+**Last Updated**: April 2024

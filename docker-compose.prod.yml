@@ -1,0 +1,77 @@
+version: '3.9'
+
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: biasharaiq_db_prod
+    environment:
+      POSTGRES_DB: biasharaiq
+      POSTGRES_USER: ${DB_USER:-biasharaiq}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    volumes:
+      - pgdata_prod:/var/lib/postgresql/data
+      - ./backend/schema.sql:/docker-entrypoint-initdb.d/schema.sql
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U ${DB_USER:-biasharaiq}" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: always
+    networks:
+      - biasharaiq_network
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.prod
+    container_name: biasharaiq_api_prod
+    environment:
+      ENVIRONMENT: production
+      DATABASE_URL: postgresql://${DB_USER:-biasharaiq}:${DB_PASSWORD}@db/biasharaiq
+      SECRET_KEY: ${SECRET_KEY}
+      JWT_SECRET: ${JWT_SECRET}
+      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY}
+      CORS_ORIGINS: ${CORS_ORIGINS}
+      LOG_LEVEL: INFO
+      DB_POOL_SIZE: 25
+      DB_MAX_OVERFLOW: 15
+    ports:
+      - "8000:8000"
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: always
+    networks:
+      - biasharaiq_network
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8000/health" ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL}
+    container_name: biasharaiq_web_prod
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
+    restart: always
+    networks:
+      - biasharaiq_network
+    environment:
+      NODE_ENV: production
+
+volumes:
+  pgdata_prod:
+
+networks:
+  biasharaiq_network:
+    driver: bridge
