@@ -1,16 +1,3 @@
-"""
-BiasharaIQ Demo Seed Script
----------------------------
-Creates a demo user account and populates realistic transaction data
-for a Kenyan small business (a retail shop called "Mama Jane's General Store").
-
-Usage:
-    cd backend
-    python seed_demo.py
-
-    Or with a custom DATABASE_URL:
-    DATABASE_URL=postgresql://... python seed_demo.py
-"""
 
 import os
 import sys
