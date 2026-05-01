@@ -1,6 +1,3 @@
-#!/bin/bash
-# Production Health Check & Monitoring Script
-# Usage: ./health_check.sh <environment-url>
 
 set -e
 
