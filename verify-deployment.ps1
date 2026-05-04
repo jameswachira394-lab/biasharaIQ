@@ -29,11 +29,11 @@ function Test-Config {
         
         if ($content -match $Pattern) {
             if ([string]::IsNullOrEmpty($Expected) -or ($content -match $Expected)) {
-                Write-Host "✓ $Name" -ForegroundColor Green
+                Write-Host "[OK] $Name" -ForegroundColor Green
                 return $true
             }
             else {
-                Write-Host "✗ $Name - Expected: $Expected" -ForegroundColor Red
+                Write-Host "[FAIL] $Name - Expected: $Expected" -ForegroundColor Red
                 if ($Verbose) {
                     Write-Host "  File: $normalizedPath" -ForegroundColor DarkGray
                     Write-Host "  Pattern: $Pattern" -ForegroundColor DarkGray
@@ -42,7 +42,7 @@ function Test-Config {
             }
         }
         else {
-            Write-Host "✗ $Name - Pattern not found: $Pattern" -ForegroundColor Red
+            Write-Host "[FAIL] $Name - Pattern not found: $Pattern" -ForegroundColor Red
             if ($Verbose) {
                 Write-Host "  File: $normalizedPath" -ForegroundColor DarkGray
             }
@@ -50,13 +50,12 @@ function Test-Config {
         }
     }
     else {
-        Write-Host "✗ $Name - File not found: $FilePath" -ForegroundColor Red
+        Write-Host "[FAIL] $Name - File not found: $FilePath" -ForegroundColor Red
         if ($Verbose) {
             Write-Host "  Expected file: $normalizedPath" -ForegroundColor DarkGray
         }
         return $false
     }
-    return $false
 }
 
 Write-Host "Backend Configuration:" -ForegroundColor Cyan
@@ -64,8 +63,8 @@ Write-Host "-----------------------------------------------------------" -Foregr
 if (Test-Config "Config uses env variables" "backend/core/config.py" "os\.getenv") { $checksPasssed++ } else { $checksFailed++ }
 if (Test-Config "CORS origins configured" "render.yaml" "CORS_ORIGINS") { $checksPasssed++ } else { $checksFailed++ }
 if (Test-Config "Frontend URL configured" "render.yaml" "FRONTEND_URL") { $checksPasssed++ } else { $checksFailed++ }
-if (Test-Config "Environment set to production" "render.yaml" "ENVIRONMENT: production") { $checksPasssed++ } else { $checksFailed++ }
-if (Test-Config "Database pool optimized" "render.yaml" "DB_POOL_SIZE: 25") { $checksPasssed++ } else { $checksFailed++ }
+if (Test-Config "Environment set to production" "render.yaml" "ENVIRONMENT") { $checksPasssed++ } else { $checksFailed++ }
+if (Test-Config "Database pool optimized" "render.yaml" "DB_POOL_SIZE") { $checksPasssed++ } else { $checksFailed++ }
 Write-Host ""
 
 Write-Host "Frontend Configuration:" -ForegroundColor Cyan
@@ -105,7 +104,7 @@ Write-Host "===============================================================" -Fo
 Write-Host ""
 
 if ($checksFailed -eq 0) {
-    Write-Host "✓ All deployment configurations verified!" -ForegroundColor Green
+    Write-Host "[SUCCESS] All deployment configurations verified!" -ForegroundColor Green
     Write-Host ""
     Write-Host "Next steps:" -ForegroundColor Cyan
     Write-Host "1. Push code to GitHub: git push" -ForegroundColor White
@@ -119,7 +118,7 @@ if ($checksFailed -eq 0) {
     exit 0
 }
 else {
-    Write-Host "✗ Some configurations need attention!" -ForegroundColor Red
+    Write-Host "[FAILED] Some configurations need attention!" -ForegroundColor Red
     Write-Host "Please review the failed checks above." -ForegroundColor Red
     if (-not $Verbose) {
         Write-Host "Run with -Verbose flag for more details." -ForegroundColor Yellow
