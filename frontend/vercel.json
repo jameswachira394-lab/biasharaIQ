@@ -7,6 +7,12 @@
   ],
   "env": {
     "NEXT_PUBLIC_API_URL": "https://biasharaiq.onrender.com",
-    "NEXT_PUBLIC_APP_NAME": "BiasharaIQ"
+    "NEXT_PUBLIC_APP_NAME": "BiasharaIQ",
+    "NODE_ENV": "production"
+  },
+  "buildCache": {
+    "paths": [
+      ".next/cache"
+    ]
   }
 }

@@ -31,9 +31,10 @@ services:
       ENVIRONMENT: production
       DATABASE_URL: postgresql://${DB_USER:-biasharaiq}:${DB_PASSWORD}@db/biasharaiq
       SECRET_KEY: ${SECRET_KEY}
-      JWT_SECRET: ${JWT_SECRET}
       ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY}
-      CORS_ORIGINS: ${CORS_ORIGINS}
+      GEMINI_API_KEY: ${GEMINI_API_KEY}
+      CORS_ORIGINS: ${CORS_ORIGINS:-https://biashara-f43hbl3il-veritys-projects-965ff306.vercel.app}
+      FRONTEND_URL: ${FRONTEND_URL:-https://biashara-f43hbl3il-veritys-projects-965ff306.vercel.app}
       LOG_LEVEL: INFO
       DB_POOL_SIZE: 25
       DB_MAX_OVERFLOW: 15
