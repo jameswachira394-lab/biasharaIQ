@@ -23,7 +23,7 @@ class Settings(BaseSettings):
     GEMINI_API_KEY: str = ""
     
     
-    CORS_ORIGINS: str = "https://biasharaiq.onrender.com/_/backend"
+    CORS_ORIGINS: str = "https://biashara-f43hbl3il-veritys-projects-965ff306.vercel.app"
     
     # Logging
     LOG_LEVEL: str = "INFO"

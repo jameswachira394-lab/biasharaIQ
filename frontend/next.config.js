@@ -5,7 +5,7 @@ const nextConfig = {
     return [
       {
         source: '/api/:path*',
-        destination: `${process.env.NEXT_PUBLIC_API_URL || 'https://biasharaiq.onrender.com/_/backend'}/:path*`,
+        destination: `${process.env.NEXT_PUBLIC_API_URL || 'https://biasharaiq.onrender.com'}/:path*`,
       },
     ]
   },
