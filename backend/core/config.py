@@ -22,7 +22,7 @@ class Settings(BaseSettings):
     ANTHROPIC_API_KEY: str = ""
     GEMINI_API_KEY: str = ""
     
-    # CORS - Restricted in production
+    
     CORS_ORIGINS: str = "http://localhost:3000"
     
     # Logging
