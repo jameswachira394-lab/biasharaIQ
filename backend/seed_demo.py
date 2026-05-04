@@ -14,7 +14,6 @@ from models.database import SessionLocal, engine
 from models.models import Base, User, Transaction, Category, TransactionType
 from middleware.auth import hash_password
 
-# ─── Config ───────────────────────────────────────────────────────────────────
 
 DEMO_EMAIL = "demo@biasharaiq.com"
 DEMO_PASSWORD = "demo1234"
