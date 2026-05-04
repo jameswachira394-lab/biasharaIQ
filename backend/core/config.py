@@ -23,7 +23,7 @@ class Settings(BaseSettings):
     GEMINI_API_KEY: str = ""
     
     
-    CORS_ORIGINS: str = "http://localhost:3000"
+    CORS_ORIGINS: str = "https://biasharaiq.onrender.com/_/backend"
     
     # Logging
     LOG_LEVEL: str = "INFO"
