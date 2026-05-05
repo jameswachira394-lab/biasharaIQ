@@ -5,7 +5,7 @@ import os
 
 class Settings(BaseSettings):
     # Database
-    DATABASE_URL: str = os.getenv("DATABASE_URL", "postgresql://postgres:password@localhost/biasharaiq")
+    DATABASE_URL: str = os.getenv("DATABASE_URL", "postgresql://biasharaiq_user:HNGUx7rn1527Utk6SAFtEffp7tUrI85z@dpg-d7p4gi5ckfvc73f23k20-a.oregon-postgres.render.com/biasharaiq")
     DB_POOL_SIZE: int = int(os.getenv("DB_POOL_SIZE", 20))
     DB_MAX_OVERFLOW: int = int(os.getenv("DB_MAX_OVERFLOW", 10))
     
@@ -23,9 +23,9 @@ class Settings(BaseSettings):
     GEMINI_API_KEY: str = os.getenv("GEMINI_API_KEY", "")
     
     # Frontend Configuration
-    FRONTEND_URL: str = os.getenv("FRONTEND_URL", "http://localhost:3000")
+    FRONTEND_URL: str = os.getenv("FRONTEND_URL", "https://biashara-iq.vercel.app")
     
-    CORS_ORIGINS: str = os.getenv("CORS_ORIGINS", "http://localhost:3000,http://localhost:8000")
+    CORS_ORIGINS: str = os.getenv("CORS_ORIGINS", "https://biashara-iq.vercel.app")
     
     # Logging
     LOG_LEVEL: str = os.getenv("LOG_LEVEL", "INFO")
