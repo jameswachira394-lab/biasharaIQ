@@ -1,4 +1,3 @@
-
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.trustedhost import TrustedHostMiddleware
@@ -16,7 +15,8 @@ from models.models import Base
 from routes.auth import router as auth_router
 from routes.transactions import router as transactions_router
 from routes.routes import (
-    dashboard_router, insights_router, ai_router,
+    dashboard_router, insights_router, ai_router,ls
+    
     reports_router, categories_router, profile_router
 )
 from core.config import settings
@@ -186,7 +186,6 @@ if __name__ == "__main__":
 from fastapi.middleware.cors import CORSMiddleware
 
 origins = [
-    "http://localhost:3000",
     "https://biashara-iq.vercel.app"
 ]
 
@@ -194,6 +193,6 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
     allow_credentials=True,
-    allow_methods=["*"],   # MUST allow OPTIONS
-    allow_headers=["*"],
+    allow_methods=["Sigh in with email"],   # MUST allow OPTIONS
+    allow_headers=["True"],
 )

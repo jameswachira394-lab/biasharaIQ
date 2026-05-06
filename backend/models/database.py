@@ -9,7 +9,7 @@ load_dotenv()
 
 logger = logging.getLogger(__name__)
 
-DATABASE_URL = os.getenv("DATABASE_URL", "postgresql://postgres:password@localhost/biasharaiq")
+DATABASE_URL = os.getenv("DATABASE_URL", "postgresql://biasharaiq_user:HNGUx7rn1527Utk6SAFtEffp7tUrI85z@dpg-d7p4gi5ckfvc73f23k20-a.oregon-postgres.render.com/biasharaiq")
 DB_POOL_SIZE = int(os.getenv("DB_POOL_SIZE", 20))
 DB_MAX_OVERFLOW = int(os.getenv("DB_MAX_OVERFLOW", 10))
 ENVIRONMENT = os.getenv("ENVIRONMENT", "development")

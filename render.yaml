@@ -16,9 +16,9 @@ services:
       - key: SECRET_KEY
         generateValue: true
       - key: CORS_ORIGINS
-        value: https://biashara-f43hbl3il-veritys-projects-965ff306.vercel.app,https://biasharaiq.onrender.com
+        value: https://biasharaiq.vercel.app,https://biasharaiq.onrender.com
       - key: FRONTEND_URL
-        value: https://biashara-f43hbl3il-veritys-projects-965ff306.vercel.app
+        value: https://biasharaiq.vercel.app
       - key: LOG_LEVEL
         value: INFO
       - key: DB_POOL_SIZE

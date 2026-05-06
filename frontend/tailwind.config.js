@@ -10,7 +10,7 @@ module.exports = {
       colors: {
         /* ── Brand palette ── */
         brand: {
-          50:  '#ECFDF5',
+          50: '#ecfdee',
           100: '#D1FAE5',
           200: '#A7F3D0',
           300: '#6EE7B7',
@@ -32,9 +32,9 @@ module.exports = {
         },
       },
       fontFamily: {
-        sans:    ['var(--font-inter)', 'system-ui', 'sans-serif'],
-        display: ['var(--font-syne)',  'sans-serif'],
-        mono:    ['var(--font-jetbrains)', 'monospace'],
+        sans: ['var(--font-inter)', 'system-ui', 'sans-serif'],
+        display: ['var(--font-syne)', 'sans-serif'],
+        mono: ['var(--font-jetbrains)', 'monospace'],
       },
     },
   },
