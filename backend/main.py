@@ -16,19 +16,19 @@ from routes.auth import router as auth_router
 from routes.transactions import router as transactions_router
 from routes.routes import (
     dashboard_router, insights_router, ai_router,ls
-    
+
     reports_router, categories_router, profile_router
 )
 from core.config import settings
 
-# Configure logging
+
 logging.basicConfig(
     level=getattr(logging, settings.LOG_LEVEL),
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
 )
 logger = logging.getLogger(__name__)
 
-# Initialize database
+
 try:
     Base.metadata.create_all(bind=engine)
     logger.info("✓ Database initialized successfully")
@@ -43,14 +43,14 @@ app = FastAPI(
     redoc_url="/redoc" if settings.DEBUG else None,
 )
 
-# Security Middleware - Trust only specific hosts in production
+
 if not settings.DEBUG:
     app.add_middleware(
         TrustedHostMiddleware,
         allowed_hosts=settings.cors_origins_list
     )
 
-# CORS Middleware - Proper configuration for production
+
 cors_origins = settings.cors_origins_list
 logger.info(f"CORS Origins: {cors_origins}")
 
@@ -63,7 +63,7 @@ app.add_middleware(
     max_age=3600,
 )
 
-# Security Headers Middleware
+
 @app.middleware("http")
 async def add_security_headers(request: Request, call_next):
     response = await call_next(request)
@@ -193,6 +193,6 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
     allow_credentials=True,
-    allow_methods=["Sigh in with email"],   # MUST allow OPTIONS
-    allow_headers=["True"],
+    allow_methods=["True"],   # MUST allow OPTIONS
+    allow_headers=[""],
 )
