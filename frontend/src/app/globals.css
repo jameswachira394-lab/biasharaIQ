@@ -3,38 +3,41 @@
 @tailwind utilities;
 
 :root {
-  /* ── Core Palette ── */
-  --bg-primary: #0B0F14;
-  /* Dark Background */
-  --bg-secondary: #121821;
-  /* Card Background */
-  --bg-card: #121821;
-  /* Card Background */
-  --bg-card-hover: #161e2a;
-  /* Card hover — slightly lighter */
+  /* ── Primary Navy ── */
+  --primary-navy: #0A2540;
+  --primary-navy-light: #134282;
+
+  /* ── Semantic Colors ── */
+  --text-white: #FFFFFF;
+  --success-green: #2E7D32;
+  --error-red: #D32F2F;
+  --text-dark: #1E1E1E;
+  --bg-light-gray: #F5F5F5;
+  --accent-blue: #1A1F71;    /* Visa Blue */
+  --accent-gold: #F9A825;    /* Visa Gold */
+
+  /* ── Legacy Color Variables (mapped to new palette) ── */
+  --bg-primary: #F5F5F5;     /* Light Gray Background */
+  --bg-secondary: #FFFFFF;   /* White */
+  --bg-card: #0A2540;        /* Navy Card Background */
+  --bg-card-hover: #134282;  /* Navy Card Hover */
 
   /* ── Borders ── */
-  --border: #1A2535;
-  /* Subtle border */
-  --border-bright: #0F6B4F;
-  /* Deep Green border accent */
+  --border: #F5F5F5;         /* Light Gray border */
+  --border-bright: #2E7D32;  /* Success Green border accent */
 
   /* ── Text ── */
-  --text-primary: #E5E7EB;
-  /* Text Primary */
-  --text-secondary: #9CA3AF;
-  /* Text Secondary */
-  --text-muted: #4B5563;
-  /* Muted */
+  --text-primary: #1E1E1E;   /* Dark Gray body text */
+  --text-secondary: #666666; /* Medium Gray */
+  --text-muted: #999999;     /* Light Gray text */
 
   /* ── Accents ── */
-  --accent-green: #10B981;
-  --accent-green-deep: #0F6B4F;
-  /* Deep Green */
-  --accent-red: #EF4444;
-  --accent-amber: #F59E0B;
-  --accent-blue: #3B82F6;
-  --accent-cyan: #06B6D4;
+  --accent-green: #2E7D32;   /* Success Green */
+  --accent-green-deep: #0A2540;  /* Navy */
+  --accent-red: #D32F2F;     /* Error Red */
+  --accent-amber: #F9A825;   /* Gold */
+  --accent-blue: #1A1F71;    /* Visa Blue */
+  --accent-cyan: #0A2540;    /* Navy */
 }
 
 * {
@@ -80,12 +83,12 @@ body {
 }
 
 .card:hover {
-  border-color: #1F3A2F;
+  border-color: var(--accent-gold);
 }
 
-/* ── Gradient text — Deep Green → Emerald ── */
+/* ── Gradient text — Navy → Green ── */
 .gradient-text {
-  background: linear-gradient(135deg, #10B981 0%, #0F6B4F 100%);
+  background: linear-gradient(135deg, #2E7D32 0%, #0A2540 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -93,15 +96,15 @@ body {
 
 /* ── Glow effects ── */
 .glow-green {
-  box-shadow: 0 0 24px rgba(15, 107, 79, 0.25);
+  box-shadow: 0 0 24px rgba(46, 125, 50, 0.25);
 }
 
 .glow-red {
-  box-shadow: 0 0 20px rgba(239, 68, 68, 0.15);
+  box-shadow: 0 0 20px rgba(211, 47, 47, 0.15);
 }
 
 .glow-amber {
-  box-shadow: 0 0 20px rgba(245, 158, 11, 0.15);
+  box-shadow: 0 0 20px rgba(249, 168, 37, 0.15);
 }
 
 /* ── Noise texture overlay ── */

@@ -8,26 +8,44 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        /* ── Brand palette ── */
+        /* ── Primary Navy (cards/headers) ── */
+        navy: {
+          950: '#0A2540',
+          900: '#0D2E52',
+          800: '#10366A',
+          700: '#134282',
+          600: '#164E9A',
+        },
+        /* ── Semantic Colors ── */
+        semantic: {
+          white: '#FFFFFF',
+          success: '#2E7D32',
+          error: '#D32F2F',
+          textDark: '#1E1E1E',
+          textLight: '#F5F5F5',
+          accentBlue: '#1A1F71',    /* Visa Blue */
+          accentGold: '#F9A825',    /* Visa Gold */
+        },
+        /* ── Brand palette (legacy) ── */
         brand: {
           50: '#ecfdee',
           100: '#D1FAE5',
           200: '#A7F3D0',
           300: '#6EE7B7',
           400: '#34D399',
-          500: '#10B981',   /* Emerald Accent */
+          500: '#2E7D32',   /* Updated to new green */
           600: '#059669',
-          700: '#0F6B4F',   /* Deep Green */
+          700: '#0A2540',   /* Updated to navy */
           800: '#065F46',
           900: '#064E3B',
         },
         /* ── Surface palette ── */
         surface: {
-          900: '#0B0F14',   /* Dark Background */
-          800: '#0D1117',
-          700: '#121821',   /* Card Background */
+          900: '#F5F5F5',   /* Light Gray Background */
+          800: '#FFFFFF',   /* White */
+          700: '#0A2540',   /* Navy Card Background */
           600: '#161E2A',
-          500: '#1A2535',   /* Border */
+          500: '#F5F5F5',   /* Light Gray Border */
           400: '#243347',
         },
       },
