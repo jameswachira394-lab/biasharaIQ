@@ -15,8 +15,7 @@ from models.models import Base
 from routes.auth import router as auth_router
 from routes.transactions import router as transactions_router
 from routes.routes import (
-    dashboard_router, insights_router, ai_router,ls
-
+    dashboard_router, insights_router, ai_router,
     reports_router, categories_router, profile_router
 )
 from core.config import settings
