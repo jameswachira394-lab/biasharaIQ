@@ -42,11 +42,11 @@ check_endpoint() {
     fi
 }
 
-# Function to check database connection
+
 check_database() {
     echo -n "Checking database connection... "
     
-    # Make a request to an endpoint that uses the database
+    
     if response=$(curl -s -X GET "$ENVIRONMENT_URL/health" 2>/dev/null); then
         if echo "$response" | grep -q "connected"; then
             echo -e "${GREEN}✓ Connected${NC}"
