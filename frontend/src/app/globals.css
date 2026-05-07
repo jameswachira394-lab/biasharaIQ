@@ -17,44 +17,6 @@
   /* Visa Blue */
   --accent-gold: #F9A825;
   /* Visa Gold */
-
-  /* ── Legacy Color Variables (mapped to new palette) ── */
-  --bg-primary: #F5F5F5;
-  /* Light Gray Background */
-  --bg-secondary: #FFFFFF;
-  /* White */
-  --bg-card: #0A2540;
-  /* Navy Card Background */
-  --bg-card-hover: #134282;
-  /* Navy Card Hover */
-
-  /* ── Borders ── */
-  --border: #F5F5F5;
-  /* Light Gray border */
-  --border-bright: #2E7D32;
-  /* Success Green border accent */
-
-  /* ── Text ── */
-  --text-primary: #1E1E1E;
-  /* Dark Gray body text */
-  --text-secondary: #666666;
-  /* Medium Gray */
-  --text-muted: #999999;
-  /* Light Gray text */
-
-  /* ── Accents ── */
-  --accent-green: #2E7D32;
-  /* Success Green */
-  --accent-green-deep: #0A2540;
-  /* Navy */
-  --accent-red: #D32F2F;
-  /* Error Red */
-  --accent-amber: #F9A825;
-  /* Gold */
-  --accent-blue: #1A1F71;
-  /* Visa Blue */
-  --accent-cyan: #0A2540;
-  /* Navy */
 }
 
 * {
@@ -66,8 +28,8 @@ html {
 }
 
 body {
-  background: var(--bg-primary);
-  color: var(--text-primary);
+  background: var(--bg-light-gray);
+  color: var(--text-dark);
   font-family: var(--font-inter), system-ui, sans-serif;
   min-height: 100vh;
 }
@@ -79,22 +41,22 @@ body {
 }
 
 ::-webkit-scrollbar-track {
-  background: var(--bg-secondary);
+  background: var(--text-white);
 }
 
 ::-webkit-scrollbar-thumb {
-  background: var(--accent-green-deep);
+  background: var(--primary-navy);
   border-radius: 3px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--accent-green);
+  background: var(--success-green);
 }
 
 /* ── Card ── */
 .card {
-  background: var(--bg-card);
-  border: 1px solid var(--border);
+  background: var(--primary-navy);
+  border: 1px solid var(--bg-light-gray);
   border-radius: 12px;
   transition: border-color 0.2s, background 0.2s;
 }

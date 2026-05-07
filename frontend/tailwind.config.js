@@ -26,28 +26,6 @@ module.exports = {
           accentBlue: '#1A1F71',    /* Visa Blue */
           accentGold: '#F9A825',    /* Visa Gold */
         },
-        /* ── Brand palette (legacy) ── */
-        brand: {
-          50: '#ecfdee',
-          100: '#D1FAE5',
-          200: '#A7F3D0',
-          300: '#6EE7B7',
-          400: '#34D399',
-          500: '#2E7D32',   /* Updated to new green */
-          600: '#059669',
-          700: '#0A2540',   /* Updated to navy */
-          800: '#065F46',
-          900: '#064E3B',
-        },
-        /* ── Surface palette ── */
-        surface: {
-          900: '#F5F5F5',   /* Light Gray Background */
-          800: '#FFFFFF',   /* White */
-          700: '#0A2540',   /* Navy Card Background */
-          600: '#161E2A',
-          500: '#F5F5F5',   /* Light Gray Border */
-          400: '#243347',
-        },
       },
       fontFamily: {
         sans: ['var(--font-inter)', 'system-ui', 'sans-serif'],
