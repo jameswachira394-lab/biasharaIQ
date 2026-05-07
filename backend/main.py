@@ -176,22 +176,3 @@ if __name__ == "__main__":
         reload=settings.DEBUG,
         log_level=settings.LOG_LEVEL.lower()
     )
-
-
-
-if __name__ == "__main__":
-    import uvicorn
-    uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)
-from fastapi.middleware.cors import CORSMiddleware
-
-origins = [
-    "https://biashara-iq.vercel.app"
-]
-
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=origins,
-    allow_credentials=True,
-    allow_methods=["True"],   # MUST allow OPTIONS
-    allow_headers=[""],
-)

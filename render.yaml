@@ -16,9 +16,9 @@ services:
       - key: SECRET_KEY
         generateValue: true
       - key: CORS_ORIGINS
-        value: https://biashara-iq.vercel.app,https://biasharaiq.onrender.com
+        value: https://biashara-iq.vercel.app,https://biasharaiq-api.onrender.com
       - key: FRONTEND_URL
-        value: https://biasharaiq.vercel.app
+        value: https://biashara-iq.vercel.app
       - key: LOG_LEVEL
         value: INFO
       - key: DB_POOL_SIZE
