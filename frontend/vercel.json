@@ -6,7 +6,7 @@
     "fra1"
   ],
   "env": {
-    "NEXT_PUBLIC_API_URL": "https://biasharaiq-api.onrender.com",
+    "NEXT_PUBLIC_API_URL": "https://biasharaiq.onrender.com",
     "NEXT_PUBLIC_APP_NAME": "BiasharaIQ",
     "NODE_ENV": "production"
   }
