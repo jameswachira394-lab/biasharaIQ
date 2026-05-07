@@ -41,14 +41,14 @@ export default function QuickAddTransaction({ onAdded, categories = [] }) {
 
   return (
     <div className="card p-5">
-      <h2 className="font-display font-semibold text-[#E5E7EB] text-sm uppercase tracking-wide mb-4">
+      <h2 className="font-display font-semibold text-[#1E1E1E] text-sm uppercase tracking-wide mb-4">
         Quick Add Transaction
       </h2>
 
       {/* Type toggle */}
-      <div className="grid grid-cols-2 gap-2 p-1 bg-[#121821] rounded-lg border border-[#1A2535] mb-4">
+      <div className="grid grid-cols-2 gap-2 p-1 bg-[#0A2540] rounded-lg border border-[#F5F5F5] mb-4">
         {[
-          { id: 'income',  label: 'Money In',  Icon: TrendingUp  },
+          { id: 'income', label: 'Money In', Icon: TrendingUp },
           { id: 'expense', label: 'Money Out', Icon: TrendingDown },
         ].map(({ id, label, Icon }) => (
           <button key={id} type="button"
@@ -56,8 +56,8 @@ export default function QuickAddTransaction({ onAdded, categories = [] }) {
             className={clsx(
               'py-2 rounded-md text-sm font-medium transition-all flex items-center justify-center gap-2',
               type === id
-                ? id === 'income' ? 'bg-[#0F6B4F]/15 text-[#10B981] border border-[#0F6B4F]/25' : 'bg-red-500/15 text-red-400 border border-red-500/25'
-                : 'text-[#9CA3AF] hover:text-[#E5E7EB]'
+                ? id === 'income' ? 'bg-[#2E7D32]/15 text-[#2E7D32] border border-[#2E7D32]/25' : 'bg-[#D32F2F]/15 text-[#D32F2F] border border-[#D32F2F]/25'
+                : 'text-[#999999] hover:text-[#1E1E1E]'
             )}>
             <Icon size={13} /> {label}
           </button>
@@ -65,7 +65,7 @@ export default function QuickAddTransaction({ onAdded, categories = [] }) {
       </div>
 
       {error && (
-        <div className="mb-3 text-xs text-red-400 bg-red-500/10 border border-red-500/20 rounded-lg px-3 py-2">
+        <div className="mb-3 text-xs text-[#D32F2F] bg-[#D32F2F]/10 border border-[#D32F2F]/20 rounded-lg px-3 py-2">
           {error}
         </div>
       )}

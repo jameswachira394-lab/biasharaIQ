@@ -58,22 +58,22 @@ function TransactionModal({ open, onClose, onSaved, categories, editData }) {
       <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={onClose} />
       <div className="relative w-full max-w-md card p-6 animate-fade-in">
         <div className="flex items-center justify-between mb-5">
-          <h2 className="font-display font-semibold text-[#E5E7EB]">{isEdit ? 'Edit Transaction' : 'Add Transaction'}</h2>
-          <button onClick={onClose} className="text-[#9CA3AF] hover:text-[#E5E7EB] p-1"><X size={18} /></button>
+          <h2 className="font-display font-semibold text-[#1E1E1E]">{isEdit ? 'Edit Transaction' : 'Add Transaction'}</h2>
+          <button onClick={onClose} className="text-[#999999] hover:text-[#1E1E1E] p-1"><X size={18} /></button>
         </div>
 
         {error && <div className="mb-4 p-3 rounded-lg bg-red-500/10 border border-red-500/20 text-red-400 text-sm">{error}</div>}
 
         <form onSubmit={submit} className="space-y-4">
           {/* Type toggle */}
-          <div className="grid grid-cols-2 gap-2 p-1 bg-[#121821] rounded-lg border border-[#1A2535]">
+          <div className="grid grid-cols-2 gap-2 p-1 bg-[#0A2540] rounded-lg border border-[#F5F5F5]">
             {['income', 'expense'].map((t) => (
               <button key={t} type="button"
                 onClick={() => setForm(f => ({ ...f, type: t, category: '' }))}
                 className={clsx('py-2 rounded-md text-sm font-medium transition-all flex items-center justify-center gap-2',
                   form.type === t
-                    ? t === 'income' ? 'bg-[#0F6B4F]/15 text-[#10B981] border border-[#0F6B4F]/25' : 'bg-red-500/15 text-red-400 border border-red-500/25'
-                    : 'text-[#9CA3AF] hover:text-[#E5E7EB]'
+                    ? t === 'income' ? 'bg-[#2E7D32]/15 text-[#2E7D32] border border-[#2E7D32]/25' : 'bg-[#D32F2F]/15 text-[#D32F2F] border border-[#D32F2F]/25'
+                    : 'text-[#999999] hover:text-[#1E1E1E]'
                 )}>
                 {t === 'income' ? <TrendingUp size={14} /> : <TrendingDown size={14} />}
                 {t === 'income' ? 'Money In' : 'Money Out'}
@@ -138,14 +138,14 @@ export default function TransactionsPage() {
       setTransactions(txRes.data.items || [])
       setTotal(txRes.data.total || 0)
       setCategories(catRes.data || [])
-    } catch {}
+    } catch { }
     finally { setLoading(false) }
   }, [page, filters])
 
   useEffect(() => { load() }, [load])
 
   const handleDelete = async (id) => {
-    try { await transactionsApi.delete(id); load() } catch {}
+    try { await transactionsApi.delete(id); load() } catch { }
     setDeleteId(null)
   }
 

@@ -80,18 +80,18 @@ CREATE TABLE IF NOT EXISTS default_categories (
 
 INSERT INTO default_categories (name, type, color, icon) VALUES
 -- Income categories
-('Sales', 'income', '#10b981', 'trending-up'),
-('Services', 'income', '#06b6d4', 'briefcase'),
-('Loans Received', 'income', '#8b5cf6', 'credit-card'),
-('Other Income', 'income', '#84cc16', 'plus-circle'),
+('Sales', 'income', '#2E7D32', 'trending-up'),
+('Services', 'income', '#1A1F71', 'briefcase'),
+('Loans Received', 'income', '#0A2540', 'credit-card'),
+('Other Income', 'income', '#F9A825', 'plus-circle'),
 -- Expense categories
-('Stock / Inventory', 'expense', '#f59e0b', 'package'),
-('Rent', 'expense', '#ef4444', 'home'),
-('Salaries', 'expense', '#f97316', 'users'),
-('Transport', 'expense', '#6366f1', 'truck'),
-('Utilities', 'expense', '#14b8a6', 'zap'),
-('Marketing', 'expense', '#ec4899', 'megaphone'),
-('Loan Repayment', 'expense', '#dc2626', 'credit-card'),
-('Equipment', 'expense', '#7c3aed', 'tool'),
-('Other Expenses', 'expense', '#94a3b8', 'more-horizontal')
+('Stock / Inventory', 'expense', '#F9A825', 'package'),
+('Rent', 'expense', '#D32F2F', 'home'),
+('Salaries', 'expense', '#0A2540', 'users'),
+('Transport', 'expense', '#1A1F71', 'truck'),
+('Utilities', 'expense', '#2E7D32', 'zap'),
+('Marketing', 'expense', '#F9A825', 'megaphone'),
+('Loan Repayment', 'expense', '#D32F2F', 'credit-card'),
+('Equipment', 'expense', '#0A2540', 'tool'),
+('Other Expenses', 'expense', '#1E1E1E', 'more-horizontal')
 ON CONFLICT DO NOTHING;

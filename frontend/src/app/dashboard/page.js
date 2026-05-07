@@ -19,17 +19,17 @@ import { RefreshCw, TrendingUp, TrendingDown, DollarSign, Activity, AlertTriangl
 import Link from 'next/link'
 
 
-const COLORS = ['#22c55e','#06b6d4','#f59e0b','#8b5cf6','#ef4444','#ec4899']
+const COLORS = ['#2E7D32', '#1A1F71', '#F9A825', '#0A2540', '#D32F2F', '#F5F5F5']
 
 const CustomTooltip = ({ active, payload, label }) => {
   if (!active || !payload?.length) return null
   return (
-    <div className="bg-[#121821] border border-[#1A2535] rounded-lg p-3 text-xs shadow-xl">
-      <p className="text-[#9CA3AF] mb-2">{label}</p>
+    <div className="bg-[#0A2540] border border-[#F5F5F5] rounded-lg p-3 text-xs shadow-xl">
+      <p className="text-[#FFFFFF] mb-2">{label}</p>
       {payload.map((p, i) => (
         <div key={i} className="flex items-center gap-2">
           <div className="w-2 h-2 rounded-full" style={{ background: p.color }} />
-          <span className="text-[#E5E7EB]">{p.name}:</span>
+          <span className="text-[#FFFFFF]">{p.name}:</span>
           <span className="font-mono font-semibold" style={{ color: p.color }}>
             KES {Number(p.value).toLocaleString()}
           </span>
@@ -49,7 +49,7 @@ export default function DashboardPage() {
   useEffect(() => {
     transactionsApi.list({ limit: 8 })
       .then(r => setRecentTxns(r.data.items || []))
-      .catch(() => {})
+      .catch(() => { })
   }, [data])
 
   const handleRefresh = async () => {
@@ -86,10 +86,10 @@ export default function DashboardPage() {
         {/* Header */}
         <div className="flex items-start justify-between">
           <div>
-            <h1 className="font-display font-bold text-2xl text-[#E5E7EB]">
+            <h1 className="font-display font-bold text-2xl text-[#1E1E1E]">
               {user?.business_name || 'Dashboard'}
             </h1>
-            <p className="text-[#9CA3AF] text-sm mt-0.5">
+            <p className="text-[#999999] text-sm mt-0.5">
               {new Date().toLocaleDateString('en-KE', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
             </p>
           </div>
@@ -108,10 +108,10 @@ export default function DashboardPage() {
         {criticals.length > 0 && (
           <div className="space-y-2">
             {criticals.map((ins, idx) => (
-              <div key={idx} className="flex items-start gap-3 p-4 rounded-xl bg-red-500/10 border border-red-500/25 animate-fade-in">
-                <AlertTriangle size={16} className="text-red-400 flex-shrink-0 mt-0.5" />
+              <div key={idx} className="flex items-start gap-3 p-4 rounded-xl bg-[#D32F2F]/10 border border-[#D32F2F]/25 animate-fade-in">
+                <AlertTriangle size={16} className="text-[#D32F2F] flex-shrink-0 mt-0.5" />
                 <div>
-                  <p className="text-sm text-red-300 font-medium">{ins.message}</p>
+                  <p className="text-sm text-[#D32F2F] font-medium">{ins.message}</p>
                 </div>
               </div>
             ))}
@@ -170,26 +170,26 @@ export default function DashboardPage() {
                 <AreaChart data={weekly_trend} margin={{ top: 5, right: 5, bottom: 0, left: -10 }}>
                   <defs>
                     <linearGradient id="gIncome" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="#22c55e" stopOpacity={0.2} />
-                      <stop offset="95%" stopColor="#22c55e" stopOpacity={0} />
+                      <stop offset="5%" stopColor="#2E7D32" stopOpacity={0.2} />
+                      <stop offset="95%" stopColor="#2E7D32" stopOpacity={0} />
                     </linearGradient>
                     <linearGradient id="gExpense" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="#ef4444" stopOpacity={0.15} />
-                      <stop offset="95%" stopColor="#ef4444" stopOpacity={0} />
+                      <stop offset="5%" stopColor="#D32F2F" stopOpacity={0.15} />
+                      <stop offset="95%" stopColor="#D32F2F" stopOpacity={0} />
                     </linearGradient>
                   </defs>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#1A2535" />
-                  <XAxis dataKey="week" tick={{ fill: '#475569', fontSize: 11 }} axisLine={false} tickLine={false} />
-                  <YAxis tick={{ fill: '#475569', fontSize: 11 }} axisLine={false} tickLine={false} tickFormatter={v => `${(v / 1000).toFixed(0)}K`} />
+                  <CartesianGrid strokeDasharray="3 3" stroke="#F5F5F5" />
+                  <XAxis dataKey="week" tick={{ fill: '#1E1E1E', fontSize: 11 }} axisLine={false} tickLine={false} />
+                  <YAxis tick={{ fill: '#1E1E1E', fontSize: 11 }} axisLine={false} tickLine={false} tickFormatter={v => `${(v / 1000).toFixed(0)}K`} />
                   <Tooltip content={<CustomTooltip />} />
-                  <Area type="monotone" dataKey="income" name="Money In" stroke="#22c55e" strokeWidth={2} fill="url(#gIncome)" />
-                  <Area type="monotone" dataKey="expenses" name="Money Out" stroke="#ef4444" strokeWidth={2} fill="url(#gExpense)" />
+                  <Area type="monotone" dataKey="income" name="Money In" stroke="#2E7D32" strokeWidth={2} fill="url(#gIncome)" />
+                  <Area type="monotone" dataKey="expenses" name="Money Out" stroke="#D32F2F" strokeWidth={2} fill="url(#gExpense)" />
                 </AreaChart>
               </ResponsiveContainer>
             ) : (
-              <div className="h-52 flex flex-col items-center justify-center text-[#4B5563] text-sm gap-2">
+              <div className="h-52 flex flex-col items-center justify-center text-[#999999] text-sm gap-2">
                 <p>No transaction data yet</p>
-                <Link href="/transactions" className="text-[#0F6B4F] hover:text-[#10B981] text-xs">
+                <Link href="/transactions" className="text-[#2E7D32] hover:text-[#2E7D32] text-xs">
                   Add your first transaction →
                 </Link>
               </div>

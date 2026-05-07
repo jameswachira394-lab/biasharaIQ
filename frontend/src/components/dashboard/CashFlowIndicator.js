@@ -2,9 +2,9 @@
 import clsx from 'clsx'
 
 const LEVELS = {
-  safe:     { label: 'Safe',     bg: 'bg-[#0F6B4F]/10', border: 'border-[#0F6B4F]/30', text: 'text-[#10B981]', bar: 'bg-[#10B981]', dot: 'bg-[#10B981]' },
-  warning:  { label: 'Warning',  bg: 'bg-amber-500/10',  border: 'border-amber-500/25',  text: 'text-amber-400',   bar: 'bg-amber-500',   dot: 'bg-amber-400' },
-  critical: { label: 'Critical', bg: 'bg-red-500/10',    border: 'border-red-500/25',    text: 'text-red-400',     bar: 'bg-red-500',     dot: 'bg-red-400'   },
+  safe: { label: 'Safe', bg: 'bg-[#2E7D32]/10', border: 'border-[#2E7D32]/30', text: 'text-[#2E7D32]', bar: 'bg-[#2E7D32]', dot: 'bg-[#2E7D32]' },
+  warning: { label: 'Warning', bg: 'bg-[#F9A825]/10', border: 'border-[#F9A825]/25', text: 'text-[#F9A825]', bar: 'bg-[#F9A825]', dot: 'bg-[#F9A825]' },
+  critical: { label: 'Critical', bg: 'bg-[#D32F2F]/10', border: 'border-[#D32F2F]/25', text: 'text-[#D32F2F]', bar: 'bg-[#D32F2F]', dot: 'bg-[#D32F2F]' },
 }
 
 export default function CashFlowIndicator({ survivalDays, riskLevel, dailyRate, message }) {

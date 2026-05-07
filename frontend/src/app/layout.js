@@ -3,7 +3,7 @@ import './globals.css'
 import { AuthProvider } from '@/context/AuthContext'
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter' })
-const syne = Syne({ subsets: ['latin'], variable: '--font-syne', weight: ['400','500','600','700','800'] })
+const syne = Syne({ subsets: ['latin'], variable: '--font-syne', weight: ['400', '500', '600', '700', '800'] })
 const jetbrains = JetBrains_Mono({ subsets: ['latin'], variable: '--font-jetbrains' })
 
 export const metadata = {
@@ -14,7 +14,7 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en" className={`${inter.variable} ${syne.variable} ${jetbrains.variable}`}>
-      <body className="bg-[#0B0F14] text-[#E5E7EB] antialiased">
+      <body className="bg-[#F5F5F5] text-[#1E1E1E] antialiased">
         <AuthProvider>
           {children}
         </AuthProvider>

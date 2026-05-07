@@ -36,14 +36,14 @@ export default function LoginPage() {
         {/* Logo */}
         <div className="text-center mb-8">
           <div className="inline-flex items-center gap-2 mb-4">
-            <div className="w-10 h-10 rounded-xl bg-[#0F6B4F]/10 border border-[#0F6B4F]/30 flex items-center justify-center">
-              <TrendingUp size={20} className="text-[#10B981]" />
+            <div className="w-10 h-10 rounded-xl bg-[#2E7D32]/10 border border-[#2E7D32]/30 flex items-center justify-center">
+              <TrendingUp size={20} className="text-[#2E7D32]" />
             </div>
             <span className="font-display font-bold text-2xl tracking-tight">
               Biashara<span className="gradient-text">IQ</span>
             </span>
           </div>
-          <p className="text-[#9CA3AF] text-sm">Sign in to your business account</p>
+          <p className="text-[#999999] text-sm">Sign in to your business account</p>
         </div>
 
         {/* Card */}
@@ -57,7 +57,7 @@ export default function LoginPage() {
 
           <form onSubmit={handleSubmit} className="space-y-5">
             <div>
-              <label className="block text-sm text-[#E5E7EB] mb-1.5 font-medium">Email</label>
+              <label className="block text-sm text-[#1E1E1E] mb-1.5 font-medium">Email</label>
               <input
                 type="email"
                 className="input-dark"
@@ -69,7 +69,7 @@ export default function LoginPage() {
             </div>
 
             <div>
-              <label className="block text-sm text-[#E5E7EB] mb-1.5 font-medium">Password</label>
+              <label className="block text-sm text-[#1E1E1E] mb-1.5 font-medium">Password</label>
               <div className="relative">
                 <input
                   type={showPw ? 'text' : 'password'}
@@ -82,7 +82,7 @@ export default function LoginPage() {
                 <button
                   type="button"
                   onClick={() => setShowPw(!showPw)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-[#9CA3AF] hover:text-[#E5E7EB]"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-[#999999] hover:text-[#1E1E1E]"
                 >
                   {showPw ? <EyeOff size={16} /> : <Eye size={16} />}
                 </button>
@@ -96,15 +96,15 @@ export default function LoginPage() {
             </button>
           </form>
 
-          <div className="mt-6 text-center text-sm text-[#9CA3AF]">
+          <div className="mt-6 text-center text-sm text-[#999999]">
             New to BiasharaIQ?{' '}
-            <Link href="/register" className="text-[#10B981] hover:text-[#10B981] font-medium">
+            <Link href="/register" className="text-[#2E7D32] hover:text-[#2E7D32] font-medium">
               Create account
             </Link>
           </div>
         </div>
 
-        <p className="text-center text-xs text-[#4B5563] mt-6">
+        <p className="text-center text-xs text-[#999999] mt-6">
           Financial intelligence for Kenyan businesses 🇰🇪
         </p>
       </div>
