@@ -18,7 +18,7 @@ echo "Timestamp: $TIMESTAMP"
 echo "==============================================="
 echo ""
 
-# Function to check endpoint
+
 check_endpoint() {
     local endpoint=$1
     local name=$2
