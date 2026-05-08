@@ -1,6 +1,6 @@
 'use client'
 import { createContext, useContext, useState, useEffect } from 'react'
-import { authApi } from '@/utils/api'
+import { authApi, profileApi } from '@/utils/api'
 
 const AuthContext = createContext(null)
 
@@ -9,12 +9,22 @@ export function AuthProvider({ children }) {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    const stored = localStorage.getItem('biasharaiq_user')
-    const token = localStorage.getItem('biasharaiq_token')
-    if (stored && token) {
-      try { setUser(JSON.parse(stored)) } catch {}
+    const fetchUser = async () => {
+      const token = localStorage.getItem('biasharaiq_token')
+      if (token) {
+        try {
+          const res = await profileApi.get()
+          setUser(res.data)
+          localStorage.setItem('biasharaiq_user', JSON.stringify(res.data))
+        } catch (err) {
+          console.error("Failed to fetch user profile", err)
+          // If profile fetch fails (e.g. token expired), we might want to logout
+          if (err.response?.status === 401) logout()
+        }
+      }
+      setLoading(false)
     }
-    setLoading(false)
+    fetchUser()
   }, [])
 
   const login = async (email, password) => {

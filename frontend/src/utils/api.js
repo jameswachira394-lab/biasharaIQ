@@ -80,4 +80,16 @@ export const profileApi = {
   update: (data) => api.put('/profile/', data),
 }
 
+// Subscription
+export const subscriptionApi = {
+  status: () => api.get('/subscription/status'),
+  plans: () => api.get('/subscription/plans'),
+}
+
+// Payments
+export const paymentApi = {
+  initiate: (data) => api.post('/payments/initiate', data),
+  status: (checkoutId) => api.get(`/payments/status/${checkoutId}`),
+}
+
 export default api

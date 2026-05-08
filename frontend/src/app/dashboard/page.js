@@ -104,6 +104,30 @@ export default function DashboardPage() {
           </div>
         </div>
 
+        {/* Usage Meter for Free Users */}
+        {user?.plan === 'FREE' && (
+          <div className="card p-4 bg-semantic-accentBlue/5 border-semantic-accentBlue/20">
+            <div className="flex items-center justify-between mb-2">
+              <div className="flex items-center gap-2">
+                <Activity size={16} className="text-semantic-accentBlue" />
+                <span className="text-sm font-medium text-semantic-white">Monthly Transaction Usage</span>
+              </div>
+              <span className="text-xs text-semantic-textSecondary">
+                {user.monthly_transaction_count} / 200 transactions
+              </span>
+            </div>
+            <div className="w-full h-2 bg-white/5 rounded-full overflow-hidden">
+              <div 
+                className="h-full bg-semantic-accentBlue transition-all duration-500" 
+                style={{ width: `${Math.min((user.monthly_transaction_count / 200) * 100, 100)}%` }}
+              />
+            </div>
+            <p className="text-[10px] text-semantic-textMuted mt-2">
+              Upgrade to <Link href="/pricing" className="text-semantic-accentBlue hover:underline">Pro Plan</Link> for unlimited tracking and AI insights.
+            </p>
+          </div>
+        )}
+
         {/* Critical alerts banner */}
         {criticals.length > 0 && (
           <div className="space-y-2">
@@ -271,19 +295,26 @@ export default function DashboardPage() {
         )}
 
         {/* AI CTA */}
-        <div className="card p-5 border-dashed border-[#1A1F71] bg-gradient-to-r from-[#1A1F71]/5 to-transparent">
+        <div className="card p-5 border-dashed border-semantic-accentBlue/30 bg-gradient-to-r from-semantic-accentBlue/5 to-transparent">
           <div className="flex items-center gap-4">
-            <div className="w-10 h-10 rounded-xl bg-[#1A1F71]/10 border border-[#1A1F71]/20 flex items-center justify-center flex-shrink-0">
-              <Bot size={18} className="text-[#1A1F71]" />
+            <div className="w-10 h-10 rounded-xl bg-semantic-accentBlue/10 border border-semantic-accentBlue/20 flex items-center justify-center flex-shrink-0">
+              <Bot size={18} className="text-semantic-accentBlue" />
             </div>
             <div className="flex-1">
-              <p className="font-display font-semibold text-semantic-white text-sm">Ask the AI Advisor</p>
+              <p className="font-display font-semibold text-semantic-white text-sm">
+                Ask the AI Advisor {user?.plan === 'FREE' && <span className="text-[10px] bg-semantic-accentGold/20 text-semantic-accentGold px-1.5 py-0.5 rounded-full ml-1">PRO</span>}
+              </p>
               <p className="text-xs text-semantic-textSecondary mt-0.5">
-                "Why am I losing money?" — Get answers based on your real data
+                {user?.plan === 'FREE' 
+                  ? "Upgrade to Pro to unlock real-time financial advice and waste detection." 
+                  : "\"Why am I losing money?\" — Get answers based on your real data"}
               </p>
             </div>
-            <Link href="/ai" className="btn-primary text-sm flex-shrink-0 hidden sm:flex">
-              Open AI →
+            <Link 
+              href={user?.plan === 'FREE' ? "/pricing" : "/ai"} 
+              className="btn-primary text-sm flex-shrink-0 hidden sm:flex"
+            >
+              {user?.plan === 'FREE' ? "Upgrade Now" : "Open AI →"}
             </Link>
           </div>
         </div>

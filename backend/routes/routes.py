@@ -8,6 +8,7 @@ from middleware.auth import get_current_user
 from services.financial_engine import FinancialEngine
 from services.insights_engine import InsightsEngine
 from services.ai_agent import chat_with_ai_agent
+from middleware.subscription_guard import require_pro
 
 # ──────────────────────────────────────────────
 # Dashboard
@@ -39,7 +40,7 @@ def get_dashboard(
 insights_router = APIRouter(prefix="/insights", tags=["insights"])
 
 
-@insights_router.get("/")
+@insights_router.get("/", dependencies=[Depends(require_pro)])
 def get_insights(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user)
@@ -52,7 +53,7 @@ def get_insights(
 def get_insight_history(
     limit: int = Query(20, le=100),
     db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user)
+    current_user: User = Depends(require_pro)
 ):
     items = (
         db.query(Insight)
@@ -79,7 +80,7 @@ class ChatMessage(BaseModel):
 def chat(
     req: ChatMessage,
     db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user)
+    current_user: User = Depends(require_pro)
 ):
     try:
         response = chat_with_ai_agent(
@@ -217,7 +218,11 @@ def get_profile(current_user: User = Depends(get_current_user)):
         "owner_name": current_user.owner_name,
         "phone": current_user.phone,
         "business_type": current_user.business_type,
-        "created_at": current_user.created_at
+        "created_at": current_user.created_at,
+        "plan": current_user.plan,
+        "subscription_status": current_user.subscription_status,
+        "subscription_end": current_user.subscription_end,
+        "monthly_transaction_count": current_user.monthly_transaction_count
     }
 
 

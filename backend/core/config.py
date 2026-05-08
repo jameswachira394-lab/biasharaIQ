@@ -30,6 +30,14 @@ class Settings(BaseSettings):
     # Logging
     LOG_LEVEL: str = os.getenv("LOG_LEVEL", "INFO")
 
+    # M-Pesa Configuration
+    MPESA_CONSUMER_KEY: str = os.getenv("MPESA_CONSUMER_KEY", "")
+    MPESA_CONSUMER_SECRET: str = os.getenv("MPESA_CONSUMER_SECRET", "")
+    MPESA_SHORTCODE: str = os.getenv("MPESA_SHORTCODE", "")
+    MPESA_PASSKEY: str = os.getenv("MPESA_PASSKEY", "")
+    MPESA_CALLBACK_URL: str = os.getenv("MPESA_CALLBACK_URL", "")
+    MPESA_ENVIRONMENT: str = os.getenv("MPESA_ENVIRONMENT", "sandbox")  # sandbox or production
+
     @property
     def cors_origins_list(self) -> List[str]:
         origins = [o.strip() for o in self.CORS_ORIGINS.split(",")]

@@ -4,7 +4,7 @@ import { usePathname } from 'next/navigation'
 import { useAuth } from '@/context/AuthContext'
 import {
   LayoutDashboard, ArrowLeftRight, Lightbulb, Bot,
-  BarChart3, Settings, LogOut, TrendingUp, Menu, X
+  BarChart3, Settings, LogOut, TrendingUp, Menu, X, Crown
 } from 'lucide-react'
 import { useState } from 'react'
 import clsx from 'clsx'
@@ -14,6 +14,7 @@ const NAV_ITEMS = [
   { href: '/transactions', label: 'Transactions', icon: ArrowLeftRight },
   { href: '/insights', label: 'Insights', icon: Lightbulb },
   { href: '/ai', label: 'AI Advisor', icon: Bot },
+  { href: '/pricing', label: 'Pricing & Plans', icon: Crown },
   { href: '/reports', label: 'Reports', icon: BarChart3 },
   { href: '/settings', label: 'Settings', icon: Settings },
 ]
@@ -32,7 +33,7 @@ export default function Sidebar() {
             <TrendingUp size={16} className="text-[#2E7D32]" />
           </div>
           <span className="font-display font-bold text-lg tracking-tight text-semantic-white">
-            Biashara<span className="gradient-text">IQ</span>
+            BiasharaIQ {user?.plan === 'PRO' && <span className="text-[10px] bg-semantic-accentGold/20 text-semantic-accentGold px-1.5 py-0.5 rounded-full font-bold ml-1">PRO</span>}
           </span>
         </div>
         {user && (
@@ -103,7 +104,7 @@ export default function Sidebar() {
             <TrendingUp size={14} className="text-[#2E7D32]" />
           </div>
           <span className="font-display font-bold text-lg tracking-tight text-semantic-white">
-            Biashara<span className="gradient-text">IQ</span>
+            BiasharaIQ {user?.plan === 'PRO' && <span className="text-[10px] bg-semantic-accentGold/20 text-semantic-accentGold px-1.5 py-0.5 rounded-full font-bold ml-1">PRO</span>}
           </span>
         </div>
         <button onClick={() => setMobileOpen(!mobileOpen)} className="text-semantic-textSecondary hover:text-semantic-white p-1">

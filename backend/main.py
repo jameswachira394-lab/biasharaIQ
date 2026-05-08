@@ -19,6 +19,8 @@ from routes.routes import (
     dashboard_router, insights_router, ai_router,
     reports_router, categories_router, profile_router
 )
+from routes.payments import router as payments_router
+from routes.subscriptions import router as subscriptions_router
 from core.config import settings
 
 
@@ -112,6 +114,8 @@ app.include_router(ai_router, tags=["AI"])
 app.include_router(reports_router, tags=["Reports"])
 app.include_router(categories_router, tags=["Categories"])
 app.include_router(profile_router, tags=["Profile"])
+app.include_router(payments_router)
+app.include_router(subscriptions_router)
 
 
 @app.get("/")

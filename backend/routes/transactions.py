@@ -6,6 +6,8 @@ from datetime import datetime
 from models.database import get_db
 from models.models import User, Transaction, TransactionType
 from middleware.auth import get_current_user
+from middleware.subscription_guard import check_transaction_limit
+from services.subscription_service import SubscriptionService
 
 router = APIRouter(prefix="/transactions", tags=["transactions"])
 
@@ -29,7 +31,7 @@ class TransactionUpdate(BaseModel):
 def create_transaction(
     req: TransactionCreate,
     db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user)
+    current_user: User = Depends(check_transaction_limit)
 ):
     if req.amount <= 0:
         raise HTTPException(status_code=400, detail="Amount must be positive")
@@ -43,6 +45,10 @@ def create_transaction(
         description=req.description
     )
     db.add(txn)
+    
+    # Increment monthly transaction count
+    SubscriptionService.increment_transaction_count(db, current_user.id)
+    
     db.commit()
     db.refresh(txn)
     return txn
