@@ -40,9 +40,7 @@ export default function RegisterPage() {
   const benefits = ['Track all money in & out', 'Know your true profit', 'Get AI financial insights', 'Predict cash flow risks']
 
   return (
-    <div className="min-h-screen flex items-center justify-center px-4 py-10" style={{
-      background: 'radial-gradient(ellipse 80% 50% at 50% -20%, rgba(34,197,94,0.08) 0%, transparent 60%), #0B0F14'
-    }}>
+    <div className="min-h-screen flex items-center justify-center px-4 py-10 bg-semantic-accentBlue">
       <div className="w-full max-w-lg animate-fade-in">
         {/* Logo */}
         <div className="text-center mb-8">
@@ -126,7 +124,7 @@ export default function RegisterPage() {
             </button>
           </form>
 
-          <div className="mt-6 text-center text-sm text-[#9CA3AF]">
+          <div className="mt-6 text-center text-sm text-semantic-textSecondary">
             Already have an account?{' '}
             <Link href="/login" className="text-[#2E7D32] hover:text-[#2E7D32] font-medium">Sign in</Link>
           </div>

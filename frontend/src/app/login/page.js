@@ -29,9 +29,7 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center px-4" style={{
-      background: 'radial-gradient(ellipse 80% 50% at 50% -20%, rgba(34,197,94,0.08) 0%, transparent 60%), #0B0F14'
-    }}>
+    <div className="min-h-screen flex items-center justify-center px-4 bg-semantic-accentBlue">
       <div className="w-full max-w-md animate-fade-in">
         {/* Logo */}
         <div className="text-center mb-8">
@@ -57,7 +55,7 @@ export default function LoginPage() {
 
           <form onSubmit={handleSubmit} className="space-y-5">
             <div>
-              <label className="block text-sm text-[#1E1E1E] mb-1.5 font-medium">Email</label>
+              <label className="block text-sm text-semantic-white mb-1.5 font-medium">Email</label>
               <input
                 type="email"
                 className="input-dark"
@@ -69,7 +67,7 @@ export default function LoginPage() {
             </div>
 
             <div>
-              <label className="block text-sm text-[#1E1E1E] mb-1.5 font-medium">Password</label>
+              <label className="block text-sm text-semantic-white mb-1.5 font-medium">Password</label>
               <div className="relative">
                 <input
                   type={showPw ? 'text' : 'password'}
@@ -82,7 +80,7 @@ export default function LoginPage() {
                 <button
                   type="button"
                   onClick={() => setShowPw(!showPw)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-semantic-textSecondary hover:text-[#1E1E1E]"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-semantic-textSecondary hover:text-semantic-white"
                 >
                   {showPw ? <EyeOff size={16} /> : <Eye size={16} />}
                 </button>

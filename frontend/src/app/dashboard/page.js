@@ -86,7 +86,7 @@ export default function DashboardPage() {
         {/* Header */}
         <div className="flex items-start justify-between">
           <div>
-            <h1 className="font-display font-bold text-2xl text-[#1E1E1E]">
+            <h1 className="font-display font-bold text-2xl text-semantic-white">
               {user?.business_name || 'Dashboard'}
             </h1>
             <p className="text-semantic-textSecondary text-sm mt-0.5">
@@ -179,8 +179,8 @@ export default function DashboardPage() {
                     </linearGradient>
                   </defs>
                   <CartesianGrid strokeDasharray="3 3" stroke="#F5F5F5" />
-                  <XAxis dataKey="week" tick={{ fill: '#1E1E1E', fontSize: 11 }} axisLine={false} tickLine={false} />
-                  <YAxis tick={{ fill: '#1E1E1E', fontSize: 11 }} axisLine={false} tickLine={false} tickFormatter={v => `${(v / 1000).toFixed(0)}K`} />
+                  <XAxis dataKey="week" tick={{ fill: 'var(--text-light)', fontSize: 11 }} axisLine={false} tickLine={false} />
+                  <YAxis tick={{ fill: 'var(--text-light)', fontSize: 11 }} axisLine={false} tickLine={false} tickFormatter={v => `${(v / 1000).toFixed(0)}K`} />
                   <Tooltip content={<CustomTooltip />} />
                   <Area type="monotone" dataKey="income" name="Money In" stroke="#2E7D32" strokeWidth={2} fill="url(#gIncome)" />
                   <Area type="monotone" dataKey="expenses" name="Money Out" stroke="#D32F2F" strokeWidth={2} fill="url(#gExpense)" />
