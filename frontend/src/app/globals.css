@@ -208,7 +208,7 @@ body {
 /* ── Primary Button — Deep Green → Emerald ── */
 .btn-primary {
   background: linear-gradient(135deg, #0A2540, #2E7D32);
-  color: white;
+  color: var(--text-light);
   border: none;
   border-radius: 8px;
   padding: 0.625rem 1.25rem;
@@ -378,7 +378,7 @@ select.input-dark {
 
 .btn-primary-landing {
   background: linear-gradient(135deg, #0A2540, #2E7D32);
-  color: white;
+  color: var(--text-light);
 }
 
 .btn-primary-landing:hover {
@@ -571,7 +571,7 @@ select.input-dark {
   height: 50px;
   background: linear-gradient(135deg, #0A2540, #2E7D32);
   border-radius: 50%;
-  color: white;
+  color: var(--text-light);
   font-weight: 800;
   font-size: 1.5rem;
   flex-shrink: 0;

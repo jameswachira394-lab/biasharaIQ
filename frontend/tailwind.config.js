@@ -8,6 +8,7 @@ module.exports = {
   theme: {
     extend: {
       colors: {
+        white: 'var(--text-light)',
         /* ── Primary Navy (cards/headers) ── */
         navy: {
           950: '#0A2540',
@@ -18,23 +19,23 @@ module.exports = {
         },
         /* ── Semantic Colors ── */
         semantic: {
-          white: '#FFFFFF',
-          success: '#2E7D32',
-          error: '#D32F2F',
-          textDark: '#1E1E1E',
-          textSecondary: '#9CA3AF',
-          textMuted: '#4B5563',
-          textLight: '#F5F5F5',
-          accentBlue: '#1A1F71',    /* Visa Blue */
-          accentGold: '#F9A825',    /* Visa Gold */
+          white: 'var(--text-light)',
+          success: 'var(--success-green)',
+          error: 'var(--error-red)',
+          textDark: 'var(--text-dark)',
+          textSecondary: 'var(--text-secondary)',
+          textMuted: 'var(--text-muted)',
+          textLight: 'var(--text-light)',
+          accentBlue: 'var(--visa-blue)',
+          accentGold: 'var(--visa-gold)',
         },
         /* ── Text Colors ── */
         text: {
-          white: '#FFFFFF',
-          dark: '#1E1E1E',
-          secondary: '#9CA3AF',
-          muted: '#4B5563',
-          light: '#F5F5F5',
+          white: 'var(--text-light)',
+          dark: 'var(--text-dark)',
+          secondary: 'var(--text-secondary)',
+          muted: 'var(--text-muted)',
+          light: 'var(--text-light)',
         },
       },
       fontFamily: {
