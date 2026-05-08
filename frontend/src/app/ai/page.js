@@ -157,7 +157,7 @@ export default function AIPage() {
             <Send size={16} />
           </button>
         </div>
-          <p className="text-xs text-semantic-textSecondary text-center mt-2">
+        <p className="text-xs text-semantic-textSecondary text-center mt-2">
           Responses are grounded in your actual transaction data. No hallucinations.
         </p>
       </div>

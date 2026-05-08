@@ -161,13 +161,13 @@ export default function Home() {
             <div className="pricing-card">
               <h3>Free Plan</h3>
               <div className="price">KSh 0</div>
-              <p style={{ margin: '16px 0' }}>✔ Track up to 200 transactions/month<br/>✔ Basic dashboard & profit view<br/>✔ Expense categories<br/>✔ Email support</p>
+              <p style={{ margin: '16px 0' }}>✔ Track up to 200 transactions/month<br />✔ Basic dashboard & profit view<br />✔ Expense categories<br />✔ Email support</p>
               <Link href="/login" className="btn btn-primary-landing w-100" style={{ textAlign: 'center' }}>Start Free →</Link>
             </div>
             <div className="pricing-card" style={{ borderTop: '3px solid #2E7D32' }}>
               <h3>Pro Plan</h3>
               <div className="price">KSh 499<span style={{ fontSize: '1rem' }}>/month</span></div>
-              <p style={{ margin: '16px 0' }}>✔ Unlimited transactions<br/>✔ AI Assistant & cash flow predictions<br/>✔ Smart insights & waste detection<br/>✔ Days remaining forecast + alerts<br/>✔ Priority support</p>
+              <p style={{ margin: '16px 0' }}>✔ Unlimited transactions<br />✔ AI Assistant & cash flow predictions<br />✔ Smart insights & waste detection<br />✔ Days remaining forecast + alerts<br />✔ Priority support</p>
               <Link href="/login" className="btn btn-primary-landing w-100">Get Pro →</Link>
             </div>
           </div>
@@ -194,7 +194,7 @@ export default function Home() {
             <a href="#">Terms</a>
           </div>
           <div className="text-center" style={{ fontSize: '0.8rem' }}>
-            © 2025 BiasharaIQ — clarity & control for your biashara. 
+            © 2025 BiasharaIQ — clarity & control for your biashara.
           </div>
         </div>
       </footer>

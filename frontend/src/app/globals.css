@@ -201,7 +201,7 @@ body {
 
 /* ── Primary Button — Deep Green → Emerald ── */
 .btn-primary {
-  background: linear-gradient(135deg, #0F6B4F, #10B981);
+  background: linear-gradient(135deg, #0A2540, #2E7D32);
   color: white;
   border: none;
   border-radius: 8px;
@@ -216,9 +216,9 @@ body {
 }
 
 .btn-primary:hover {
-  background: linear-gradient(135deg, #10B981, #0F6B4F);
+  background: linear-gradient(135deg, #2E7D32, #0A2540);
   transform: translateY(-1px);
-  box-shadow: 0 6px 20px rgba(15, 107, 79, 0.35);
+  box-shadow: 0 6px 20px rgba(46, 125, 50, 0.35);
 }
 
 .btn-primary:disabled {
@@ -244,9 +244,9 @@ body {
 }
 
 .btn-secondary:hover {
-  border-color: #0F6B4F;
+  border-color: #2E7D32;
   color: var(--text-primary);
-  background: rgba(15, 107, 79, 0.08);
+  background: rgba(46, 125, 50, 0.08);
 }
 
 /* ── Danger Button ── */
@@ -340,7 +340,7 @@ select.input-dark {
   font-weight: 800;
   line-height: 1.2;
   margin-bottom: 24px;
-  background: linear-gradient(135deg, #10B981 0%, #0F6B4F 100%);
+  background: linear-gradient(135deg, #2E7D32 0%, #0A2540 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -374,14 +374,14 @@ select.input-dark {
 }
 
 .btn-primary-landing {
-  background: linear-gradient(135deg, #0F6B4F, #10B981);
+  background: linear-gradient(135deg, #0A2540, #2E7D32);
   color: white;
 }
 
 .btn-primary-landing:hover {
-  background: linear-gradient(135deg, #10B981, #0F6B4F);
+  background: linear-gradient(135deg, #2E7D32, #0A2540);
   transform: translateY(-2px);
-  box-shadow: 0 8px 24px rgba(15, 107, 79, 0.35);
+  box-shadow: 0 8px 24px rgba(46, 125, 50, 0.35);
 }
 
 .btn-secondary-landing {
@@ -391,9 +391,9 @@ select.input-dark {
 }
 
 .btn-secondary-landing:hover {
-  border-color: #0F6B4F;
+  border-color: #2E7D32;
   color: var(--text-primary);
-  background: rgba(15, 107, 79, 0.08);
+  background: rgba(46, 125, 50, 0.08);
 }
 
 .btn-block-mobile {
@@ -425,8 +425,8 @@ select.input-dark {
 }
 
 .metric-card {
-  background: rgba(15, 107, 79, 0.15);
-  border: 1px solid rgba(15, 107, 79, 0.3);
+  background: rgba(46, 125, 50, 0.15);
+  border: 1px solid rgba(46, 125, 50, 0.3);
   border-radius: 8px;
   padding: 12px;
   text-align: center;
@@ -441,7 +441,7 @@ select.input-dark {
 .metric-value {
   font-size: 1.1rem;
   font-weight: 700;
-  color: #10B981;
+  color: #2E7D32;
 }
 
 .mock-chart {
@@ -455,7 +455,7 @@ select.input-dark {
 }
 
 .bar {
-  background: linear-gradient(135deg, #0F6B4F, #10B981);
+  background: linear-gradient(135deg, #0A2540, #2E7D32);
   border-radius: 4px;
   width: 100%;
   max-width: 60px;
@@ -486,8 +486,8 @@ select.input-dark {
 }
 
 .landing-card:hover {
-  border-color: #0F6B4F;
-  background: rgba(15, 107, 79, 0.08);
+  border-color: #2E7D32;
+  background: rgba(46, 125, 50, 0.08);
   transform: translateY(-4px);
 }
 
@@ -508,18 +508,18 @@ select.input-dark {
 
 .trust-badge {
   display: inline-block;
-  background: rgba(15, 107, 79, 0.15);
-  border: 1px solid rgba(15, 107, 79, 0.3);
+  background: rgba(46, 125, 50, 0.15);
+  border: 1px solid rgba(46, 125, 50, 0.3);
   border-radius: 20px;
   padding: 6px 16px;
   font-size: 0.85rem;
-  color: #10B981;
+  color: #2E7D32;
   font-weight: 600;
 }
 
 .ai-bubble {
-  background: linear-gradient(135deg, rgba(15, 107, 79, 0.15) 0%, rgba(16, 185, 129, 0.1) 100%);
-  border: 1px solid rgba(15, 107, 79, 0.3);
+  background: linear-gradient(135deg, rgba(46, 125, 50, 0.15) 0%, rgba(46, 125, 50, 0.1) 100%);
+  border: 1px solid rgba(46, 125, 50, 0.3);
   border-radius: 20px;
   padding: 40px;
   text-align: center;
@@ -531,7 +531,7 @@ select.input-dark {
   font-size: 2.2rem;
   font-weight: 800;
   margin-bottom: 16px;
-  background: linear-gradient(135deg, #10B981 0%, #0F6B4F 100%);
+  background: linear-gradient(135deg, #2E7D32 0%, #0A2540 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -539,10 +539,10 @@ select.input-dark {
 
 .ask-badge {
   display: inline-block;
-  background: rgba(16, 185, 129, 0.2);
+  background: rgba(46, 125, 50, 0.2);
   border-radius: 20px;
   padding: 8px 16px;
-  color: #10B981;
+  color: #2E7D32;
   font-weight: 600;
   font-size: 0.9rem;
 }

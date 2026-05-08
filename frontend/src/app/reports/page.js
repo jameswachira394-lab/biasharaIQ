@@ -37,7 +37,7 @@ export default function ReportsPage() {
         const [mRes, tRes] = await Promise.all([reportsApi.monthly(), reportsApi.weeklyTrend(weeks)])
         setMonthly(mRes.data)
         setTrend(tRes.data || [])
-      } catch {}
+      } catch { }
       finally { setLoading(false) }
     }
     load()
@@ -92,7 +92,7 @@ export default function ReportsPage() {
               <BarChart data={trend} margin={{ top: 5, right: 5, bottom: 0, left: -10 }}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#0A2540" />
                 <XAxis dataKey="week" tick={{ fill: '#475569', fontSize: 11 }} axisLine={false} tickLine={false} />
-                <YAxis tick={{ fill: '#475569', fontSize: 11 }} axisLine={false} tickLine={false} tickFormatter={v => `${(v/1000).toFixed(0)}K`} />
+                <YAxis tick={{ fill: '#475569', fontSize: 11 }} axisLine={false} tickLine={false} tickFormatter={v => `${(v / 1000).toFixed(0)}K`} />
                 <Tooltip content={<CustomTooltip />} />
                 <Legend formatter={v => <span style={{ color: '#94a3b8', fontSize: 11 }}>{v}</span>} />
                 <Bar dataKey="income" name="Money In" fill="#2E7D32" radius={[4, 4, 0, 0]} fillOpacity={0.8} />
@@ -112,7 +112,7 @@ export default function ReportsPage() {
               <LineChart data={trend} margin={{ top: 5, right: 5, bottom: 0, left: -10 }}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#0A2540" />
                 <XAxis dataKey="week" tick={{ fill: '#475569', fontSize: 11 }} axisLine={false} tickLine={false} />
-                <YAxis tick={{ fill: '#475569', fontSize: 11 }} axisLine={false} tickLine={false} tickFormatter={v => `${(v/1000).toFixed(0)}K`} />
+                <YAxis tick={{ fill: '#475569', fontSize: 11 }} axisLine={false} tickLine={false} tickFormatter={v => `${(v / 1000).toFixed(0)}K`} />
                 <Tooltip content={<CustomTooltip />} />
                 <Line type="monotone" dataKey="profit" name="Profit" stroke="#2E7D32" strokeWidth={2.5} dot={{ fill: '#2E7D32', r: 3 }} />
               </LineChart>

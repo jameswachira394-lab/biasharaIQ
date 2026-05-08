@@ -3,10 +3,10 @@ import clsx from 'clsx'
 export default function StatCard({ label, value, sub, icon, trend, color = 'emerald', className }) {
   const colors = {
     emerald: { text: 'text-[#2E7D32]', bg: 'bg-[#2E7D32]/10', border: 'border-[#2E7D32]/25', line: '#2E7D32' },
-    red:     { text: 'text-[#D32F2F]', bg: 'bg-[#D32F2F]/8',  border: 'border-[#D32F2F]/15', line: '#D32F2F' },
-    amber:   { text: 'text-[#F9A825]', bg: 'bg-[#F9A825]/8',  border: 'border-[#F9A825]/15', line: '#F9A825' },
-    blue:    { text: 'text-[#1A1F71]', bg: 'bg-[#1A1F71]/8',  border: 'border-[#1A1F71]/15', line: '#1A1F71' },
-    cyan:    { text: 'text-[#0A2540]', bg: 'bg-[#0A2540]/8',  border: 'border-[#0A2540]/15', line: '#0A2540' },
+    red: { text: 'text-[#D32F2F]', bg: 'bg-[#D32F2F]/8', border: 'border-[#D32F2F]/15', line: '#D32F2F' },
+    amber: { text: 'text-[#F9A825]', bg: 'bg-[#F9A825]/8', border: 'border-[#F9A825]/15', line: '#F9A825' },
+    blue: { text: 'text-[#1A1F71]', bg: 'bg-[#1A1F71]/8', border: 'border-[#1A1F71]/15', line: '#1A1F71' },
+    cyan: { text: 'text-[#0A2540]', bg: 'bg-[#0A2540]/8', border: 'border-[#0A2540]/15', line: '#0A2540' },
   }
   const c = colors[color] || colors.emerald
 

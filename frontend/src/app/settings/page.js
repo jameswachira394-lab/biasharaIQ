@@ -16,8 +16,8 @@ export default function SettingsPage() {
   const [tab, setTab] = useState('profile')
 
   useEffect(() => {
-    profileApi.get().then(r => setProfile(r.data)).catch(() => {})
-    categoriesApi.list().then(r => setCategories(r.data || [])).catch(() => {})
+    profileApi.get().then(r => setProfile(r.data)).catch(() => { })
+    categoriesApi.list().then(r => setCategories(r.data || [])).catch(() => { })
   }, [])
 
   const showToast = (msg, type = 'success') => {

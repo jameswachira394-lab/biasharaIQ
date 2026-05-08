@@ -10,12 +10,12 @@ import { useState } from 'react'
 import clsx from 'clsx'
 
 const NAV_ITEMS = [
-  { href: '/dashboard',    label: 'Dashboard',    icon: LayoutDashboard },
+  { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
   { href: '/transactions', label: 'Transactions', icon: ArrowLeftRight },
-  { href: '/insights',     label: 'Insights',     icon: Lightbulb },
-  { href: '/ai',           label: 'AI Advisor',   icon: Bot },
-  { href: '/reports',      label: 'Reports',      icon: BarChart3 },
-  { href: '/settings',     label: 'Settings',     icon: Settings },
+  { href: '/insights', label: 'Insights', icon: Lightbulb },
+  { href: '/ai', label: 'AI Advisor', icon: Bot },
+  { href: '/reports', label: 'Reports', icon: BarChart3 },
+  { href: '/settings', label: 'Settings', icon: Settings },
 ]
 
 export default function Sidebar() {
