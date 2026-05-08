@@ -14,11 +14,11 @@ export default function ReportSummaryCard({ label, value, isKES = true, color = 
 
   return (
     <div className="card p-5 text-center">
-      <p className="text-xs text-[#999999] uppercase tracking-wide mb-2 font-medium">{label}</p>
+      <p className="text-xs text-semantic-textSecondary uppercase tracking-wide mb-2 font-medium">{label}</p>
       <p className={clsx('font-display font-bold text-2xl', colors[color] || colors.emerald)}>
         {displayValue}
       </p>
-      {subtext && <p className="text-xs text-[#999999] mt-1">{subtext}</p>}
+      {subtext && <p className="text-xs text-semantic-textSecondary mt-1">{subtext}</p>}
     </div>
   )
 }

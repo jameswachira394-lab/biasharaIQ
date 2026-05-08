@@ -59,10 +59,10 @@ function TransactionModal({ open, onClose, onSaved, categories, editData }) {
       <div className="relative w-full max-w-md card p-6 animate-fade-in">
         <div className="flex items-center justify-between mb-5">
           <h2 className="font-display font-semibold text-[#1E1E1E]">{isEdit ? 'Edit Transaction' : 'Add Transaction'}</h2>
-          <button onClick={onClose} className="text-[#999999] hover:text-[#1E1E1E] p-1"><X size={18} /></button>
+          <button onClick={onClose} className="text-semantic-textSecondary hover:text-[#1E1E1E] p-1"><X size={18} /></button>
         </div>
 
-        {error && <div className="mb-4 p-3 rounded-lg bg-red-500/10 border border-red-500/20 text-red-400 text-sm">{error}</div>}
+        {error && <div className="mb-4 p-3 rounded-lg bg-[#D32F2F]/10 border border-[#D32F2F]/20 text-[#D32F2F] text-sm">{error}</div>}
 
         <form onSubmit={submit} className="space-y-4">
           {/* Type toggle */}
@@ -73,7 +73,7 @@ function TransactionModal({ open, onClose, onSaved, categories, editData }) {
                 className={clsx('py-2 rounded-md text-sm font-medium transition-all flex items-center justify-center gap-2',
                   form.type === t
                     ? t === 'income' ? 'bg-[#2E7D32]/15 text-[#2E7D32] border border-[#2E7D32]/25' : 'bg-[#D32F2F]/15 text-[#D32F2F] border border-[#D32F2F]/25'
-                    : 'text-[#999999] hover:text-[#1E1E1E]'
+                    : 'text-semantic-textSecondary hover:text-[#1E1E1E]'
                 )}>
                 {t === 'income' ? <TrendingUp size={14} /> : <TrendingDown size={14} />}
                 {t === 'income' ? 'Money In' : 'Money Out'}
@@ -83,17 +83,17 @@ function TransactionModal({ open, onClose, onSaved, categories, editData }) {
 
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="block text-xs text-[#9CA3AF] mb-1.5">Amount (KES) *</label>
+              <label className="block text-xs text-semantic-textSecondary mb-1.5">Amount (KES) *</label>
               <input type="number" className="input-dark" placeholder="0" value={form.amount} onChange={set('amount')} min="1" step="0.01" required />
             </div>
             <div>
-              <label className="block text-xs text-[#9CA3AF] mb-1.5">Date *</label>
+              <label className="block text-xs text-semantic-textSecondary mb-1.5">Date *</label>
               <input type="date" className="input-dark" value={form.date} onChange={set('date')} required />
             </div>
           </div>
 
           <div>
-            <label className="block text-xs text-[#9CA3AF] mb-1.5">Category *</label>
+            <label className="block text-xs text-semantic-textSecondary mb-1.5">Category *</label>
             <select className="input-dark" value={form.category} onChange={set('category')} required>
               <option value="">Select category...</option>
               {filteredCats.map(c => <option key={c.id} value={c.name}>{c.name}</option>)}
@@ -101,7 +101,7 @@ function TransactionModal({ open, onClose, onSaved, categories, editData }) {
           </div>
 
           <div>
-            <label className="block text-xs text-[#9CA3AF] mb-1.5">Description (Optional)</label>
+            <label className="block text-xs text-semantic-textSecondary mb-1.5">Description (Optional)</label>
             <input className="input-dark" placeholder="What was this for?" value={form.description} onChange={set('description')} />
           </div>
 
@@ -159,8 +159,8 @@ export default function TransactionsPage() {
       <div className="space-y-5 stagger-children">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="font-display font-bold text-2xl text-[#E5E7EB]">Transactions</h1>
-            <p className="text-[#9CA3AF] text-sm mt-0.5">{total} total records</p>
+            <h1 className="font-display font-bold text-2xl text-semantic-white">Transactions</h1>
+            <p className="text-semantic-textSecondary text-sm mt-0.5">{total} total records</p>
           </div>
           <button onClick={() => { setEditData(null); setModalOpen(true) }} className="btn-primary">
             <Plus size={16} /> Add Transaction
@@ -170,7 +170,7 @@ export default function TransactionsPage() {
         {/* Filters */}
         <div className="card p-4 flex flex-wrap gap-3">
           <div className="relative flex-1 min-w-[180px]">
-            <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-[#9CA3AF]" />
+            <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-semantic-textSecondary" />
             <input className="input-dark pl-8" placeholder="Search..." value={filters.search} onChange={e => setFilters(f => ({ ...f, search: e.target.value }))} />
           </div>
           <select className="input-dark w-auto min-w-[130px]" value={filters.type} onChange={e => { setFilters(f => ({ ...f, type: e.target.value, category: '' })); setPage(0) }}>
@@ -192,11 +192,11 @@ export default function TransactionsPage() {
         {/* Table */}
         <div className="card overflow-hidden">
           {loading ? (
-            <div className="flex items-center justify-center h-40 text-[#9CA3AF] text-sm">
-              <div className="w-4 h-4 border-2 border-[#0F6B4F] border-t-transparent rounded-full animate-spin mr-2" /> Loading...
+            <div className="flex items-center justify-center h-40 text-semantic-textSecondary text-sm">
+              <div className="w-4 h-4 border-2 border-[#2E7D32] border-t-transparent rounded-full animate-spin mr-2" /> Loading...
             </div>
           ) : filtered.length === 0 ? (
-            <div className="flex flex-col items-center justify-center h-40 text-[#9CA3AF] text-sm gap-3">
+            <div className="flex flex-col items-center justify-center h-40 text-semantic-textSecondary text-sm gap-3">
               <p>No transactions found</p>
               <button onClick={() => { setEditData(null); setModalOpen(true) }} className="btn-primary text-xs py-1.5 px-3">
                 <Plus size={13} /> Add First Transaction
@@ -206,39 +206,39 @@ export default function TransactionsPage() {
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
                 <thead>
-                  <tr className="border-b border-[#1A2535]">
+                  <tr className="border-b border-[#0A2540]/30">
                     {['Date', 'Type', 'Category', 'Description', 'Amount', ''].map(h => (
-                      <th key={h} className="px-4 py-3 text-left text-xs text-[#9CA3AF] font-medium uppercase tracking-wide">{h}</th>
+                      <th key={h} className="px-4 py-3 text-left text-xs text-semantic-textSecondary font-medium uppercase tracking-wide">{h}</th>
                     ))}
                   </tr>
                 </thead>
                 <tbody>
                   {filtered.map((txn) => (
-                    <tr key={txn.id} className="border-b border-[#1A2535] hover:bg-white/2 transition-colors">
-                      <td className="px-4 py-3 text-[#9CA3AF] text-xs whitespace-nowrap">{formatDate(txn.date)}</td>
+                    <tr key={txn.id} className="border-b border-[#0A2540]/30 hover:bg-white/2 transition-colors">
+                      <td className="px-4 py-3 text-semantic-textSecondary text-xs whitespace-nowrap">{formatDate(txn.date)}</td>
                       <td className="px-4 py-3">
                         <span className={clsx('text-xs px-2 py-0.5 rounded-full font-medium',
-                          txn.type === 'income' ? 'bg-[#0F6B4F]/10 text-[#10B981]' : 'bg-red-500/10 text-red-400')}>
+                          txn.type === 'income' ? 'bg-[#2E7D32]/10 text-[#2E7D32]' : 'bg-[#D32F2F]/10 text-[#D32F2F]')}>
                           {txn.type === 'income' ? '↑ In' : '↓ Out'}
                         </span>
                       </td>
-                      <td className="px-4 py-3 text-[#E5E7EB] text-xs">{txn.category}</td>
-                      <td className="px-4 py-3 text-[#9CA3AF] text-xs max-w-[200px] truncate">{txn.description || '—'}</td>
+                      <td className="px-4 py-3 text-semantic-white text-xs">{txn.category}</td>
+                      <td className="px-4 py-3 text-semantic-textSecondary text-xs max-w-[200px] truncate">{txn.description || '—'}</td>
                       <td className={clsx('px-4 py-3 font-mono font-semibold text-sm whitespace-nowrap',
-                        txn.type === 'income' ? 'text-[#10B981]' : 'text-red-400')}>
+                        txn.type === 'income' ? 'text-[#2E7D32]' : 'text-[#D32F2F]')}>
                         {txn.type === 'income' ? '+' : '-'}{formatCurrency(txn.amount)}
                       </td>
                       <td className="px-4 py-3">
                         <div className="flex items-center gap-2">
                           <button onClick={() => { setEditData(txn); setModalOpen(true) }}
-                            className="p-1 text-[#9CA3AF] hover:text-[#E5E7EB] transition-colors"><Pencil size={13} /></button>
+                            className="p-1 text-semantic-textSecondary hover:text-semantic-white transition-colors"><Pencil size={13} /></button>
                           {deleteId === txn.id ? (
                             <div className="flex items-center gap-1">
-                              <button onClick={() => handleDelete(txn.id)} className="text-xs text-red-400 hover:text-red-300 px-1.5 py-0.5 border border-red-500/30 rounded">Yes</button>
-                              <button onClick={() => setDeleteId(null)} className="text-xs text-[#9CA3AF] hover:text-[#E5E7EB]">No</button>
+                              <button onClick={() => handleDelete(txn.id)} className="text-xs text-[#D32F2F] hover:text-[#D32F2F]/80 px-1.5 py-0.5 border border-[#D32F2F]/30 rounded">Yes</button>
+                              <button onClick={() => setDeleteId(null)} className="text-xs text-semantic-textSecondary hover:text-semantic-white">No</button>
                             </div>
                           ) : (
-                            <button onClick={() => setDeleteId(txn.id)} className="p-1 text-[#9CA3AF] hover:text-red-400 transition-colors"><Trash2 size={13} /></button>
+                            <button onClick={() => setDeleteId(txn.id)} className="p-1 text-semantic-textSecondary hover:text-[#D32F2F] transition-colors"><Trash2 size={13} /></button>
                           )}
                         </div>
                       </td>

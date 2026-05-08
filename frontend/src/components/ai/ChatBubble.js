@@ -31,7 +31,7 @@ export default function ChatBubble({ role, content, loading = false }) {
             {[0, 150, 300].map(delay => (
               <div
                 key={delay}
-                className="w-1.5 h-1.5 rounded-full bg-blue-400 animate-pulse-soft"
+                className="w-1.5 h-1.5 rounded-full bg-[#2E7D32] animate-pulse-soft"
                 style={{ animationDelay: `${delay}ms` }}
               />
             ))}

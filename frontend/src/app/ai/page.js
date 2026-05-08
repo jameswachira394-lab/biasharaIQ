@@ -77,13 +77,13 @@ export default function AIPage() {
         <div className="flex items-center justify-between mb-4">
           <div>
             <div className="flex items-center gap-2">
-              <div className="w-7 h-7 rounded-lg bg-blue-500/15 border border-blue-500/25 flex items-center justify-center">
-                <Bot size={14} className="text-blue-400" />
+              <div className="w-7 h-7 rounded-lg bg-[#1A1F71]/15 border border-[#1A1F71]/25 flex items-center justify-center">
+                <Bot size={14} className="text-[#1A1F71]" />
               </div>
-              <h1 className="font-display font-bold text-2xl text-[#E5E7EB]">AI Advisor</h1>
+              <h1 className="font-display font-bold text-2xl text-semantic-white">AI Advisor</h1>
               <span className="text-xs bg-[#2E7D32]/15 text-[#2E7D32] px-2 py-0.5 rounded-full border border-[#2E7D32]/25 font-semibold">LIVE DATA</span>
             </div>
-            <p className="text-[#9CA3AF] text-sm mt-0.5 ml-9">Ask anything about your finances. Answers are based on your real data.</p>
+            <p className="text-semantic-textSecondary text-sm mt-0.5 ml-9">Ask anything about your finances. Answers are based on your real data.</p>
           </div>
           {messages.length > 0 && (
             <button onClick={reset} className="btn-secondary text-xs py-1.5 px-3 flex items-center gap-1.5">
@@ -157,7 +157,7 @@ export default function AIPage() {
             <Send size={16} />
           </button>
         </div>
-        <p className="text-xs text-[#999999] text-center mt-2">
+          <p className="text-xs text-semantic-textSecondary text-center mt-2">
           Responses are grounded in your actual transaction data. No hallucinations.
         </p>
       </div>

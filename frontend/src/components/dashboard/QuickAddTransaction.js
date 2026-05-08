@@ -57,7 +57,7 @@ export default function QuickAddTransaction({ onAdded, categories = [] }) {
               'py-2 rounded-md text-sm font-medium transition-all flex items-center justify-center gap-2',
               type === id
                 ? id === 'income' ? 'bg-[#2E7D32]/15 text-[#2E7D32] border border-[#2E7D32]/25' : 'bg-[#D32F2F]/15 text-[#D32F2F] border border-[#D32F2F]/25'
-                : 'text-[#999999] hover:text-[#1E1E1E]'
+                : 'text-semantic-textSecondary hover:text-[#1E1E1E]'
             )}>
             <Icon size={13} /> {label}
           </button>

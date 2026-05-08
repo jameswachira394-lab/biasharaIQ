@@ -43,13 +43,13 @@ export default function LoginPage() {
               Biashara<span className="gradient-text">IQ</span>
             </span>
           </div>
-          <p className="text-[#999999] text-sm">Sign in to your business account</p>
+          <p className="text-semantic-textSecondary text-sm">Sign in to your business account</p>
         </div>
 
         {/* Card */}
         <div className="card p-8">
           {error && (
-            <div className="mb-5 flex items-center gap-2 p-3 rounded-lg bg-red-500/10 border border-red-500/20 text-red-400 text-sm">
+            <div className="mb-5 flex items-center gap-2 p-3 rounded-lg bg-[#D32F2F]/10 border border-[#D32F2F]/20 text-[#D32F2F] text-sm">
               <AlertCircle size={16} />
               {error}
             </div>
@@ -82,7 +82,7 @@ export default function LoginPage() {
                 <button
                   type="button"
                   onClick={() => setShowPw(!showPw)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-[#999999] hover:text-[#1E1E1E]"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-semantic-textSecondary hover:text-[#1E1E1E]"
                 >
                   {showPw ? <EyeOff size={16} /> : <Eye size={16} />}
                 </button>
@@ -96,7 +96,7 @@ export default function LoginPage() {
             </button>
           </form>
 
-          <div className="mt-6 text-center text-sm text-[#999999]">
+          <div className="mt-6 text-center text-sm text-semantic-textSecondary">
             New to BiasharaIQ?{' '}
             <Link href="/register" className="text-[#2E7D32] hover:text-[#2E7D32] font-medium">
               Create account
@@ -104,7 +104,7 @@ export default function LoginPage() {
           </div>
         </div>
 
-        <p className="text-center text-xs text-[#999999] mt-6">
+        <p className="text-center text-xs text-semantic-textSecondary mt-6">
           Financial intelligence for Kenyan businesses 🇰🇪
         </p>
       </div>

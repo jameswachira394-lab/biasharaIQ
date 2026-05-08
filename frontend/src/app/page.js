@@ -18,8 +18,8 @@ export default function Home() {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-full border-2 border-[#0F6B4F] border-t-transparent animate-spin" />
-          <span className="text-[#9CA3AF]">Loading BiasharaIQ...</span>
+          <div className="w-8 h-8 rounded-full border-2 border-[#2E7D32] border-t-transparent animate-spin" />
+          <span className="text-semantic-textSecondary">Loading BiasharaIQ...</span>
         </div>
       </div>
     )
@@ -40,7 +40,7 @@ export default function Home() {
               <Link href="/login" className="btn btn-primary-landing">Get Started Free →</Link>
               <a href="#how-it-works" className="btn btn-secondary-landing">See How It Works</a>
             </div>
-            <p style={{ marginTop: '1rem', fontSize: '0.8rem', color: '#9CA3AF' }}>No credit card required • Free plan available</p>
+            <p style={{ marginTop: '1rem', fontSize: '0.8rem', color: 'var(--text-secondary)' }}>No credit card required • Free plan available</p>
           </div>
           <div className="hero-visual">
             <div className="dashboard-mock">
@@ -51,11 +51,11 @@ export default function Home() {
               </div>
               <div className="mock-chart">
                 <div style={{ flex: 1 }}><div className="bar bar-md" style={{ height: '58px' }}></div><div style={{ fontSize: '0.7rem' }}>Sales</div></div>
-                <div style={{ flex: 1 }}><div className="bar bar-sm" style={{ height: '32px', background: '#F97316' }}></div><div style={{ fontSize: '0.7rem' }}>Marketing</div></div>
-                <div style={{ flex: 1 }}><div className="bar bar-sm" style={{ height: '28px', background: '#10B981' }}></div><div style={{ fontSize: '0.7rem' }}>Stock</div></div>
-                <div style={{ flex: 1 }}><div className="bar" style={{ height: '46px', background: '#3B82F6' }}></div><div style={{ fontSize: '0.7rem' }}>Profit</div></div>
+                <div style={{ flex: 1 }}><div className="bar bar-sm" style={{ height: '32px', background: '#F9A825' }}></div><div style={{ fontSize: '0.7rem' }}>Marketing</div></div>
+                <div style={{ flex: 1 }}><div className="bar bar-sm" style={{ height: '28px', background: '#2E7D32' }}></div><div style={{ fontSize: '0.7rem' }}>Stock</div></div>
+                <div style={{ flex: 1 }}><div className="bar" style={{ height: '46px', background: '#1A1F71' }}></div><div style={{ fontSize: '0.7rem' }}>Profit</div></div>
               </div>
-              <div style={{ marginTop: '24px', background: '#00000030', borderRadius: '24px', padding: '12px', fontSize: '0.75rem', color: '#aaa', textAlign: 'center' }}>
+              <div style={{ background: '#00000030', borderRadius: '24px', padding: '12px', fontSize: '0.75rem', color: '#aaa', textAlign: 'center' }}>
                 📊 Real‑time dashboard • Track every shilling
               </div>
             </div>
@@ -121,7 +121,7 @@ export default function Home() {
             <div className="ask-badge">✨ AI-Powered Intelligence</div>
             <h2 style={{ marginTop: '8px' }}>Your Business, Explained by AI.</h2>
             <p style={{ fontSize: '1.1rem' }}>Just ask: <strong>“Why is my profit low?”</strong> or <strong>“Where am I losing money?”</strong> and get clear answers based on your data — in seconds.</p>
-            <div style={{ background: '#00000030', borderRadius: '60px', padding: '12px 24px', marginTop: '24px', fontStyle: 'italic', borderLeft: '4px solid #10B981' }}>
+            <div style={{ background: '#00000030', borderRadius: '60px', padding: '12px 24px', marginTop: '24px', fontStyle: 'italic', borderLeft: '4px solid #2E7D32' }}>
               “M-Pesa & cash transactions analyzed. You lost KSh 8,200 on idle stock and unrecorded expenses last month.”
             </div>
             <p className="mt-4" style={{ marginBottom: 0 }}><strong>No guesswork. Just real insights.</strong></p>
@@ -147,7 +147,7 @@ export default function Home() {
           <div className="trust-badge" style={{ marginBottom: '24px' }}>🇰🇪 Built for small businesses in Kenya</div>
           <div className="landing-card" style={{ maxWidth: '700px', margin: '0 auto' }}>
             <p style={{ fontWeight: 500, fontSize: '1rem' }}>“Designed for real-world biashara — from mama mboga to boutique owners. Already helping 500+ businesses track profit and sleep better.”</p>
-            <p style={{ marginTop: '12px', color: '#10B981' }}>— BiasharaIQ early access community</p>
+            <p style={{ marginTop: '12px', color: '#2E7D32' }}>— BiasharaIQ early access community</p>
           </div>
         </div>
       </section>
@@ -164,7 +164,7 @@ export default function Home() {
               <p style={{ margin: '16px 0' }}>✔ Track up to 200 transactions/month<br/>✔ Basic dashboard & profit view<br/>✔ Expense categories<br/>✔ Email support</p>
               <Link href="/login" className="btn btn-primary-landing w-100" style={{ textAlign: 'center' }}>Start Free →</Link>
             </div>
-            <div className="pricing-card" style={{ borderTop: '3px solid #10B981' }}>
+            <div className="pricing-card" style={{ borderTop: '3px solid #2E7D32' }}>
               <h3>Pro Plan</h3>
               <div className="price">KSh 499<span style={{ fontSize: '1rem' }}>/month</span></div>
               <p style={{ margin: '16px 0' }}>✔ Unlimited transactions<br/>✔ AI Assistant & cash flow predictions<br/>✔ Smart insights & waste detection<br/>✔ Days remaining forecast + alerts<br/>✔ Priority support</p>
