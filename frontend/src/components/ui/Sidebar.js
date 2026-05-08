@@ -54,14 +54,14 @@ export default function Sidebar() {
               className={clsx(
                 'flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all',
                 active
-                  ? 'bg-[#2E7D32]/15 text-[#2E7D32] border border-[#2E7D32]/30'
+                  ? 'bg-semantic-accentBlue/10 text-semantic-accentBlue border border-semantic-accentBlue/20'
                   : 'text-semantic-textSecondary hover:text-semantic-white hover:bg-white/[0.04]'
               )}
             >
               <Icon size={17} />
               {label}
               {href === '/ai' && (
-                <span className="ml-auto text-[10px] bg-[#2E7D32]/25 text-[#2E7D32] px-1.5 py-0.5 rounded-full font-semibold border border-[#2E7D32]/30">
+                <span className="ml-auto text-[10px] bg-semantic-accentBlue/20 text-semantic-accentBlue px-1.5 py-0.5 rounded-full font-semibold border border-semantic-accentBlue/30">
                   AI
                 </span>
               )}
@@ -92,12 +92,12 @@ export default function Sidebar() {
   return (
     <>
       {/* Desktop sidebar */}
-      <aside className="hidden md:flex flex-col w-56 min-h-screen bg-[#0A2540] border-r border-[#0A2540]/30 fixed left-0 top-0 bottom-0 z-30">
+      <aside className="hidden md:flex flex-col w-56 min-h-screen bg-semantic-bgSidebar border-r border-white/5 fixed left-0 top-0 bottom-0 z-30">
         <NavContent />
       </aside>
 
       {/* Mobile header */}
-      <div className="md:hidden fixed top-0 left-0 right-0 z-40 bg-[#0A2540] border-b border-[#0A2540]/30 px-4 h-14 flex items-center justify-between">
+      <div className="md:hidden fixed top-0 left-0 right-0 z-40 bg-semantic-bgSidebar border-b border-white/5 px-4 h-14 flex items-center justify-between">
         <div className="flex items-center gap-2">
           <div className="w-7 h-7 rounded-lg bg-[#2E7D32]/20 border border-[#2E7D32]/40 flex items-center justify-center">
             <TrendingUp size={14} className="text-[#2E7D32]" />
@@ -115,7 +115,7 @@ export default function Sidebar() {
       {mobileOpen && (
         <div className="md:hidden fixed inset-0 z-50">
           <div className="absolute inset-0 bg-black/70" onClick={() => setMobileOpen(false)} />
-          <aside className="absolute left-0 top-0 bottom-0 w-64 bg-[#0A2540] border-r border-[#0A2540]/30 flex flex-col">
+          <aside className="absolute left-0 top-0 bottom-0 w-64 bg-semantic-bgSidebar border-r border-white/5 flex flex-col">
             <NavContent />
           </aside>
         </div>

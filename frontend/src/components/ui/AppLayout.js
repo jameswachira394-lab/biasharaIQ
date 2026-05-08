@@ -14,7 +14,7 @@ export default function AppLayout({ children }) {
 
   if (loading || !user) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-semantic-accentBlue">
+      <div className="min-h-screen flex items-center justify-center bg-semantic-bgMain">
         <div className="flex items-center gap-3">
           <div className="w-6 h-6 rounded-full border-2 border-[#2E7D32] border-t-transparent animate-spin" />
           <span className="text-semantic-textSecondary text-sm">Loading...</span>

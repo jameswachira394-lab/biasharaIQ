@@ -19,20 +19,32 @@ module.exports = {
         },
         /* ── Semantic Colors ── */
         semantic: {
-          white: 'var(--text-light)',
+          white: 'var(--text-white)',
           success: 'var(--success-green)',
           error: 'var(--error-red)',
-          textDark: 'var(--text-dark)',
+          textDark: '#0F172A',
           textSecondary: 'var(--text-secondary)',
           textMuted: 'var(--text-muted)',
           textLight: 'var(--text-light)',
-          accentBlue: 'var(--visa-blue)',
-          accentGold: 'var(--visa-gold)',
+          accentBlue: 'var(--accent-primary)',
+          accentPurple: 'var(--accent-secondary)',
+          accentGold: 'var(--accent-yellow)',
+          bgMain: 'var(--bg-main)',
+          bgSidebar: 'var(--bg-sidebar)',
+        },
+        /* ── Chart Palette ── */
+        chart: {
+          pink: '#EC4899',
+          purple: '#A855F7',
+          blue: '#6366F1',
+          teal: '#14B8A6',
+          yellow: '#EAB308',
+          magenta: '#D946EF',
         },
         /* ── Text Colors ── */
         text: {
-          white: 'var(--text-light)',
-          dark: 'var(--text-dark)',
+          white: 'var(--text-white)',
+          dark: '#0F172A',
           secondary: 'var(--text-secondary)',
           muted: 'var(--text-muted)',
           light: 'var(--text-light)',
