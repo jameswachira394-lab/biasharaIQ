@@ -566,7 +566,7 @@ select.input-dark {
   justify-content: center;
   width: 50px;
   height: 50px;
-  background: linear-gradient(135deg, #0F6B4F, #10B981);
+  background: linear-gradient(135deg, #0A2540, #2E7D32);
   border-radius: 50%;
   color: white;
   font-weight: 800;
@@ -610,8 +610,8 @@ select.input-dark {
 }
 
 .pricing-card:hover {
-  border-color: #0F6B4F;
-  background: rgba(15, 107, 79, 0.08);
+  border-color: #2E7D32;
+  background: rgba(46, 125, 50, 0.08);
   transform: translateY(-4px);
 }
 
@@ -624,7 +624,7 @@ select.input-dark {
 .price {
   font-size: 2.5rem;
   font-weight: 800;
-  color: #10B981;
+  color: #2E7D32;
   margin-bottom: 16px;
 }
 
@@ -678,7 +678,7 @@ footer {
 }
 
 .footer-links a:hover {
-  color: #10B981;
+  color: #2E7D32;
 }
 
 .days-left {
