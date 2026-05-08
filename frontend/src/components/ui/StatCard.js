@@ -2,13 +2,13 @@ import clsx from 'clsx'
 
 export default function StatCard({ label, value, sub, icon, trend, color = 'emerald', className }) {
   const colors = {
-    emerald: { text: 'text-[#2E7D32]', bg: 'bg-[#2E7D32]/10', border: 'border-[#2E7D32]/25', line: '#2E7D32' },
-    red: { text: 'text-[#D32F2F]', bg: 'bg-[#D32F2F]/8', border: 'border-[#D32F2F]/15', line: '#D32F2F' },
-    amber: { text: 'text-[#F9A825]', bg: 'bg-[#F9A825]/8', border: 'border-[#F9A825]/15', line: '#F9A825' },
-    blue: { text: 'text-[#1A1F71]', bg: 'bg-[#1A1F71]/8', border: 'border-[#1A1F71]/15', line: '#1A1F71' },
-    cyan: { text: 'text-[#0A2540]', bg: 'bg-[#0A2540]/8', border: 'border-[#0A2540]/15', line: '#0A2540' },
+    emerald: { text: 'text-semantic-success', bg: 'bg-semantic-success/10', border: 'border-semantic-success/20', line: '#22C55E' },
+    red: { text: 'text-semantic-error', bg: 'bg-semantic-error/10', border: 'border-semantic-error/20', line: '#EC4899' },
+    amber: { text: 'text-semantic-accentGold', bg: 'bg-semantic-accentGold/10', border: 'border-semantic-accentGold/20', line: '#EAB308' },
+    blue: { text: 'text-semantic-accentBlue', bg: 'bg-semantic-accentBlue/10', border: 'border-semantic-accentBlue/20', line: '#6366F1' },
+    purple: { text: 'text-semantic-accentPurple', bg: 'bg-semantic-accentPurple/10', border: 'border-semantic-accentPurple/20', line: '#A855F7' },
   }
-  const c = colors[color] || colors.emerald
+  const c = colors[color] || colors.blue
 
   return (
     <div className={clsx('stat-card', c.text, className)} style={{ '--tw-shadow-color': c.line }}>
@@ -26,7 +26,7 @@ export default function StatCard({ label, value, sub, icon, trend, color = 'emer
         )}
       </div>
       {trend !== undefined && (
-        <div className={clsx('mt-2 text-xs font-medium', trend >= 0 ? 'text-[#2E7D32]' : 'text-[#D32F2F]')}>
+        <div className={clsx('mt-2 text-xs font-medium', trend >= 0 ? 'text-semantic-success' : 'text-semantic-error')}>
           {trend >= 0 ? '↑' : '↓'} {Math.abs(trend)}% vs last month
         </div>
       )}

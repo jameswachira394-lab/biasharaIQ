@@ -9,7 +9,7 @@ export default function RecentTransactions({ transactions = [], loading = false 
       <div className="card p-5">
         <div className="h-4 bg-slate-800 rounded w-36 mb-4 animate-pulse" />
         {[...Array(5)].map((_, i) => (
-          <div key={i} className="flex justify-between py-3 border-b border-[#0A2540]/30">
+          <div key={i} className="flex justify-between py-3 border-b border-white/5">
             <div className="h-3 bg-slate-800 rounded w-1/3 animate-pulse" />
             <div className="h-3 bg-slate-800 rounded w-20 animate-pulse" />
           </div>
@@ -24,7 +24,7 @@ export default function RecentTransactions({ transactions = [], loading = false 
         <h2 className="font-display font-semibold text-semantic-white text-sm uppercase tracking-wide">
           Recent Transactions
         </h2>
-        <Link href="/transactions" className="text-xs text-[#2E7D32] hover:text-[#2E7D32] transition-colors">
+        <Link href="/transactions" className="text-xs text-semantic-success hover:text-semantic-success transition-colors">
           View all →
         </Link>
       </div>
@@ -40,13 +40,13 @@ export default function RecentTransactions({ transactions = [], loading = false 
         <div className="space-y-0">
           {transactions.map((txn, i) => (
             <div key={txn.id || i}
-              className="flex items-center justify-between py-2.5 border-b border-[#0A2540]/30 last:border-0 group">
+              className="flex items-center justify-between py-2.5 border-b border-white/5 last:border-0 group">
               <div className="flex items-center gap-3 min-w-0">
                 <div className={clsx(
                   'w-7 h-7 rounded-lg flex items-center justify-center text-xs font-bold flex-shrink-0',
                   txn.type === 'income'
-                    ? 'bg-[#2E7D32]/10 text-[#2E7D32]'
-                    : 'bg-[#D32F2F]/10 text-[#D32F2F]'
+                    ? 'bg-semantic-success/10 text-semantic-success'
+                    : 'bg-semantic-error/10 text-semantic-error'
                 )}>
                   {txn.type === 'income' ? '↑' : '↓'}
                 </div>
@@ -60,7 +60,7 @@ export default function RecentTransactions({ transactions = [], loading = false 
               <div className="text-right flex-shrink-0 ml-3">
                 <p className={clsx(
                   'text-sm font-mono font-semibold',
-                  txn.type === 'income' ? 'text-[#2E7D32]' : 'text-[#D32F2F]'
+                  txn.type === 'income' ? 'text-semantic-success' : 'text-semantic-error'
                 )}>
                   {txn.type === 'income' ? '+' : '-'}{formatCurrency(txn.amount)}
                 </p>

@@ -19,12 +19,12 @@ import { RefreshCw, TrendingUp, TrendingDown, DollarSign, Activity, AlertTriangl
 import Link from 'next/link'
 
 
-const COLORS = ['#2E7D32', '#1A1F71', '#F9A825', '#0A2540', '#D32F2F', '#F5F5F5']
+const COLORS = ['#A855F7', '#EC4899', '#6366F1', '#14B8A6', '#EAB308', '#D946EF']
 
 const CustomTooltip = ({ active, payload, label }) => {
   if (!active || !payload?.length) return null
   return (
-    <div className="bg-[#0A2540] border border-[#F5F5F5] rounded-lg p-3 text-xs shadow-xl">
+    <div className="bg-semantic-bgSidebar border border-white/10 rounded-xl p-3 text-xs shadow-2xl backdrop-blur-md">
       <p className="text-[#FFFFFF] mb-2">{label}</p>
       {payload.map((p, i) => (
         <div key={i} className="flex items-center gap-2">
@@ -170,20 +170,20 @@ export default function DashboardPage() {
                 <AreaChart data={weekly_trend} margin={{ top: 5, right: 5, bottom: 0, left: -10 }}>
                   <defs>
                     <linearGradient id="gIncome" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="#2E7D32" stopOpacity={0.2} />
-                      <stop offset="95%" stopColor="#2E7D32" stopOpacity={0} />
+                      <stop offset="5%" stopColor="#6366F1" stopOpacity={0.3} />
+                      <stop offset="95%" stopColor="#A855F7" stopOpacity={0} />
                     </linearGradient>
                     <linearGradient id="gExpense" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="#D32F2F" stopOpacity={0.15} />
-                      <stop offset="95%" stopColor="#D32F2F" stopOpacity={0} />
+                      <stop offset="5%" stopColor="#EC4899" stopOpacity={0.2} />
+                      <stop offset="95%" stopColor="#D946EF" stopOpacity={0} />
                     </linearGradient>
                   </defs>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#F5F5F5" />
+                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" vertical={false} />
                   <XAxis dataKey="week" tick={{ fill: 'var(--text-light)', fontSize: 11 }} axisLine={false} tickLine={false} />
                   <YAxis tick={{ fill: 'var(--text-light)', fontSize: 11 }} axisLine={false} tickLine={false} tickFormatter={v => `${(v / 1000).toFixed(0)}K`} />
                   <Tooltip content={<CustomTooltip />} />
-                  <Area type="monotone" dataKey="income" name="Money In" stroke="#2E7D32" strokeWidth={2} fill="url(#gIncome)" />
-                  <Area type="monotone" dataKey="expenses" name="Money Out" stroke="#D32F2F" strokeWidth={2} fill="url(#gExpense)" />
+                  <Area type="monotone" dataKey="income" name="Money In" stroke="#6366F1" strokeWidth={3} fill="url(#gIncome)" />
+                  <Area type="monotone" dataKey="expenses" name="Money Out" stroke="#EC4899" strokeWidth={3} fill="url(#gExpense)" />
                 </AreaChart>
               </ResponsiveContainer>
             ) : (
@@ -213,7 +213,7 @@ export default function DashboardPage() {
                     </Pie>
                     <Tooltip
                       formatter={v => [`KES ${v.toLocaleString()}`, '']}
-                      contentStyle={{ background: '#121821', border: '1px solid #0A2540', borderRadius: 8, fontSize: 11 }}
+                      contentStyle={{ background: 'var(--bg-sidebar)', border: '1px solid var(--border)', borderRadius: 12, fontSize: 11, boxShadow: '0 10px 25px rgba(0,0,0,0.3)' }}
                     />
                   </PieChart>
                 </ResponsiveContainer>
@@ -296,15 +296,15 @@ export default function DashboardPage() {
           <div className="grid grid-cols-3 gap-4 text-center">
             <div>
               <p className="text-xs text-semantic-textSecondary mb-1">Total Money In</p>
-              <p className="font-display font-bold text-[#2E7D32]">{formatCurrency(m.all_time?.income)}</p>
+              <p className="font-display font-bold text-semantic-success">{formatCurrency(m.all_time?.income)}</p>
             </div>
             <div>
               <p className="text-xs text-semantic-textSecondary mb-1">Total Money Out</p>
-              <p className="font-display font-bold text-[#D32F2F]">{formatCurrency(m.all_time?.expenses)}</p>
+              <p className="font-display font-bold text-semantic-error">{formatCurrency(m.all_time?.expenses)}</p>
             </div>
             <div>
               <p className="text-xs text-semantic-textSecondary mb-1">Net Profit</p>
-              <p className={`font-display font-bold ${(m.all_time?.profit || 0) >= 0 ? 'text-[#2E7D32]' : 'text-[#D32F2F]'}`}>
+              <p className={`font-display font-bold ${(m.all_time?.profit || 0) >= 0 ? 'text-semantic-success' : 'text-semantic-error'}`}>
                 {formatCurrency(m.all_time?.profit)}
               </p>
             </div>
