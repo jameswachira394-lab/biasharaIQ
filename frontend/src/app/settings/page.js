@@ -71,7 +71,7 @@ export default function SettingsPage() {
 
         {toast && (
           <div className={clsx('flex items-center gap-2 p-3 rounded-lg border text-sm animate-fade-in',
-            toast.type === 'success' ? 'bg-[#2E7D32]/10 border-[#2E7D32]/20 text-[#2E7D32]' : 'bg-[#D32F2F]/10 border-[#D32F2F]/20 text-[#D32F2F]')}>>
+            toast.type === 'success' ? 'bg-[#2E7D32]/10 border-[#2E7D32]/20 text-[#2E7D32]' : 'bg-[#D32F2F]/10 border-[#D32F2F]/20 text-[#D32F2F]')} >
             {toast.type === 'success' ? <CheckCircle size={15} /> : <AlertCircle size={15} />}
             {toast.msg}
           </div>
@@ -82,7 +82,7 @@ export default function SettingsPage() {
           {TABS.map(({ id, label, icon: Icon }) => (
             <button key={id} onClick={() => setTab(id)}
               className={clsx('flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium transition-all',
-                tab === id ? 'bg-[#2E7D32]/10 text-[#2E7D32] border border-[#2E7D32]/20' : 'text-semantic-textSecondary hover:text-semantic-white')}>>
+                tab === id ? 'bg-[#2E7D32]/10 text-[#2E7D32] border border-[#2E7D32]/20' : 'text-semantic-textSecondary hover:text-semantic-white')} >
               <Icon size={14} /> {label}
             </button>
           ))}
@@ -140,13 +140,13 @@ export default function SettingsPage() {
             {/* Income categories */}
             {['income', 'expense'].map(type => (
               <div key={type} className="mb-4">
-                <h3 className={clsx('text-xs font-semibold uppercase tracking-wide mb-2', type === 'income' ? 'text-[#2E7D32]' : 'text-[#D32F2F]')}>
+                <h3 className={clsx('text-xs font-semibold uppercase tracking-wide mb-2', type === 'income' ? 'text-[#2E7D32]' : 'text-[#D32F2F]')} >
                   {type === 'income' ? '↑ Money In' : '↓ Money Out'} Categories
                 </h3>
                 <div className="flex flex-wrap gap-2">
                   {categories.filter(c => c.type === type).map(cat => (
                     <div key={cat.id} className={clsx('flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs border',
-                      type === 'income' ? 'bg-[#2E7D32]/5 border-[#2E7D32]/15 text-[#2E7D32]' : 'bg-[#D32F2F]/5 border-[#D32F2F]/15 text-[#D32F2F]')}>>
+                      type === 'income' ? 'bg-[#2E7D32]/5 border-[#2E7D32]/15 text-[#2E7D32]' : 'bg-[#D32F2F]/5 border-[#D32F2F]/15 text-[#D32F2F]')} >
                       {cat.name}
                       {!cat.is_default && (
                         <button onClick={() => deleteCategory(cat.id)} className="hover:text-[#D32F2F] ml-1 opacity-60 hover:opacity-100">
