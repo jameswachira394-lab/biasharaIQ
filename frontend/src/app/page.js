@@ -175,7 +175,7 @@ export default function Home() {
       </section>
 
       {/* SECTION 9: FINAL CTA */}
-      <section style={{ background: 'linear-gradient(135deg, #0e151d, #091017)' }}>
+      <section style={{ background: 'linear-gradient(135deg, var(--visa-blue), #0A2540)' }}>
         <div className="container text-center">
           <h2>Stop guessing. Start understanding your business.</h2>
           <p style={{ marginBottom: '32px', maxWidth: '550px', marginLeft: 'auto', marginRight: 'auto' }}>Join hundreds of Kenyan entrepreneurs who finally know where their money goes.</p>

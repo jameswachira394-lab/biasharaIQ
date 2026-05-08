@@ -7,6 +7,10 @@
   --primary-navy: #0A2540;
   --primary-navy-light: #134282;
 
+  /* ── Visa Palette ── */
+  --visa-blue: #1A1F71;
+  --visa-gold: #F9A825;
+
   /* ── Semantic Colors ── */
   --text-white: #FFFFFF;
   --success-green: #2E7D32;
@@ -14,11 +18,10 @@
   --text-dark: #1E1E1E;
   --text-secondary: #9CA3AF;
   --text-muted: #4B5563;
-  --bg-light-gray: #F5F5F5;
-  --accent-blue: #1A1F71;
-  /* Visa Blue */
-  --accent-gold: #F9A825;
-  /* Visa Gold */
+  --bg-main: var(--visa-blue);
+  --bg-card: rgba(10, 37, 64, 0.5);
+  --bg-input: #0D1117;
+  --border: rgba(255, 255, 255, 0.1);
 }
 
 * {
@@ -30,8 +33,8 @@ html {
 }
 
 body {
-  background: var(--bg-light-gray);
-  color: var(--text-dark);
+  background: var(--bg-main);
+  color: var(--text-white);
   font-family: var(--font-inter), system-ui, sans-serif;
   min-height: 100vh;
 }
@@ -57,14 +60,16 @@ body {
 
 /* ── Card ── */
 .card {
-  background: var(--primary-navy);
-  border: 1px solid var(--bg-light-gray);
+  background: rgba(10, 37, 64, 0.6);
+  backdrop-filter: blur(12px);
+  border: 1px solid var(--border);
   border-radius: 12px;
-  transition: border-color 0.2s, background 0.2s;
+  transition: all 0.2s;
 }
 
 .card:hover {
-  border-color: var(--accent-gold);
+  border-color: var(--visa-gold);
+  background: rgba(10, 37, 64, 0.8);
 }
 
 /* ── Gradient text — Navy → Green ── */
@@ -311,11 +316,8 @@ select.input-dark {
   padding: 60px 20px;
 }
 
-.landing-page section:nth-child(2),
-.landing-page section:nth-child(4),
-.landing-page section:nth-child(6),
-.landing-page section:nth-child(8) {
-  background: rgba(18, 24, 33, 0.5);
+.landing-page section:nth-child(even) {
+  background: rgba(0, 0, 0, 0.2);
 }
 
 .container {

@@ -92,12 +92,12 @@ export default function Sidebar() {
   return (
     <>
       {/* Desktop sidebar */}
-      <aside className="hidden md:flex flex-col w-56 min-h-screen bg-[#121821] border-r border-[#0A2540]/30 fixed left-0 top-0 bottom-0 z-30">
+      <aside className="hidden md:flex flex-col w-56 min-h-screen bg-[#0A2540] border-r border-[#0A2540]/30 fixed left-0 top-0 bottom-0 z-30">
         <NavContent />
       </aside>
 
       {/* Mobile header */}
-      <div className="md:hidden fixed top-0 left-0 right-0 z-40 bg-[#121821] border-b border-[#0A2540]/30 px-4 h-14 flex items-center justify-between">
+      <div className="md:hidden fixed top-0 left-0 right-0 z-40 bg-[#0A2540] border-b border-[#0A2540]/30 px-4 h-14 flex items-center justify-between">
         <div className="flex items-center gap-2">
           <div className="w-7 h-7 rounded-lg bg-[#2E7D32]/20 border border-[#2E7D32]/40 flex items-center justify-center">
             <TrendingUp size={14} className="text-[#2E7D32]" />
@@ -115,7 +115,7 @@ export default function Sidebar() {
       {mobileOpen && (
         <div className="md:hidden fixed inset-0 z-50">
           <div className="absolute inset-0 bg-black/70" onClick={() => setMobileOpen(false)} />
-          <aside className="absolute left-0 top-0 bottom-0 w-64 bg-[#121821] border-r border-[#0A2540]/30 flex flex-col">
+          <aside className="absolute left-0 top-0 bottom-0 w-64 bg-[#0A2540] border-r border-[#0A2540]/30 flex flex-col">
             <NavContent />
           </aside>
         </div>
