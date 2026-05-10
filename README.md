@@ -9,6 +9,7 @@ A financial intelligence + decision system for real-world small businesses in Ke
 - **Development**: See [Quick Start](#quick-start) below
 - **Production**: See [PRODUCTION_DEPLOYMENT.md](docs/PRODUCTION_DEPLOYMENT.md)
 - **API Docs**: Full API documentation in [API.md](docs/API.md)
+- **M-Pesa Payments**: See [MPESA_QUICKSTART.md](MPESA_QUICKSTART.md) | [Full Guide](MPESA_INTEGRATION.md)
 
 ---
 
