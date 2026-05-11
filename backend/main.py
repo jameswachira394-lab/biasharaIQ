@@ -105,7 +105,7 @@ async def log_requests(request: Request, call_next):
         logger.error(f"[{request_id}] Error: {str(e)} - Duration: {process_time:.3f}s")
         raise
 
-# Register routers
+# Register routersdd
 app.include_router(auth_router, tags=["Authentication"])
 app.include_router(transactions_router, tags=["Transactions"])
 app.include_router(dashboard_router, tags=["Dashboard"])
