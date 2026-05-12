@@ -4,8 +4,8 @@ services:
     env: python
     region: frankfurt
     plan: free
-    buildCommand: pip install -r requirements.txt
-    startCommand: gunicorn main:app --workers=4 --worker-class=uvicorn.workers.UvicornWorker --bind=0.0.0.0:$PORT
+    buildCommand: cd backend && pip install -r requirements.txt
+    startCommand: cd backend && gunicorn main:app --workers=4 --worker-class=uvicorn.workers.UvicornWorker --bind=0.0.0.0:$PORT
     envVars:
       - key: ENVIRONMENT
         value: production
@@ -27,8 +27,18 @@ services:
         value: "15"
       - key: ANTHROPIC_API_KEY
         sync: false
-      - key: GEMINI_API_KEY
+      - key: MPESA_CONSUMER_KEY
         sync: false
+      - key: MPESA_CONSUMER_SECRET
+        sync: false
+      - key: MPESA_SHORTCODE
+        value: "174379"
+      - key: MPESA_PASSKEY
+        value: bfb279f9aa9bdbcf158e97dd71a467cd2e0c893059b10f78e6b72ada1ed2c919
+      - key: MPESA_CALLBACK_URL
+        value: https://biasharaiq.onrender.com/payments/callback
+      - key: MPESA_ENVIRONMENT
+        value: sandbox
 
 databases:
   - name: biasharaiq-db

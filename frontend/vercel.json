@@ -9,5 +9,16 @@
     "NEXT_PUBLIC_API_URL": "https://biasharaiq.onrender.com",
     "NEXT_PUBLIC_APP_NAME": "BiasharaIQ",
     "NODE_ENV": "production"
+  },
+  "git": {
+    "deploymentEnabled": {
+      "main": true
+    }
+  },
+  "functions": {
+    "api/**": {
+      "memory": 512,
+      "maxDuration": 30
+    }
   }
 }
