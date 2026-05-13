@@ -33,26 +33,47 @@ async def initiate_payment(
         account_ref=f"User-{current_user.id}"
     )
     
-    if "error" in response:
-        raise HTTPException(status_code=500, detail=response["error"])
+    # Check for errors in response
+    if response.get("error"):
+        error_msg = response.get("error")
+        logger.error(f"Payment initiation failed: {error_msg}")
+        raise HTTPException(
+            status_code=response.get("status", 500),
+            detail=error_msg
+        )
     
+    # Check if we got a CheckoutRequestID (indicates success)
     checkout_id = response.get("CheckoutRequestID")
+    if not checkout_id:
+        error_msg = response.get("errorMessage") or response.get("message") or "Failed to get CheckoutRequestID from M-Pesa"
+        logger.error(f"No CheckoutRequestID in response: {response}")
+        raise HTTPException(
+            status_code=500,
+            detail=error_msg
+        )
+
     merchant_id = response.get("MerchantRequestID")
     
-    if not checkout_id:
-        raise HTTPException(status_code=500, detail="Failed to get CheckoutRequestID from M-Pesa")
-
-    # Save payment record
-    payment = Payment(
-        user_id=current_user.id,
-        phone_number=req.phone,
-        amount=float(req.amount),
-        checkout_request_id=checkout_id,
-        merchant_request_id=merchant_id,
-        status="pending"
-    )
-    db.add(payment)
-    db.commit()
+    try:
+        # Save payment record
+        payment = Payment(
+            user_id=current_user.id,
+            phone_number=req.phone,
+            amount=float(req.amount),
+            checkout_request_id=checkout_id,
+            merchant_request_id=merchant_id,
+            status="pending"
+        )
+        db.add(payment)
+        db.commit()
+        logger.info(f"Payment record created: checkout_id={checkout_id}")
+    except Exception as e:
+        db.rollback()
+        logger.error(f"Failed to save payment record: {str(e)}")
+        raise HTTPException(
+            status_code=500,
+            detail="Payment initiated but failed to save record. Please contact support."
+        )
     
     return {
         "checkout_id": checkout_id,
