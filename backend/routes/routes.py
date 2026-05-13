@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 from pydantic import BaseModel
 from typing import Optional, List
 from models.database import get_db
-from models.models import User, Category, Insight, TransactionType
+from models.models import User, Category, Insight, TransactionType, UserPlan
 from middleware.auth import get_current_user
 from services.financial_engine import FinancialEngine
 from services.insights_engine import InsightsEngine
@@ -23,8 +23,13 @@ def get_dashboard(
 ):
     engine = FinancialEngine(db, current_user.id)
     metrics = engine.get_full_metrics()
-    insights_engine = InsightsEngine(db, current_user.id)
-    insights = insights_engine.generate_insights()
+    
+    # Only generate insights for PRO users
+    insights = None
+    if current_user.plan == UserPlan.pro:
+        insights_engine = InsightsEngine(db, current_user.id)
+        insights = insights_engine.generate_insights()
+    
     trend = engine.get_weekly_trend(8)
 
     return {
