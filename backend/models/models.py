@@ -17,6 +17,11 @@ class SubscriptionStatus(str, enum.Enum):
     pending = "pending"
 
 
+class TransactionType(str, enum.Enum):
+    income = "income"
+    expense = "expense"
+
+
 class User(Base):
     __tablename__ = "users"
 
