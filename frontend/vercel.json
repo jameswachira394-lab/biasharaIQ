@@ -14,11 +14,5 @@
     "deploymentEnabled": {
       "main": true
     }
-  },
-  "functions": {
-    "api/**": {
-      "memory": 512,
-      "maxDuration": 30
-    }
   }
 }
