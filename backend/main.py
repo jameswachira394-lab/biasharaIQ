@@ -154,7 +154,7 @@ async def health_check():
             }
         )
 
-
+#mabo
 @app.exception_handler(Exception)
 async def general_exception_handler(request: Request, exc: Exception):
     """Global exception handler for production error responses"""
