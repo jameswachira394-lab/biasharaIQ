@@ -8,21 +8,33 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        white: 'var(--text-light)',
-        /* ── Primary Navy (cards/headers) ── */
-        navy: {
-          950: '#0A2540',
-          900: '#0D2E52',
-          800: '#10366A',
-          700: '#134282',
-          600: '#164E9A',
+        white: 'var(--text-white)',
+        /* ── Cream Palette ── */
+        cream: {
+          50: '#FFFDF8',
+          100: '#FDF6EC',
+          200: '#FAF3E0',
+          300: '#F5EFE6',
+          400: '#EDE3D8',
+          500: '#E0D0BC',
+        },
+        /* ── Brown Palette ── */
+        brown: {
+          900: '#2C1810',
+          800: '#3C2A1E',
+          700: '#5C4033',
+          600: '#6F4A2D',
+          500: '#8B5E3C',
+          400: '#A67B5B',
+          300: '#C4A484',
+          200: '#DCC9B0',
         },
         /* ── Semantic Colors ── */
         semantic: {
           white: 'var(--text-white)',
           success: 'var(--success-green)',
           error: 'var(--error-red)',
-          textDark: '#0F172A',
+          textDark: '#2C1810',
           textSecondary: 'var(--text-secondary)',
           textMuted: 'var(--text-muted)',
           textLight: 'var(--text-light)',
@@ -32,19 +44,19 @@ module.exports = {
           bgMain: 'var(--bg-main)',
           bgSidebar: 'var(--bg-sidebar)',
         },
-        /* ── Chart Palette ── */
+        /* ── Chart Palette (warm tones) ── */
         chart: {
-          pink: '#EC4899',
-          purple: '#A855F7',
-          blue: '#6366F1',
+          brown: '#8B5E3C',
+          mocha: '#A67B5B',
           teal: '#14B8A6',
-          yellow: '#EAB308',
-          magenta: '#D946EF',
+          amber: '#D97706',
+          rose: '#E11D48',
+          forest: '#4A7C59',
         },
         /* ── Text Colors ── */
         text: {
           white: 'var(--text-white)',
-          dark: '#0F172A',
+          dark: '#2C1810',
           secondary: 'var(--text-secondary)',
           muted: 'var(--text-muted)',
           light: 'var(--text-light)',

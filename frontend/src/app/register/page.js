@@ -40,13 +40,13 @@ export default function RegisterPage() {
   const benefits = ['Track all money in & out', 'Know your true profit', 'Get AI financial insights', 'Predict cash flow risks']
 
   return (
-    <div className="min-h-screen flex items-center justify-center px-4 py-10 bg-semantic-accentBlue">
+    <div className="min-h-screen flex items-center justify-center px-4 py-10 bg-cream-300">
       <div className="w-full max-w-lg animate-fade-in">
         {/* Logo */}
         <div className="text-center mb-8">
           <div className="inline-flex items-center gap-2 mb-4">
-            <div className="w-10 h-10 rounded-xl bg-[#2E7D32]/10 border border-[#2E7D32]/30 flex items-center justify-center">
-              <TrendingUp size={20} className="text-[#2E7D32]" />
+            <div className="w-10 h-10 rounded-xl bg-[#8B5E3C]/10 border border-[#8B5E3C]/30 flex items-center justify-center">
+              <TrendingUp size={20} className="text-[#8B5E3C]" />
             </div>
             <span className="font-display font-bold text-2xl tracking-tight">
               Biashara<span className="gradient-text">IQ</span>
@@ -56,7 +56,7 @@ export default function RegisterPage() {
           <div className="flex flex-wrap justify-center gap-x-4 gap-y-1 mt-3">
             {benefits.map((b) => (
               <span key={b} className="flex items-center gap-1 text-xs text-semantic-textSecondary">
-                <CheckCircle size={11} className="text-[#2E7D32]" /> {b}
+                <CheckCircle size={11} className="text-[#8B5E3C]" /> {b}
               </span>
             ))}
           </div>
@@ -126,7 +126,7 @@ export default function RegisterPage() {
 
           <div className="mt-6 text-center text-sm text-semantic-textSecondary">
             Already have an account?{' '}
-            <Link href="/login" className="text-[#2E7D32] hover:text-[#2E7D32] font-medium">Sign in</Link>
+            <Link href="/login" className="text-[#8B5E3C] hover:text-[#6F4A2D] font-medium">Sign in</Link>
           </div>
         </div>
       </div>

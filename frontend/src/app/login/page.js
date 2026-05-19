@@ -29,13 +29,13 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center px-4 bg-semantic-accentBlue">
+    <div className="min-h-screen flex items-center justify-center px-4 bg-cream-300">
       <div className="w-full max-w-md animate-fade-in">
         {/* Logo */}
         <div className="text-center mb-8">
           <div className="inline-flex items-center gap-2 mb-4">
-            <div className="w-10 h-10 rounded-xl bg-[#2E7D32]/10 border border-[#2E7D32]/30 flex items-center justify-center">
-              <TrendingUp size={20} className="text-[#2E7D32]" />
+            <div className="w-10 h-10 rounded-xl bg-[#8B5E3C]/10 border border-[#8B5E3C]/30 flex items-center justify-center">
+              <TrendingUp size={20} className="text-[#8B5E3C]" />
             </div>
             <span className="font-display font-bold text-2xl tracking-tight">
               Biashara<span className="gradient-text">IQ</span>
@@ -96,7 +96,7 @@ export default function LoginPage() {
 
           <div className="mt-6 text-center text-sm text-semantic-textSecondary">
             New to BiasharaIQ?{' '}
-            <Link href="/register" className="text-[#2E7D32] hover:text-[#2E7D32] font-medium">
+            <Link href="/register" className="text-[#8B5E3C] hover:text-[#6F4A2D] font-medium">
               Create account
             </Link>
           </div>

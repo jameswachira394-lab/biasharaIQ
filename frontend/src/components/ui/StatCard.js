@@ -2,11 +2,11 @@ import clsx from 'clsx'
 
 export default function StatCard({ label, value, sub, icon, trend, color = 'emerald', className }) {
   const colors = {
-    emerald: { text: 'text-semantic-success', bg: 'bg-semantic-success/10', border: 'border-semantic-success/20', line: '#22C55E' },
-    red: { text: 'text-semantic-error', bg: 'bg-semantic-error/10', border: 'border-semantic-error/20', line: '#EC4899' },
-    amber: { text: 'text-semantic-accentGold', bg: 'bg-semantic-accentGold/10', border: 'border-semantic-accentGold/20', line: '#EAB308' },
-    blue: { text: 'text-semantic-accentBlue', bg: 'bg-semantic-accentBlue/10', border: 'border-semantic-accentBlue/20', line: '#6366F1' },
-    purple: { text: 'text-semantic-accentPurple', bg: 'bg-semantic-accentPurple/10', border: 'border-semantic-accentPurple/20', line: '#A855F7' },
+    emerald: { text: 'text-semantic-success', bg: 'bg-semantic-success/10', border: 'border-semantic-success/20', line: '#4A7C59' },
+    red: { text: 'text-semantic-error', bg: 'bg-semantic-error/10', border: 'border-semantic-error/20', line: '#C0392B' },
+    amber: { text: 'text-semantic-accentGold', bg: 'bg-semantic-accentGold/10', border: 'border-semantic-accentGold/20', line: '#C4A484' },
+    blue: { text: 'text-semantic-accentBlue', bg: 'bg-semantic-accentBlue/10', border: 'border-semantic-accentBlue/20', line: '#8B5E3C' },
+    purple: { text: 'text-semantic-accentPurple', bg: 'bg-semantic-accentPurple/10', border: 'border-semantic-accentPurple/20', line: '#A67B5B' },
   }
   const c = colors[color] || colors.blue
 
