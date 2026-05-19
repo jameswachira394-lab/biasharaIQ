@@ -92,8 +92,7 @@ def chat(
             db=db,
             user_id=current_user.id,
             business_name=current_user.business_name,
-            user_message=req.message,
-            conversation_history=req.history
+            user_message=req.message
         )
         return {"response": response}
     except ValueError as e:

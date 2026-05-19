@@ -59,7 +59,7 @@ export default function AIPage() {
       const res = await aiApi.chat(msg, history)
       setMessages(prev => [...prev, { role: 'assistant', content: res.data.response }])
     } catch (err) {
-      const errorMsg = err.response?.data?.error || 'Failed to get AI response. Please check your connection.';
+      const errorMsg = err.response?.data?.error || err.response?.data?.detail || 'Failed to get AI response. Please check your connection.';
       setError(errorMsg)
       setMessages(prev => prev.slice(0, -1))
     } finally {
