@@ -32,7 +32,7 @@ export default function Sidebar() {
           <div className="w-8 h-8 rounded-lg bg-[#C4A484]/20 border border-[#C4A484]/40 flex items-center justify-center flex-shrink-0">
             <TrendingUp size={16} className="text-[#C4A484]" />
           </div>
-          <span className="font-display font-bold text-lg tracking-tight text-white">
+          <span className="font-display font-bold text-lg tracking-tight text-[#F5EFE6]">
             BiasharaIQ {user?.plan === 'PRO' && <span className="text-[10px] bg-[#C4A484]/20 text-[#C4A484] px-1.5 py-0.5 rounded-full font-bold ml-1">PRO</span>}
           </span>
         </div>
@@ -56,7 +56,7 @@ export default function Sidebar() {
                 'flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all',
                 active
                   ? 'bg-[#C4A484]/15 text-[#C4A484] border border-[#C4A484]/30'
-                  : 'text-[#A67B5B] hover:text-white hover:bg-white/[0.06]'
+                  : 'text-[#A67B5B] hover:text-[#F5EFE6] hover:bg-white/[0.06]'
               )}
             >
               <Icon size={17} />
@@ -75,7 +75,7 @@ export default function Sidebar() {
       <div className="px-3 py-4 border-t border-[#8B5E3C]/20">
         {user && (
           <div className="px-3 mb-2">
-            <p className="text-xs font-medium text-white truncate">{user.owner_name || user.email}</p>
+            <p className="text-xs font-medium text-[#F5EFE6] truncate">{user.owner_name || user.email}</p>
             <p className="text-xs text-[#A67B5B] truncate">{user.email}</p>
           </div>
         )}
@@ -103,11 +103,11 @@ export default function Sidebar() {
           <div className="w-7 h-7 rounded-lg bg-[#C4A484]/20 border border-[#C4A484]/40 flex items-center justify-center">
             <TrendingUp size={14} className="text-[#C4A484]" />
           </div>
-          <span className="font-display font-bold text-lg tracking-tight text-white">
+          <span className="font-display font-bold text-lg tracking-tight text-[#F5EFE6]">
             BiasharaIQ {user?.plan === 'PRO' && <span className="text-[10px] bg-[#C4A484]/20 text-[#C4A484] px-1.5 py-0.5 rounded-full font-bold ml-1">PRO</span>}
           </span>
         </div>
-        <button onClick={() => setMobileOpen(!mobileOpen)} className="text-[#A67B5B] hover:text-white p-1">
+        <button onClick={() => setMobileOpen(!mobileOpen)} className="text-[#A67B5B] hover:text-[#F5EFE6] p-1">
           {mobileOpen ? <X size={20} /> : <Menu size={20} />}
         </button>
       </div>

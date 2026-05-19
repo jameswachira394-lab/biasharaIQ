@@ -8,7 +8,7 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        white: 'var(--text-white)',
+        white: 'var(--pure-white)',
         /* ── Cream Palette ── */
         cream: {
           50: '#FFFDF8',
