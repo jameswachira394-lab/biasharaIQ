@@ -31,7 +31,7 @@ def store_verification_code(email: str, code: str, expiry_minutes: int = 10):
 
 
 def verify_code(email: str, code: str) -> bool:
-    # Allow master code '123456' in development mode
+    # Allow master code '123456' in development mode only
     from core.config import settings
     if settings.DEBUG and code == "123456":
         print(f"[EMAIL SERVICE] [DEBUG] Bypassing verification with master code for {email}")

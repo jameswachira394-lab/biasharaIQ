@@ -9,7 +9,6 @@ from services.email_verification import (
     store_verification_code,
     send_email,
 )
-from core.config import settings
 
 router = APIRouter(prefix="/auth", tags=["auth"])
 
@@ -53,7 +52,7 @@ def register(req: RegisterRequest, db: Session = Depends(get_db)):
         owner_name=req.owner_name,
         phone=req.phone,
         business_type=req.business_type,
-        is_verified=settings.DISABLE_EMAIL_VERIFICATION,  # Auto-verify if verification is disabled
+        is_verified=False,  # Strict production: always False on creation
     )
     db.add(user)
     db.flush()
@@ -67,11 +66,13 @@ def register(req: RegisterRequest, db: Session = Depends(get_db)):
     db.commit()
     db.refresh(user)
 
-    if not settings.DISABLE_EMAIL_VERIFICATION:
-        # Generate and send verification code
-        code = generate_verification_code()
-        store_verification_code(req.email, code)
-        send_email(req.email, code)
+    # Generate and send verification code (Strict production: always attempt)
+    code = generate_verification_code()
+    store_verification_code(req.email, code)
+    email_sent = send_email(req.email, code)
+    
+    if not email_sent:
+        print(f"[AUTH] Warning: Failed to dispatch verification email to {req.email}")
 
     token = create_access_token({"sub": str(user.id)})
     return {
@@ -84,7 +85,7 @@ def register(req: RegisterRequest, db: Session = Depends(get_db)):
             "owner_name": user.owner_name,
             "is_verified": user.is_verified,
         },
-        "message": "Account created successfully." if settings.DISABLE_EMAIL_VERIFICATION else "Account created. Verification code sent to email."
+        "message": "Account created. Verification code sent to email."
     }
 
 
@@ -94,7 +95,7 @@ def login(req: LoginRequest, db: Session = Depends(get_db)):
     if not user or not verify_password(req.password, user.password_hash):
         raise HTTPException(status_code=401, detail="Invalid email or password")
 
-    if not settings.DISABLE_EMAIL_VERIFICATION and not user.is_verified:
+    if not user.is_verified:
         raise HTTPException(status_code=403, detail="Email not verified. Please verify your email first.")
 
     token = create_access_token({"sub": str(user.id)})
