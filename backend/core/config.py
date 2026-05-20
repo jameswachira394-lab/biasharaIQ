@@ -30,6 +30,13 @@ class Settings(BaseSettings):
     # Logging
     LOG_LEVEL: str = os.getenv("LOG_LEVEL", "INFO")
 
+    # Email Verification Configuration
+    DISABLE_EMAIL_VERIFICATION: bool = (
+        os.getenv("DISABLE_EMAIL_VERIFICATION", "false").lower() in ("true", "1", "yes")
+        or not os.getenv("GMAIL_APP_PASSWORD")
+        or os.getenv("GMAIL_APP_PASSWORD") == "Verlity@gmail"
+    )
+
     # M-Pesa Configuration
     MPESA_CONSUMER_KEY: str = os.getenv("MPESA_CONSUMER_KEY", "")
     MPESA_CONSUMER_SECRET: str = os.getenv("MPESA_CONSUMER_SECRET", "")

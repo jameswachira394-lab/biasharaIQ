@@ -28,9 +28,13 @@ export default function RegisterPage() {
     setError('')
     setLoading(true)
     try {
-      await register(form)
-      // Redirect to email verification page
-      router.push(`/verify-email?email=${encodeURIComponent(form.email)}`)
+      const userData = await register(form)
+      if (userData && userData.is_verified) {
+        router.push('/dashboard')
+      } else {
+        // Redirect to email verification page
+        router.push(`/verify-email?email=${encodeURIComponent(form.email)}`)
+      }
     } catch (err) {
       setError(err.response?.data?.detail || 'Registration failed. Please try again.')
     } finally {

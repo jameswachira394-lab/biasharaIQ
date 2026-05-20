@@ -226,7 +226,8 @@ def get_profile(current_user: User = Depends(get_current_user)):
         "plan": current_user.plan,
         "subscription_status": current_user.subscription_status,
         "subscription_end": current_user.subscription_end,
-        "monthly_transaction_count": current_user.monthly_transaction_count
+        "monthly_transaction_count": current_user.monthly_transaction_count,
+        "is_verified": current_user.is_verified
     }
 
 
