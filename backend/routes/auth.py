@@ -6,7 +6,6 @@ from models.models import User, Category, TransactionType
 from middleware.auth import hash_password, verify_password, create_access_token
 from services.email_verification import (
     generate_verification_code,
-    store_verification_code,
     send_email,
 )
 
@@ -67,8 +66,12 @@ def register(req: RegisterRequest, db: Session = Depends(get_db)):
     db.refresh(user)
 
     # Generate and send verification code (Strict production: always attempt)
+    from datetime import datetime, timedelta
     code = generate_verification_code()
-    store_verification_code(req.email, code)
+    user.verification_code = code
+    user.verification_expires_at = datetime.utcnow() + timedelta(minutes=10)
+    db.commit()
+
     email_sent = send_email(req.email, code)
     
     if not email_sent:

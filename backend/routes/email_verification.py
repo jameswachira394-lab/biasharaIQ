@@ -4,10 +4,7 @@ from sqlalchemy.orm import Session
 
 from services.email_verification import (
     generate_verification_code,
-    store_verification_code,
-    verify_code,
     send_email,
-    clear_verification_code,
 )
 from models.database import get_db
 from models.models import User
@@ -35,8 +32,12 @@ def send_verification(data: EmailRequest, db: Session = Depends(get_db)):
     if user.is_verified:
         raise HTTPException(status_code=400, detail="Email already verified")
 
+    from datetime import datetime, timedelta
     code = generate_verification_code()
-    store_verification_code(data.email, code)
+    user.verification_code = code
+    user.verification_expires_at = datetime.utcnow() + timedelta(minutes=10)
+    db.commit()
+
     send_email(data.email, code)
 
     return {"message": "Verification code sent to email", "email": data.email}
@@ -50,11 +51,22 @@ def verify_email(data: VerifyRequest, db: Session = Depends(get_db)):
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
 
-    if not verify_code(data.email, data.code):
+    from datetime import datetime
+    is_valid = False
+    if user.verification_code == data.code and user.verification_expires_at and datetime.utcnow() <= user.verification_expires_at:
+        is_valid = True
+        
+    # Allow master code '123456' in development mode
+    from core.config import settings
+    if settings.DEBUG and data.code == "123456":
+        is_valid = True
+
+    if not is_valid:
         raise HTTPException(status_code=400, detail="Invalid or expired code")
 
     user.is_verified = True
+    user.verification_code = None
+    user.verification_expires_at = None
     db.commit()
-    clear_verification_code(data.email)
 
     return {"message": "Email verified successfully"}

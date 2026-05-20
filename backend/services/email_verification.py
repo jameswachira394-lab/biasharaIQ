@@ -9,9 +9,6 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-# In production, replace this with Redis or DB table
-verification_store = {}
-
 # Gmail Configuration
 GMAIL_ADDRESS = "biasharaiq@gmail.com"
 GMAIL_APP_PASSWORD = os.getenv("GMAIL_APP_PASSWORD", "")  # Use App Password, not regular Gmail password
@@ -21,37 +18,6 @@ SMTP_PORT = 587
 
 def generate_verification_code(length: int = 6) -> str:
     return "".join(random.choices(string.digits, k=length))
-
-
-def store_verification_code(email: str, code: str, expiry_minutes: int = 10):
-    verification_store[email] = {
-        "code": code,
-        "expires_at": datetime.utcnow() + timedelta(minutes=expiry_minutes),
-    }
-
-
-def verify_code(email: str, code: str) -> bool:
-    # Allow master code '123456' in development mode only
-    from core.config import settings
-    if settings.DEBUG and code == "123456":
-        print(f"[EMAIL SERVICE] [DEBUG] Bypassing verification with master code for {email}")
-        return True
-
-    record = verification_store.get(email)
-
-    if not record:
-        return False
-
-    if datetime.utcnow() > record["expires_at"]:
-        return False
-
-    return record["code"] == code
-
-
-def clear_verification_code(email: str):
-    """Clear the verification code after successful verification"""
-    if email in verification_store:
-        del verification_store[email]
 
 
 def send_email(email: str, code: str):
