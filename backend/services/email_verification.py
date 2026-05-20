@@ -1,71 +1,58 @@
-from datetime import datetime, timedelta
+import random
+import string
+import smtplib
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
+import os
+from dotenv import load_dotenv
 
-from fastapi import APIRouter, Depends, HTTPException
-from pydantic import BaseModel, EmailStr
-from sqlalchemy.orm import Session
+load_dotenv()
 
-from core.config import settings
-from models.database import get_db
-from models.models import User
-from services.email_verification import generate_verification_code, send_email
-
-router = APIRouter(prefix="/auth", tags=["Email Verification"])
-
-
-class EmailRequest(BaseModel):
-    email: EmailStr
-
-
-class VerifyRequest(BaseModel):
-    email: EmailStr
-    code: str
+# Gmail Configuration
+GMAIL_ADDRESS = "biasharaiq@gmail.com"
+GMAIL_APP_PASSWORD = os.getenv("GMAIL_APP_PASSWORD", "")  # Use App Password, not regular Gmail password
+SMTP_SERVER = "smtp.gmail.com"
+SMTP_PORT = 587
 
 
-@router.post("/send-verification")
-def send_verification(data: EmailRequest, db: Session = Depends(get_db)):
-    """Resend verification code to email"""
-    user = db.query(User).filter(User.email == data.email).first()
-    if not user:
-        raise HTTPException(status_code=404, detail="User not found")
-
-    if user.is_verified:
-        raise HTTPException(status_code=400, detail="Email already verified")
-
-    code = generate_verification_code()
-    user.verification_code = code
-    user.verification_expires_at = datetime.utcnow() + timedelta(minutes=10)
-    db.commit()  # ✅ single commit, no prior split state here
-
-    email_sent = send_email(data.email, code)
-    if not email_sent:
-        print(f"[AUTH] Warning: Failed to send verification email to {data.email}")
-
-    return {"message": "Verification code sent to email", "email": data.email}
+def generate_verification_code(length: int = 6) -> str:
+    return "".join(random.choices(string.digits, k=length))
 
 
-@router.post("/verify-email")
-def verify_email(data: VerifyRequest, db: Session = Depends(get_db)):
-    """Verify email with the provided code"""
-    user = db.query(User).filter(User.email == data.email).first()
-    if not user:
-        raise HTTPException(status_code=404, detail="User not found")
+def send_email(email: str, code: str):
+    """Send verification code via Gmail SMTP"""
+    if not GMAIL_APP_PASSWORD:
+        print(f"[EMAIL SERVICE] WARNING: GMAIL_APP_PASSWORD not set. Verification code for {email}: {code}")
+        return False
 
-    # ✅ Guard None fields before comparing to avoid TypeError
-    if user.verification_code is None:
-        raise HTTPException(status_code=400, detail="No verification pending")
+    msg = MIMEMultipart()
+    msg["From"] = f"Biashara IQ <{GMAIL_ADDRESS}>"
+    msg["To"] = email
+    msg["Subject"] = "Verify Your Biashara IQ Account"
 
-    if user.verification_expires_at is None or datetime.utcnow() > user.verification_expires_at:
-        raise HTTPException(status_code=400, detail="Verification code has expired")
+    body = f"""
+    Welcome to Biashara IQ!
 
-    code_matches = user.verification_code == data.code
-    debug_bypass = settings.DEBUG and data.code == "123456"
+    Your verification code is: {code}
 
-    if not code_matches and not debug_bypass:
-        raise HTTPException(status_code=400, detail="Invalid verification code")
+    This code will expire in 10 minutes.
 
-    user.is_verified = True
-    user.verification_code = None
-    user.verification_expires_at = None
-    db.commit()
+    If you did not request this code, please ignore this email.
+    """
+    msg.attach(MIMEText(body, "plain"))
 
-    return {"message": "Email verified successfully"}
+    try:
+        with smtplib.SMTP(SMTP_SERVER, SMTP_PORT) as server:
+            server.starttls()
+            server.login(GMAIL_ADDRESS, GMAIL_APP_PASSWORD)
+            server.send_message(msg)
+        print(f"[EMAIL SERVICE] [SUCCESS] Verification code sent to {email}")
+        return True
+    except smtplib.SMTPException as e:
+        print(f"[EMAIL SERVICE] [FAIL] SMTP error: {str(e)}")
+        print(f"[FALLBACK] Verification code for {email}: {code}")
+        return False
+    except Exception as e:
+        print(f"[EMAIL SERVICE] [ERROR] Error sending email: {str(e)}")
+        print(f"[FALLBACK] Verification code for {email}: {code}")
+        return False
