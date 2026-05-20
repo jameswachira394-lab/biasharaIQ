@@ -68,7 +68,7 @@ def seed():
         # ── User ──────────────────────────────────────────────────────────────
         existing = db.query(User).filter(User.email == DEMO_EMAIL).first()
         if existing:
-            print(f"⚠  Demo user already exists ({DEMO_EMAIL}). Skipping user creation.")
+            print(f"[SKIP] Demo user already exists ({DEMO_EMAIL}). Skipping user creation.")
             user = existing
         else:
             user = User(
@@ -89,12 +89,12 @@ def seed():
                 db.add(Category(user_id=user.id, name=name, type=TransactionType.income, is_default=True))
 
             db.commit()
-            print(f"✓  Created demo user: {DEMO_EMAIL} / {DEMO_PASSWORD}")
+            print(f"[OK] Created demo user: {DEMO_EMAIL} / {DEMO_PASSWORD}")
 
         # ── Transactions ──────────────────────────────────────────────────────
         existing_count = db.query(Transaction).filter(Transaction.user_id == user.id).count()
         if existing_count > 0:
-            print(f"⚠  {existing_count} transactions already exist. Skipping transaction seed.")
+            print(f"[SKIP] {existing_count} transactions already exist. Skipping transaction seed.")
         else:
             now = datetime.utcnow()
             transactions = []
@@ -149,7 +149,7 @@ def seed():
 
             db.bulk_save_objects(transactions)
             db.commit()
-            print(f"✓  Created {len(transactions)} transactions spanning 90 days")
+            print(f"[OK] Created {len(transactions)} transactions spanning 90 days")
 
         # ── Summary ───────────────────────────────────────────────────────────
         from sqlalchemy import func
@@ -162,19 +162,19 @@ def seed():
             Transaction.type == TransactionType.expense
         ).scalar() or 0
 
-        print("\n── Demo Account Summary ───────────────────────────")
+        print("\n-- Demo Account Summary ---------------------------")
         print(f"   Email:      {DEMO_EMAIL}")
         print(f"   Password:   {DEMO_PASSWORD}")
         print(f"   Business:   {DEMO_BUSINESS}")
         print(f"   Total In:   KES {income:,.0f}")
         print(f"   Total Out:  KES {expenses:,.0f}")
         print(f"   Net Profit: KES {income - expenses:,.0f}")
-        print("────────────────────────────────────────────────────")
-        print("\n✓  Seed complete. Start the server and log in with the credentials above.")
+        print("----------------------------------------------------")
+        print("\n[OK] Seed complete. Start the server and log in with the credentials above.")
 
     except Exception as e:
         db.rollback()
-        print(f"✗  Seed failed: {e}")
+        print(f"[ERROR] Seed failed: {e}")
         raise
     finally:
         db.close()
