@@ -127,19 +127,19 @@ The BiasharaIQ Team
             server.login(GMAIL_ADDRESS, GMAIL_APP_PASSWORD)
             server.send_message(msg)
 
-        print(f"[EMAIL SERVICE] ✓ Verification code sent to {email}")
+        print(f"[EMAIL SERVICE] [SUCCESS] Verification code sent to {email}")
         return True
 
     except smtplib.SMTPAuthenticationError:
-        print(f"[EMAIL SERVICE] ✗ Authentication failed. Check GMAIL_APP_PASSWORD in .env")
+        print(f"[EMAIL SERVICE] [FAIL] Authentication failed. Check GMAIL_APP_PASSWORD in .env")
         print(f"[FALLBACK] Verification code for {email}: {code}")
         return False
     except smtplib.SMTPException as e:
-        print(f"[EMAIL SERVICE] ✗ SMTP error: {str(e)}")
+        print(f"[EMAIL SERVICE] [FAIL] SMTP error: {str(e)}")
         print(f"[FALLBACK] Verification code for {email}: {code}")
         return False
     except Exception as e:
-        print(f"[EMAIL SERVICE] ✗ Error sending email: {str(e)}")
+        print(f"[EMAIL SERVICE] [ERROR] Error sending email: {str(e)}")
         print(f"[FALLBACK] Verification code for {email}: {code}")
         return False
 

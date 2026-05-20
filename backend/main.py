@@ -34,9 +34,9 @@ logger = logging.getLogger(__name__)
 
 try:
     Base.metadata.create_all(bind=engine)
-    logger.info("✓ Database initialized successfully")
+    logger.info("[SUCCESS] Database initialized successfully")
 except Exception as e:
-    logger.error(f"✗ Failed to initialize database: {e}")
+    logger.error(f"[FAIL] Failed to initialize database: {e}")
 
 app = FastAPI(
     title="BiasharaIQ API",
