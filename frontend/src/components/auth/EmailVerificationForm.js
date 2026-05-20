@@ -1,7 +1,7 @@
 'use client'
 import { useState } from 'react'
 import { AlertCircle, CheckCircle2, Mail, Loader2, Clock } from 'lucide-react'
-import { api } from '@/utils/api'
+import api from '@/utils/api'
 
 export default function EmailVerificationForm({ email, onSuccess, showResendOption = true }) {
     const [code, setCode] = useState('')

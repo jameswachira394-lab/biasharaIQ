@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { TrendingUp, AlertCircle, CheckCircle2, Mail, Loader2, Clock } from 'lucide-react'
-import { api } from '@/utils/api'
+import api from '@/utils/api'
 
 export default function VerifyEmailPage() {
     const router = useRouter()

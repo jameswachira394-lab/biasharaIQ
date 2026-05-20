@@ -45,6 +45,7 @@ columns_to_add = [
     ("monthly_transaction_count","INTEGER DEFAULT 0"),
     ("currency",                 "VARCHAR DEFAULT 'KES'"),
     ("is_active",                "BOOLEAN DEFAULT TRUE"),
+    ("is_verified",              "BOOLEAN DEFAULT FALSE"),
 ]
 
 for col_name, col_def in columns_to_add:
