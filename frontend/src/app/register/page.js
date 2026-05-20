@@ -29,7 +29,8 @@ export default function RegisterPage() {
     setLoading(true)
     try {
       await register(form)
-      router.push('/dashboard')
+      // Redirect to email verification page
+      router.push(`/verify-email?email=${encodeURIComponent(form.email)}`)
     } catch (err) {
       setError(err.response?.data?.detail || 'Registration failed. Please try again.')
     } finally {

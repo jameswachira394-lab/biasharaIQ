@@ -14,6 +14,7 @@ load_dotenv()
 from models.database import engine, get_db
 from models.models import Base
 from routes.auth import router as auth_router
+from routes.email_verification import router as email_verification_router
 from routes.transactions import router as transactions_router
 from routes.routes import (
     dashboard_router, insights_router, ai_router,
@@ -107,6 +108,7 @@ async def log_requests(request: Request, call_next):
 
 # Register routersdd
 app.include_router(auth_router, tags=["Authentication"])
+app.include_router(email_verification_router, tags=["Email Verification"])
 app.include_router(transactions_router, tags=["Transactions"])
 app.include_router(dashboard_router, tags=["Dashboard"])
 app.include_router(insights_router, tags=["Insights"])

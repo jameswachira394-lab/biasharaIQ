@@ -43,6 +43,7 @@ class User(Base):
     
     created_at = Column(DateTime, default=datetime.utcnow)
     is_active = Column(Boolean, default=True)
+    is_verified = Column(Boolean, default=False)
 
     transactions = relationship("Transaction", back_populates="user", cascade="all, delete-orphan")
     insights = relationship("Insight", back_populates="user", cascade="all, delete-orphan")
