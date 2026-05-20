@@ -30,11 +30,11 @@ export default function Home() {
   return (
     <div className="landing-page">
       {/* SECTION 1: HERO */}
-      <section style={{ paddingTop: '48px', paddingBottom: '48px', backgroundImage: 'url(/biasharaiq.png)', backgroundSize: 'contain', backgroundPosition: 'right center', backgroundRepeat: 'no-repeat', backgroundAttachment: 'fixed', opacity: 0.98 }}>
+      <section style={{ paddingTop: '48px', paddingBottom: '48px' }}>
         <div className="container hero-flex">
           <div className="hero-content">
             <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '24px' }}>
-              <Image src="/biasharaiq.png" alt="BiasharaIQ Logo" width={48} height={48} style={{ borderRadius: '8px' }} />
+              <Image src="/biasharaiq.png" alt="BiasharaIQ Logo" width={64} height={64} style={{ borderRadius: '8px' }} />
               <h2 style={{ margin: 0, fontSize: '1.5rem', fontWeight: 'bold', color: '#8B5E3C' }}>BiasharaIQ</h2>
             </div>
             <h1>Know Where Your Money Goes. Control Your Business.</h1>
@@ -180,8 +180,8 @@ export default function Home() {
       </section>
 
       {/* SECTION 9: FINAL CTA */}
-      <section style={{ background: 'linear-gradient(135deg, #8B5E3C, #6F4A2D)', backgroundImage: 'url(/biasharaiq.png)', backgroundSize: 'contain', backgroundPosition: 'left center', backgroundRepeat: 'no-repeat', backgroundAttachment: 'fixed', position: 'relative' }}>
-        <div className="container text-center" style={{ position: 'relative', zIndex: 1 }}>
+      <section style={{ background: 'linear-gradient(135deg, #8B5E3C, #6F4A2D)' }}>
+        <div className="container text-center">
           <h2>Stop guessing. Start understanding your business.</h2>
           <p style={{ marginBottom: '32px', maxWidth: '550px', marginLeft: 'auto', marginRight: 'auto' }}>Join hundreds of Kenyan entrepreneurs who finally know where their money goes.</p>
           <Link href="/login" className="btn btn-primary-landing btn-block-mobile" style={{ padding: '14px 40px', fontSize: '1.2rem' }}>Get Started Free →</Link>

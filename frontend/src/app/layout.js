@@ -9,6 +9,15 @@ const jetbrains = JetBrains_Mono({ subsets: ['latin'], variable: '--font-jetbrai
 export const metadata = {
   title: 'BiasharaIQ – Smart Business Finance',
   description: 'Financial intelligence for Kenyan SMEs',
+  icons: {
+    icon: '/biasharaiq.png',
+    apple: '/biasharaiq.png',
+  },
+  openGraph: {
+    title: 'BiasharaIQ – Smart Business Finance',
+    description: 'Financial intelligence for Kenyan SMEs',
+    images: ['/biasharaiq.png'],
+  },
 }
 
 export default function RootLayout({ children }) {
