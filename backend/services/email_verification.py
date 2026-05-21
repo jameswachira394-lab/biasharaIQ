@@ -19,7 +19,7 @@ SMTP_SERVER = "smtp.gmail.com"
 SMTP_PORT = 587
 
 # Environment
-ENVIRONMENT = os.getenv("ENVIRONMENT", "development")
+ENVIRONMENT = os.getenv("ENVIRONMENT", "production")
 IS_PRODUCTION = ENVIRONMENT == "production"
 
 
@@ -38,23 +38,29 @@ def _send_via_smtp(msg: MIMEMultipart, recipient: str) -> bool:
         return False
 
     try:
-        logger.info("[EMAIL] Sending verification email to %s", recipient)
+        logger.info("[EMAIL] Sending verification email to %s via SMTP", recipient)
+        logger.info("[EMAIL] Using Gmail address: %s", GMAIL_ADDRESS)
         context = ssl.create_default_context()
 
         with smtplib.SMTP(SMTP_SERVER, SMTP_PORT, timeout=10) as server:
+            logger.info("[EMAIL] Connected to SMTP server: %s:%s", SMTP_SERVER, SMTP_PORT)
             server.starttls(context=context)
-            server.login(GMAIL_ADDRESS, GMAIL_APP_PASSWORD)
+            logger.info("[EMAIL] TLS connection established")
+            # Remove spaces from app password
+            clean_password = GMAIL_APP_PASSWORD.replace(" ", "")
+            server.login(GMAIL_ADDRESS, clean_password)
+            logger.info("[EMAIL] Successfully authenticated")
             server.send_message(msg)
 
-        logger.info("[EMAIL] Verification email delivered to %s", recipient)
+        logger.info("[EMAIL] ✓ Verification email delivered to %s", recipient)
         return True
 
-    except smtplib.SMTPAuthenticationError:
-        logger.error("[EMAIL] Authentication failed — check GMAIL_APP_PASSWORD")
+    except smtplib.SMTPAuthenticationError as e:
+        logger.error("[EMAIL] ✗ SMTP Authentication failed: %s — ensure Gmail 2FA is enabled and app password is correct", e)
     except smtplib.SMTPException as e:
-        logger.error("[EMAIL] SMTP error sending to %s: %s", recipient, e)
+        logger.error("[EMAIL] ✗ SMTP error sending to %s: %s", recipient, e)
     except Exception as e:
-        logger.error("[EMAIL] Unexpected error sending to %s: %s: %s", recipient, type(e).__name__, e)
+        logger.error("[EMAIL] ✗ Unexpected error sending to %s: %s: %s", recipient, type(e).__name__, e)
 
     return False
 
