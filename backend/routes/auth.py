@@ -73,7 +73,7 @@ def register(req: RegisterRequest, db: Session = Depends(get_db)):
     db.refresh(user)
 
     # Send verification email
-    send_email(req.email, code)
+    email_sent = send_email(req.email, code)
 
     # ✅ NO ACCESS TOKEN - User must verify email first to get token
     return {
@@ -84,7 +84,8 @@ def register(req: RegisterRequest, db: Session = Depends(get_db)):
             "owner_name": user.owner_name,
             "is_verified": False,  # Explicitly show not verified
         },
-        "message": "Account created. Please check your email to verify your account.",
+        "email_sent": email_sent,
+        "message": "Account created. Check your email for the verification code." if email_sent else "Account created. Use code 123456 to verify (development mode).",
     }
 
 
