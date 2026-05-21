@@ -46,32 +46,43 @@ def send_verification(data: EmailRequest, db: Session = Depends(get_db)):
 
 @router.post("/verify-email")
 def verify_email(data: VerifyRequest, db: Session = Depends(get_db)):
-    """Verify email with the provided code"""
+    """Verify email with the provided code and issue access token."""
     user = db.query(User).filter(User.email == data.email).first()
 
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
 
+    # Check if already verified
+    if user.is_verified:
+        raise HTTPException(status_code=400, detail="Email already verified")
+
     from datetime import datetime
-    is_valid = False
-    if user.verification_code == data.code and user.verification_expires_at and datetime.utcnow() <= user.verification_expires_at:
-        is_valid = True
-        
-    # Allow master code '123456' in development mode
     from core.config import settings
+    
+    # Validate code
+    is_valid = False
+    
+    # Check actual code
+    if (user.verification_code == data.code and 
+        user.verification_expires_at and 
+        datetime.utcnow() <= user.verification_expires_at):
+        is_valid = True
+    
+    # Allow master code '123456' in development mode only
     if settings.DEBUG and data.code == "123456":
         is_valid = True
 
     if not is_valid:
-        raise HTTPException(status_code=400, detail="Invalid or expired code")
+        raise HTTPException(status_code=400, detail="Invalid or expired verification code")
 
+    # Mark email as verified
     user.is_verified = True
     user.verification_code = None
     user.verification_expires_at = None
     db.commit()
     db.refresh(user)
 
-    # ✅ Issue token after successful email verification
+    # ✅ Issue token ONLY after successful verification
     token = create_access_token({"sub": str(user.id)})
     return {
         "access_token": token,
@@ -81,7 +92,7 @@ def verify_email(data: VerifyRequest, db: Session = Depends(get_db)):
             "email": user.email,
             "business_name": user.business_name,
             "owner_name": user.owner_name,
-            "is_verified": user.is_verified,
+            "is_verified": True,
         },
         "message": "Email verified successfully. You are now logged in."
     }
