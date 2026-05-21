@@ -17,6 +17,7 @@ class Settings(BaseSettings):
     # API Configuration
     ENVIRONMENT: str = os.getenv("ENVIRONMENT", "development")
     DEBUG: bool = ENVIRONMENT == "development"
+    IS_PRODUCTION: bool = ENVIRONMENT == "production"
     
     # API Keys
     ANTHROPIC_API_KEY: str = os.getenv("ANTHROPIC_API_KEY", "")
