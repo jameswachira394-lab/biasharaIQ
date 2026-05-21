@@ -8,6 +8,7 @@ from services.email_verification import (
 )
 from models.database import get_db
 from models.models import User
+from middleware.auth import create_access_token
 
 router = APIRouter(prefix="/auth", tags=["Email Verification"])
 
@@ -68,5 +69,19 @@ def verify_email(data: VerifyRequest, db: Session = Depends(get_db)):
     user.verification_code = None
     user.verification_expires_at = None
     db.commit()
+    db.refresh(user)
 
-    return {"message": "Email verified successfully"}
+    # ✅ Issue token after successful email verification
+    token = create_access_token({"sub": str(user.id)})
+    return {
+        "access_token": token,
+        "token_type": "bearer",
+        "user": {
+            "id": user.id,
+            "email": user.email,
+            "business_name": user.business_name,
+            "owner_name": user.owner_name,
+            "is_verified": user.is_verified,
+        },
+        "message": "Email verified successfully. You are now logged in."
+    }

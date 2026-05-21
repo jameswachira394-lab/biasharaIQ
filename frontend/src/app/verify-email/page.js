@@ -59,11 +59,19 @@ export default function VerifyEmailPage() {
         setLoading(true)
         setError('')
         try {
-            await api.post('/auth/verify-email', { email, code })
+            const res = await api.post('/auth/verify-email', { email, code })
+            const { access_token, user: userData } = res.data
+
+            // ✅ Store token and user data after successful verification
+            if (access_token) {
+                localStorage.setItem('biasharaiq_token', access_token)
+                localStorage.setItem('biasharaiq_user', JSON.stringify(userData))
+            }
+
             setSuccess(true)
-            // Redirect to login after 2 seconds
+            // Redirect to dashboard after 2 seconds
             setTimeout(() => {
-                router.push('/login')
+                router.push('/dashboard')
             }, 2000)
         } catch (err) {
             setError(err.response?.data?.detail || 'Invalid or expired code. Please try again.')
@@ -98,7 +106,7 @@ export default function VerifyEmailPage() {
                             </div>
                             <h2 className="text-xl font-display font-bold text-semantic-white mb-2">Email Verified! 🎉</h2>
                             <p className="text-sm text-semantic-textSecondary mb-6">
-                                Your account is now active. Redirecting to login...
+                                Your account is now active. Redirecting to your dashboard...
                             </p>
                         </div>
                     ) : (

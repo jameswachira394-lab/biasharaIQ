@@ -74,10 +74,8 @@ def register(req: RegisterRequest, db: Session = Depends(get_db)):
     if not email_sent:
         print(f"[AUTH] Warning: Failed to send verification email to {req.email}")
 
-    token = create_access_token({"sub": str(user.id)})
+    # ✅ NO TOKEN ON REGISTRATION - User must verify email first
     return {
-        "access_token": token,
-        "token_type": "bearer",
         "user": {
             "id": user.id,
             "email": user.email,
@@ -85,7 +83,7 @@ def register(req: RegisterRequest, db: Session = Depends(get_db)):
             "owner_name": user.owner_name,
             "is_verified": user.is_verified,
         },
-        "message": "Account created. Verification code sent to email.",
+        "message": "Account created. Verification code sent to email. Please verify your email to login.",
     }
 
 

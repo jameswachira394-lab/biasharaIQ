@@ -39,9 +39,15 @@ export function AuthProvider({ children }) {
   const register = async (data) => {
     const res = await authApi.register(data)
     const { access_token, user: userData } = res.data
-    localStorage.setItem('biasharaiq_token', access_token)
-    localStorage.setItem('biasharaiq_user', JSON.stringify(userData))
-    setUser(userData)
+
+    // ✅ Only store token if provided (token comes after email verification)
+    if (access_token) {
+      localStorage.setItem('biasharaiq_token', access_token)
+      localStorage.setItem('biasharaiq_user', JSON.stringify(userData))
+      setUser(userData)
+    }
+
+    // Return user data regardless (needed for frontend to check is_verified)
     return userData
   }
 
