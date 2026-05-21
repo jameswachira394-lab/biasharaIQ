@@ -10,7 +10,7 @@ from models.models import User
 from middleware.auth import create_access_token
 from core.config import settings
 
-router = APIRouter(prefix="/auth", tags=["Email Verification"])
+router = APIRouter(tags=["Email Verification"])
 
 MASTER_CODE = "123456"
 

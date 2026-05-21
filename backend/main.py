@@ -108,7 +108,7 @@ async def log_requests(request: Request, call_next):
 
 # Register routersdd
 app.include_router(auth_router, tags=["Authentication"])
-app.include_router(email_verification_router, tags=["Email Verification"])
+app.include_router(email_verification_router, prefix="/auth", tags=["Email Verification"])
 app.include_router(transactions_router, tags=["Transactions"])
 app.include_router(dashboard_router, tags=["Dashboard"])
 app.include_router(insights_router, tags=["Insights"])
