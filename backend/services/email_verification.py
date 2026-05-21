@@ -4,22 +4,26 @@ import smtplib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 import os
+from pathlib import Path
 from dotenv import load_dotenv
 import logging
 import ssl
 
-load_dotenv()
+# Load .env from backend directory (absolute path)
+backend_dir = Path(__file__).parent.parent
+env_path = backend_dir / ".env"
+load_dotenv(dotenv_path=env_path)
 
 logger = logging.getLogger(__name__)
 
-# Email Configuration
+# Email Configuration - load AFTER load_dotenv()
 GMAIL_ADDRESS = os.getenv("GMAIL_ADDRESS", "biasharaiq@gmail.com")
 GMAIL_APP_PASSWORD = os.getenv("GMAIL_APP_PASSWORD", "")
 SMTP_SERVER = "smtp.gmail.com"
 SMTP_PORT = 587
 
-# Environment
-ENVIRONMENT = os.getenv("ENVIRONMENT", "production")
+# Environment - load AFTER load_dotenv()
+ENVIRONMENT = os.getenv("ENVIRONMENT", "development")
 IS_PRODUCTION = ENVIRONMENT == "production"
 
 
@@ -71,6 +75,12 @@ def send_email(email: str, code: str) -> bool:
     Production: requires GMAIL_APP_PASSWORD in environment.
     Development: logs the code to console and returns True.
     """
+    logger.info("[EMAIL] ======== EMAIL SENDING FLOW ========")
+    logger.info("[EMAIL] IS_PRODUCTION=%s", IS_PRODUCTION)
+    logger.info("[EMAIL] ENVIRONMENT=%s", ENVIRONMENT)
+    logger.info("[EMAIL] GMAIL_ADDRESS=%s", GMAIL_ADDRESS)
+    logger.info("[EMAIL] GMAIL_APP_PASSWORD set: %s", bool(GMAIL_APP_PASSWORD))
+    
     msg = MIMEMultipart()
     msg["From"] = f"Biashara IQ <{GMAIL_ADDRESS}>"
     msg["To"] = email
@@ -87,11 +97,12 @@ def send_email(email: str, code: str) -> bool:
     msg.attach(MIMEText(body, "plain"))
 
     if IS_PRODUCTION:
+        logger.info("[EMAIL] → PRODUCTION MODE: Attempting SMTP delivery to %s", email)
         return _send_via_smtp(msg, email)
 
     # Development fallback — never log the code in production
     logger.warning(
-        "[EMAIL] Development mode — SMTP skipped.\n"
+        "[EMAIL] → DEVELOPMENT MODE: SMTP skipped.\n"
         "  Recipient : %s\n"
         "  Code      : %s\n"
         "  Expires   : 10 minutes",
