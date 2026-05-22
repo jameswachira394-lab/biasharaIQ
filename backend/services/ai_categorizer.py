@@ -1,16 +1,28 @@
 """
 AI-powered transaction categorization and summarization.
 Uses Claude to assign categories and generate upload summaries.
+Falls back to rule-based categorization when no API key is available.
 """
 
+import os
 import json
 import logging
 from typing import Optional
-import anthropic
 
 logger = logging.getLogger(__name__)
 
-client = anthropic.Anthropic()
+# Only instantiate Anthropic client if API key is present
+_anthropic_key = os.environ.get("ANTHROPIC_API_KEY", "")
+client = None
+if _anthropic_key:
+    try:
+        import anthropic
+        client = anthropic.Anthropic(api_key=_anthropic_key)
+        logger.info("[AI] Anthropic client initialized")
+    except Exception as e:
+        logger.warning(f"[AI] Failed to initialize Anthropic client: {e}")
+else:
+    logger.warning("[AI] No ANTHROPIC_API_KEY set — using rule-based categorization fallback")
 
 # ─────────────────────────────────────────────
 # Category mapping prompt
@@ -75,8 +87,56 @@ def categorize_transactions(transactions: list[dict], user_categories: list[str]
     return enriched
 
 
+# ─────────────────────────────────────────────
+# Rule-based fallback categorizer
+# ─────────────────────────────────────────────
+
+RULE_KEYWORDS = {
+    "expense": {
+        "Rent": ["rent", "rental", "lease"],
+        "Utilities": ["kplc", "kenya power", "water", "nawasco", "nairobi water", "electricity", "utility"],
+        "Airtime/Internet": ["safaricom", "airtel", "telkom", "airtime", "data", "internet", "wifi"],
+        "Salaries": ["salary", "salaries", "wages", "payroll", "staff"],
+        "Transport": ["fuel", "transport", "uber", "bolt", "matatu", "taxi", "petrol", "diesel"],
+        "Stock/Inventory": ["stock", "inventory", "goods", "merchandise", "supplier", "purchase"],
+        "Bank Charges": ["bank charge", "transaction fee", "service charge", "ledger fee", "excise"],
+        "Marketing": ["advert", "marketing", "promotion", "google", "facebook", "meta ads"],
+        "Food & Supplies": ["food", "grocery", "supermarket", "naivas", "quickmart", "carrefour", "cleanshelf"],
+        "Equipment": ["equipment", "machine", "laptop", "phone", "computer", "printer"],
+    },
+    "income": {
+        "M-Pesa Collections": ["mpesa", "m-pesa", "paybill", "till", "lipa na"],
+        "Sales": ["sale", "payment received", "invoice paid", "customer"],
+        "Bank Transfer In": ["transfer in", "bank transfer", "eft", "rtgs", "swift"],
+        "Refund": ["refund", "reversal", "chargeback", "returned"],
+    },
+}
+
+def _rule_based_category(description: str, tx_type: str) -> str:
+    """Simple keyword-based fallback categorization."""
+    desc_lower = description.lower()
+    rules = RULE_KEYWORDS.get(tx_type, {})
+    for category, keywords in rules.items():
+        if any(kw in desc_lower for kw in keywords):
+            return category
+    return "Other Expense" if tx_type == "expense" else "Other Income"
+
+
 def _categorize_batch(items: list[dict], user_categories: list[str] = None) -> dict:
-    """Categorize a batch of transactions. Returns {index: {category, confidence}}."""
+    """Categorize a batch of transactions. Returns {index: {category, confidence}}.
+    Uses Claude when available, falls back to rule-based when no API key.
+    """
+    # Fall back to rule-based if no AI client
+    if client is None:
+        logger.info("[AI] Using rule-based categorization (no Anthropic key)")
+        return {
+            item["index"]: {
+                "category": _rule_based_category(item["description"], item["type"]),
+                "confidence": 0.6,
+            }
+            for item in items
+        }
+
     system = CATEGORIZE_SYSTEM
     if user_categories:
         system += f"\n\nThis user's custom categories: {', '.join(user_categories)}"
@@ -100,8 +160,14 @@ def _categorize_batch(items: list[dict], user_categories: list[str] = None) -> d
                 for r in results}
 
     except Exception as e:
-        logger.error("[AI] Categorization batch failed: %s", e)
-        return {}
+        logger.error("[AI] Categorization batch failed: %s — falling back to rules", e)
+        return {
+            item["index"]: {
+                "category": _rule_based_category(item["description"], item["type"]),
+                "confidence": 0.5,
+            }
+            for item in items
+        }
 
 
 # ─────────────────────────────────────────────
@@ -166,7 +232,19 @@ def _generate_narrative(
     net: float,
     top_categories: list,
 ) -> str:
-    """Ask Claude for a concise 2-3 sentence financial summary."""
+    """Ask Claude for a concise 2-3 sentence financial summary.
+    Falls back to a template string when no AI client is available.
+    """
+    direction = "surplus" if net >= 0 else "deficit"
+    fallback = (
+        f"Imported {count} transactions from your {doc_type} statement. "
+        f"Total income: KES {total_income:,.2f}, total expenses: KES {total_expenses:,.2f}. "
+        f"Net {direction}: KES {abs(net):,.2f}."
+    )
+
+    if client is None:
+        return fallback
+
     try:
         cat_str = ", ".join(f"{c} (KES {a:,.0f})" for c, a in top_categories[:3])
         prompt = (
@@ -188,9 +266,4 @@ def _generate_narrative(
 
     except Exception as e:
         logger.error("[AI] Narrative generation failed: %s", e)
-        direction = "surplus" if net >= 0 else "deficit"
-        return (
-            f"Imported {count} transactions from your {doc_type} statement. "
-            f"Total income: KES {total_income:,.2f}, total expenses: KES {total_expenses:,.2f}. "
-            f"Net {direction}: KES {abs(net):,.2f}."
-        )
+        return fallback

@@ -384,11 +384,20 @@ def parse_invoice(file_bytes: bytes, mime_type: str = "application/pdf") -> list
     """
     Parse an invoice using Claude's vision API.
     Returns a list with a single transaction (the invoice total).
+    Raises ValueError if no Anthropic API key is configured.
     """
+    import os
+    api_key = os.environ.get("ANTHROPIC_API_KEY", "")
+    if not api_key:
+        raise ValueError(
+            "Invoice/image parsing requires an ANTHROPIC_API_KEY. "
+            "Please set it in your environment or upload a CSV/PDF bank statement instead."
+        )
+
     import anthropic
     import base64
 
-    client = anthropic.Anthropic()
+    client = anthropic.Anthropic(api_key=api_key)
     b64 = base64.standard_b64encode(file_bytes).decode("utf-8")
 
     prompt = """Extract the following from this invoice and return ONLY valid JSON, no markdown:

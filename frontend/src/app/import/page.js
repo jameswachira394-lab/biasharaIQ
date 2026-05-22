@@ -93,18 +93,24 @@ export default function ImportPage() {
                 }
             )
             const previewData = previewResponse.data
-            setTransactions(previewData.transactions)
+            setTransactions(previewData.transactions || [])
 
             setToast({
                 type: 'success',
                 message: `Successfully parsed ${data.transaction_count} transactions!`,
             })
         } catch (error) {
+            const detail = error.response?.data?.detail
+            const msg = detail || error.message || 'Failed to upload file'
             setToast({
                 type: 'error',
-                message: error.message || 'Failed to upload file',
+                message: msg,
             })
             console.error('Upload error:', error)
+            // Reset so the upload form is shown again
+            setUploadData(null)
+            setBatchId(null)
+            setTransactions([])
         } finally {
             setUploading(false)
         }
@@ -303,23 +309,23 @@ export default function ImportPage() {
                         <div>
                             <p className="text-sm text-[#8B5E3C]">Total Income</p>
                             <p className="text-2xl font-bold text-[#27AE60]">
-                                KES {uploadData.summary.total_income.toLocaleString()}
+                                KES {(uploadData.summary?.total_income ?? 0).toLocaleString()}
                             </p>
                         </div>
                         <div>
                             <p className="text-sm text-[#8B5E3C]">Total Expenses</p>
                             <p className="text-2xl font-bold text-[#E57373]">
-                                KES {uploadData.summary.total_expenses.toLocaleString()}
+                                KES {(uploadData.summary?.total_expenses ?? 0).toLocaleString()}
                             </p>
                         </div>
                         <div>
                             <p className="text-sm text-[#8B5E3C]">Net</p>
-                            <p className={`text-2xl font-bold ${uploadData.summary.net >= 0 ? 'text-[#27AE60]' : 'text-[#E57373]'}`}>
-                                KES {uploadData.summary.net.toLocaleString()}
+                            <p className={`text-2xl font-bold ${(uploadData.summary?.net ?? 0) >= 0 ? 'text-[#27AE60]' : 'text-[#E57373]'}`}>
+                                KES {(uploadData.summary?.net ?? 0).toLocaleString()}
                             </p>
                         </div>
                     </div>
-                    {uploadData.summary.narrative && (
+                    {uploadData.summary?.narrative && (
                         <p className="mt-4 text-sm text-[#8B5E3C] italic">
                             {uploadData.summary.narrative}
                         </p>

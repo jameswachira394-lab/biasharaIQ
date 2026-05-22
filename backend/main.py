@@ -49,9 +49,15 @@ app = FastAPI(
 
 
 if not settings.DEBUG:
+    from urllib.parse import urlparse
+    allowed_hosts = [
+        urlparse(o).hostname
+        for o in settings.cors_origins_list
+        if o and o != "*" and urlparse(o).hostname
+    ]
     app.add_middleware(
         TrustedHostMiddleware,
-        allowed_hosts=settings.cors_origins_list
+        allowed_hosts=allowed_hosts
     )
 
 
