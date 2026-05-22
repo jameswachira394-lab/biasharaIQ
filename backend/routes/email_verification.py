@@ -94,3 +94,4 @@ def verify_email(data: VerifyRequest, db: Session = Depends(get_db)):
         },
         "message": "Email verified successfully. You are now logged in.",
     }
+    # Note: The response includes user info for convenience, but be mindful of what you return in production.
