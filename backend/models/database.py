@@ -62,3 +62,19 @@ def close_db():
         logger.info("Database connection pool disposed")
     except Exception as e:
         logger.error(f"Error closing database: {str(e)}")
+# Transaction model — add these
+source = Column(String, default="manual")        # "mpesa", "bank", "csv", "invoice"
+import_batch_id = Column(String, nullable=True)  # groups transactions from same upload
+status = Column(String, default="confirmed")     # "pending_review" | "confirmed"
+
+# New model — UploadedDocument
+class UploadedDocument(Base):
+    __tablename__ = "uploaded_documents"
+    id = Column(Integer, primary_key=True)
+    user_id = Column(Integer, ForeignKey("users.id"))
+    filename = Column(String)
+    file_type = Column(String)        # "mpesa", "bank", "csv", "invoice"
+    storage_url = Column(String)      # Cloudinary or S3 URL
+    parsed_at = Column(DateTime)
+    transaction_count = Column(Integer)
+    batch_id = Column(String)         # links to transactions

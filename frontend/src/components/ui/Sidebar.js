@@ -4,7 +4,7 @@ import { usePathname } from 'next/navigation'
 import { useAuth } from '@/context/AuthContext'
 import {
   LayoutDashboard, ArrowLeftRight, Lightbulb, Bot,
-  BarChart3, Settings, LogOut, TrendingUp, Menu, X, Crown
+  BarChart3, Settings, LogOut, TrendingUp, Menu, X, Crown, Upload
 } from 'lucide-react'
 import { useState } from 'react'
 import clsx from 'clsx'
@@ -12,6 +12,7 @@ import clsx from 'clsx'
 const NAV_ITEMS = [
   { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
   { href: '/transactions', label: 'Transactions', icon: ArrowLeftRight },
+  { href: '/import', label: 'Import', icon: Upload },
   { href: '/insights', label: 'Insights', icon: Lightbulb },
   { href: '/ai', label: 'AI Advisor', icon: Bot },
   { href: '/pricing', label: 'Pricing & Plans', icon: Crown },

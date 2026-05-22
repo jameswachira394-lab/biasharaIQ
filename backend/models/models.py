@@ -52,6 +52,7 @@ class User(Base):
     categories = relationship("Category", back_populates="user", cascade="all, delete-orphan")
     subscriptions = relationship("Subscription", back_populates="user", cascade="all, delete-orphan")
     payments = relationship("Payment", back_populates="user", cascade="all, delete-orphan")
+    uploaded_documents = relationship("UploadedDocument", back_populates="user", cascade="all, delete-orphan")
 
 
 class Transaction(Base):
@@ -64,6 +65,9 @@ class Transaction(Base):
     category = Column(String, nullable=False)
     date = Column(DateTime, nullable=False)
     description = Column(Text, nullable=True)
+    source = Column(String, default="manual")  # "manual", "mpesa", "bank", "csv", "invoice"
+    import_batch_id = Column(String, nullable=True)  # groups transactions from same upload
+    status = Column(String, default="confirmed")  # "pending_review" | "confirmed"
     created_at = Column(DateTime, default=datetime.utcnow)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
@@ -98,6 +102,24 @@ class Payment(Base):
     created_at = Column(DateTime, default=datetime.utcnow)
 
     user = relationship("User", back_populates="payments")
+
+
+class UploadedDocument(Base):
+    __tablename__ = "uploaded_documents"
+
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+    filename = Column(String, nullable=False)
+    file_type = Column(String, nullable=False)  # "mpesa", "bank", "csv", "invoice"
+    storage_url = Column(String, nullable=False)  # Cloudinary or S3 URL
+    parsed_at = Column(DateTime, default=datetime.utcnow)
+    transaction_count = Column(Integer, default=0)
+    batch_id = Column(String, unique=True, index=True)  # links to transactions
+    status = Column(String, default="pending_review")  # "pending_review" | "confirmed" | "cancelled"
+    summary = Column(Text, nullable=True)  # JSON string with summary data
+    created_at = Column(DateTime, default=datetime.utcnow)
+
+    user = relationship("User", back_populates="uploaded_documents")
 
 
 class Insight(Base):

@@ -22,6 +22,7 @@ from routes.routes import (
 )
 from routes.payments import router as payments_router
 from routes.subscriptions import router as subscriptions_router
+from routes.uploads import router as uploads_router
 from core.config import settings
 
 
@@ -118,6 +119,7 @@ app.include_router(categories_router, tags=["Categories"])
 app.include_router(profile_router, tags=["Profile"])
 app.include_router(payments_router)
 app.include_router(subscriptions_router)
+app.include_router(uploads_router)
 
 
 @app.get("/")
