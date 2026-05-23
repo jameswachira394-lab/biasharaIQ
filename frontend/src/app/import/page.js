@@ -217,8 +217,8 @@ export default function ImportPage() {
                         onDragLeave={handleDragLeave}
                         onDrop={handleDrop}
                         className={`border-2 border-dashed rounded-lg p-12 text-center transition-colors ${isDragging
-                                ? 'border-[#8B5E3C] bg-[#F5EFE6]'
-                                : 'border-[#C4A484] bg-white'
+                            ? 'border-[#8B5E3C] bg-[#F5EFE6]'
+                            : 'border-[#C4A484] bg-white'
                             }`}
                     >
                         <Upload size={48} className="mx-auto mb-4 text-[#C4A484]" />
@@ -352,7 +352,7 @@ export default function ImportPage() {
                                         className={`border-b border-[#C4A484]/10 ${idx % 2 === 0 ? 'bg-white' : 'bg-[#F5EFE6]/30'}`}
                                     >
                                         <td className="px-4 py-3 text-[#8B5E3C]">
-                                            {new Date(tx.date).toLocaleDateString()}
+                                            {tx.date ? new Date(tx.date).toLocaleDateString() : 'N/A'}
                                         </td>
                                         <td className="px-4 py-3">
                                             <input
@@ -366,13 +366,13 @@ export default function ImportPage() {
                                         </td>
                                         <td className="px-4 py-3 font-semibold text-[#3C2A1E]">
                                             {tx.type === 'income' ? '+' : '-'}
-                                            KES {tx.amount.toLocaleString()}
+                                            KES {(tx.amount ?? 0).toLocaleString()}
                                         </td>
                                         <td className="px-4 py-3">
                                             <span
                                                 className={`px-2 py-1 rounded text-xs font-semibold ${tx.type === 'income'
-                                                        ? 'bg-[#27AE60]/10 text-[#27AE60]'
-                                                        : 'bg-[#E57373]/10 text-[#E57373]'
+                                                    ? 'bg-[#27AE60]/10 text-[#27AE60]'
+                                                    : 'bg-[#E57373]/10 text-[#E57373]'
                                                     }`}
                                             >
                                                 {tx.type}
@@ -398,7 +398,7 @@ export default function ImportPage() {
                                                     onClick={() => setEditingTx(tx.id)}
                                                     className="px-2 py-1 bg-[#C4A484]/10 text-[#8B5E3C] rounded cursor-pointer hover:bg-[#C4A484]/20"
                                                 >
-                                                    {tx.category}
+                                                    {tx.category || 'Uncategorized'}
                                                 </div>
                                             )}
                                         </td>
