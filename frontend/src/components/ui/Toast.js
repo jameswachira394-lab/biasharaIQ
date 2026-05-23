@@ -61,3 +61,22 @@ export function useToast() {
 
   return { toasts, dismiss, toast, success, error, warning, info }
 }
+
+export default function SingleToast({ type, message, onClose }) {
+  const Icon = ICONS[type] || Info
+  return (
+    <div className="fixed bottom-4 right-4 z-50 flex flex-col gap-2 pointer-events-none">
+      <div className={clsx(
+        'flex items-center gap-3 px-4 py-3 rounded-xl border text-sm shadow-xl backdrop-blur pointer-events-auto animate-fade-in max-w-xs',
+        STYLES[type] || STYLES.info
+      )}>
+        <Icon size={15} className="flex-shrink-0" />
+        <span className="flex-1">{message}</span>
+        <button onClick={onClose} className="opacity-60 hover:opacity-100 ml-1">
+          <X size={13} />
+        </button>
+      </div>
+    </div>
+  )
+}
+
