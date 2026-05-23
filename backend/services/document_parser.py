@@ -412,7 +412,7 @@ If you cannot determine a field, use null. Amount should be the total payable am
 
     try:
         response = client.models.generate_content(
-            model="gemini-2.0-flash",
+            model="gemini-3.5-flash",
             contents=[
                 types.Part.from_bytes(data=file_bytes, mime_type=mime_type),
                 prompt
