@@ -382,25 +382,24 @@ def _parse_csv_row(row: pd.Series, headers: dict) -> Optional[dict]:
 
 def parse_invoice(file_bytes: bytes, mime_type: str = "application/pdf") -> list[dict]:
     """
-    Parse an invoice using Claude's vision API.
+    Parse an invoice using Gemini 2.0 Flash vision API.
     Returns a list with a single transaction (the invoice total).
-    Raises ValueError if no Anthropic API key is configured.
+    Raises ValueError if no Gemini API key is configured.
     """
     import os
-    api_key = os.environ.get("ANTHROPIC_API_KEY", "")
+    api_key = os.environ.get("GEMINI_API_KEY", "")
     if not api_key:
         raise ValueError(
-            "Invoice/image parsing requires an ANTHROPIC_API_KEY. "
+            "Invoice/image parsing requires a GEMINI_API_KEY. "
             "Please set it in your environment or upload a CSV/PDF bank statement instead."
         )
 
-    import anthropic
-    import base64
+    from google import genai
+    from google.genai import types
 
-    client = anthropic.Anthropic(api_key=api_key)
-    b64 = base64.standard_b64encode(file_bytes).decode("utf-8")
+    client = genai.Client(api_key=api_key)
 
-    prompt = """Extract the following from this invoice and return ONLY valid JSON, no markdown:
+    prompt = """Extract the following from this invoice and return ONLY valid JSON:
 {
   "date": "YYYY-MM-DD or null",
   "vendor": "vendor/supplier name",
@@ -411,26 +410,29 @@ def parse_invoice(file_bytes: bytes, mime_type: str = "application/pdf") -> list
 }
 If you cannot determine a field, use null. Amount should be the total payable amount as a number."""
 
-    response = client.messages.create(
-        model="claude-sonnet-4-20250514",
-        max_tokens=512,
-        messages=[
-            {
-                "role": "user",
-                "content": [
-                    {
-                        "type": "document" if "pdf" in mime_type else "image",
-                        "source": {"type": "base64", "media_type": mime_type, "data": b64},
-                    },
-                    {"type": "text", "text": prompt},
-                ],
-            }
-        ],
-    )
+    try:
+        response = client.models.generate_content(
+            model="gemini-2.0-flash",
+            contents=[
+                types.Part.from_bytes(data=file_bytes, mime_type=mime_type),
+                prompt
+            ],
+            config=types.GenerateContentConfig(
+                response_mime_type="application/json",
+                temperature=0.1,
+            )
+        )
+        raw_text = response.text.strip()
+    except Exception as e:
+        logger.error("[PARSER] Gemini content generation failed: %s", e)
+        raise ValueError(f"Failed to process document with Gemini: {e}")
 
     import json
-    raw_text = response.content[0].text.strip()
-    data = json.loads(raw_text)
+    try:
+        data = json.loads(raw_text)
+    except Exception as e:
+        logger.error("[PARSER] Failed to parse JSON response from Gemini: %s. Raw text: %s", e, raw_text)
+        raise ValueError(f"Gemini returned an invalid JSON structure: {raw_text}")
 
     date_str = data.get("date")
     date = _parse_date(date_str, ["%Y-%m-%d"]) if date_str else datetime.utcnow()
@@ -452,6 +454,7 @@ If you cannot determine a field, use null. Amount should be the total payable am
             "raw": f"{data.get('vendor','')} | Invoice {data.get('invoice_number','')}",
         }
     ]
+
 
 
 # ─────────────────────────────────────────────

@@ -11,18 +11,34 @@ from typing import Optional
 
 logger = logging.getLogger(__name__)
 
-# Only instantiate Anthropic client if API key is present
+# Only instantiate clients if API keys are present
+_gemini_key = os.environ.get("GEMINI_API_KEY", "")
 _anthropic_key = os.environ.get("ANTHROPIC_API_KEY", "")
+
 client = None
-if _anthropic_key:
+client_type = None
+
+if _gemini_key:
+    try:
+        from google import genai
+        client = genai.Client(api_key=_gemini_key)
+        client_type = "gemini"
+        logger.info("[AI] Gemini client initialized for categorization")
+    except Exception as e:
+        logger.warning(f"[AI] Failed to initialize Gemini client: {e}")
+
+if not client and _anthropic_key:
     try:
         import anthropic
         client = anthropic.Anthropic(api_key=_anthropic_key)
-        logger.info("[AI] Anthropic client initialized")
+        client_type = "anthropic"
+        logger.info("[AI] Anthropic client initialized for categorization")
     except Exception as e:
         logger.warning(f"[AI] Failed to initialize Anthropic client: {e}")
-else:
-    logger.warning("[AI] No ANTHROPIC_API_KEY set — using rule-based categorization fallback")
+
+if not client:
+    logger.warning("[AI] No GEMINI_API_KEY or ANTHROPIC_API_KEY set — using rule-based categorization fallback")
+
 
 # ─────────────────────────────────────────────
 # Category mapping prompt
@@ -124,11 +140,11 @@ def _rule_based_category(description: str, tx_type: str) -> str:
 
 def _categorize_batch(items: list[dict], user_categories: list[str] = None) -> dict:
     """Categorize a batch of transactions. Returns {index: {category, confidence}}.
-    Uses Claude when available, falls back to rule-based when no API key.
+    Uses Gemini or Claude when available, falls back to rule-based when no API key.
     """
     # Fall back to rule-based if no AI client
     if client is None:
-        logger.info("[AI] Using rule-based categorization (no Anthropic key)")
+        logger.info("[AI] Using rule-based categorization (no AI key)")
         return {
             item["index"]: {
                 "category": _rule_based_category(item["description"], item["type"]),
@@ -144,14 +160,27 @@ def _categorize_batch(items: list[dict], user_categories: list[str] = None) -> d
     prompt = f"Categorize these transactions:\n{json.dumps(items, indent=2)}"
 
     try:
-        response = client.messages.create(
-            model="claude-sonnet-4-20250514",
-            max_tokens=1000,
-            system=system,
-            messages=[{"role": "user", "content": prompt}],
-        )
+        if client_type == "gemini":
+            from google.genai import types
+            response = client.models.generate_content(
+                model="gemini-2.0-flash",
+                contents=[prompt],
+                config=types.GenerateContentConfig(
+                    system_instruction=system,
+                    response_mime_type="application/json",
+                    temperature=0.1,
+                )
+            )
+            raw = response.text.strip()
+        else:
+            response = client.messages.create(
+                model="claude-sonnet-4-20250514",
+                max_tokens=1000,
+                system=system,
+                messages=[{"role": "user", "content": prompt}],
+            )
+            raw = response.content[0].text.strip()
 
-        raw = response.content[0].text.strip()
         # Strip markdown fences if present
         raw = raw.replace("```json", "").replace("```", "").strip()
         results = json.loads(raw)
@@ -168,6 +197,7 @@ def _categorize_batch(items: list[dict], user_categories: list[str] = None) -> d
             }
             for item in items
         }
+
 
 
 # ─────────────────────────────────────────────
@@ -232,7 +262,7 @@ def _generate_narrative(
     net: float,
     top_categories: list,
 ) -> str:
-    """Ask Claude for a concise 2-3 sentence financial summary.
+    """Ask AI for a concise 2-3 sentence financial summary.
     Falls back to a template string when no AI client is available.
     """
     direction = "surplus" if net >= 0 else "deficit"
@@ -257,13 +287,21 @@ def _generate_narrative(
             f"Top spending areas: {cat_str}"
         )
 
-        response = client.messages.create(
-            model="claude-sonnet-4-20250514",
-            max_tokens=200,
-            messages=[{"role": "user", "content": prompt}],
-        )
-        return response.content[0].text.strip()
+        if client_type == "gemini":
+            response = client.models.generate_content(
+                model="gemini-2.0-flash",
+                contents=[prompt],
+            )
+            return response.text.strip()
+        else:
+            response = client.messages.create(
+                model="claude-sonnet-4-20250514",
+                max_tokens=200,
+                messages=[{"role": "user", "content": prompt}],
+            )
+            return response.content[0].text.strip()
 
     except Exception as e:
         logger.error("[AI] Narrative generation failed: %s", e)
         return fallback
+
