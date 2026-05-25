@@ -212,7 +212,7 @@ RESPONSE RULES:
 
 def create_chat_session(financial_context: dict) -> genai.chats.Chat:
     chat = client.chats.create(
-        model="gemini-3.5-flash",
+        model="gemini-2.0-flash",
         config=types.GenerateContentConfig(
             system_instruction=build_system_prompt(),
             temperature=0.2,
