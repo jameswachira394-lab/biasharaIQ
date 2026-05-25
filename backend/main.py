@@ -88,7 +88,7 @@ async def add_security_headers(request: Request, call_next):
     
     return response
 
-#routersSS
+# Logging middleware
 @app.middleware("http")
 async def log_requests(request: Request, call_next):
     start_time = time.time()
@@ -113,7 +113,7 @@ async def log_requests(request: Request, call_next):
         logger.error(f"[{request_id}] Error: {str(e)} - Duration: {process_time:.3f}s")
         raise
 
-# Register routersdd
+# Register routers
 app.include_router(auth_router, tags=["Authentication"])
 app.include_router(email_verification_router, prefix="/auth", tags=["Email Verification"])
 app.include_router(transactions_router, tags=["Transactions"])

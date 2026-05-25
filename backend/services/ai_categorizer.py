@@ -163,7 +163,7 @@ def _categorize_batch(items: list[dict], user_categories: list[str] = None) -> d
         if client_type == "gemini":
             from google.genai import types
             response = client.models.generate_content(
-                model="gemini-3.5-flash",
+                model="gemini-2.0-flash",
                 contents=[prompt],
                 config=types.GenerateContentConfig(
                     system_instruction=system,
@@ -289,7 +289,7 @@ def _generate_narrative(
 
         if client_type == "gemini":
             response = client.models.generate_content(
-                model="gemini-3.5-flash",
+                model="gemini-2.0-flash",
                 contents=[prompt],
             )
             return response.text.strip()

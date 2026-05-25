@@ -29,7 +29,7 @@ services:
       SECRET_KEY: ${SECRET_KEY:-change-me-in-production-32chars-min}
       ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY}
       JWT_SECRET: ${SECRET_KEY:-change-me-in-production-32chars-min}
-      CORS_ORIGINS: htps://biashara-iq.vercel.app
+      CORS_ORIGINS: https://biashara-iq.vercel.app
     ports:
       - "8000:8000"
     depends_on:
