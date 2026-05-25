@@ -5,11 +5,11 @@ import random
 from datetime import datetime, timedelta
 from dotenv import load_dotenv
 
+# Setup environment and paths
 load_dotenv()
-
-# Must be run from the backend directory
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
+# Single import statement for all models and dependencies
 from models.database import SessionLocal, engine
 from models.models import Base, User, Transaction, Category, TransactionType
 from middleware.auth import hash_password
@@ -97,7 +97,9 @@ def seed():
             print(f"[SKIP] {existing_count} transactions already exist. Skipping transaction seed.")
         else:
             now = datetime.utcnow()
-            transactions = []
+            transaction_count = 0
+            batch = []
+            batch_size = 100  # Add transactions in batches of 100
 
             # Generate 90 days of data
             for day_offset in range(90, 0, -1):
@@ -111,7 +113,7 @@ def seed():
                     # Slow months have lower income
                     multiplier = 0.75 if day_offset > 60 else 1.0
                     amount = round(random.uniform(low * multiplier, high * multiplier), -1)
-                    transactions.append(Transaction(
+                    batch.append(Transaction(
                         user_id=user.id,
                         amount=amount,
                         type=TransactionType.income,
@@ -125,7 +127,7 @@ def seed():
                 for _ in range(expense_count):
                     cat, low, high, desc = random.choice(EXPENSE_TEMPLATES)
                     amount = round(random.uniform(low, high), -1)
-                    transactions.append(Transaction(
+                    batch.append(Transaction(
                         user_id=user.id,
                         amount=amount,
                         type=TransactionType.expense,
@@ -141,15 +143,26 @@ def seed():
                         ("Salaries", 12000, "Employee salary - Kamau"),
                         ("Loan Repayment", 5000, "Equity Bank microfinance"),
                     ]:
-                        transactions.append(Transaction(
+                        batch.append(Transaction(
                             user_id=user.id, amount=amount,
                             type=TransactionType.expense, category=cat,
                             date=date.replace(hour=9, minute=0), description=desc,
                         ))
 
-            db.bulk_save_objects(transactions)
-            db.commit()
-            print(f"[OK] Created {len(transactions)} transactions spanning 90 days")
+                # Add batch to database when it reaches batch_size
+                if len(batch) >= batch_size:
+                    db.bulk_save_objects(batch)
+                    db.commit()
+                    transaction_count += len(batch)
+                    batch = []
+
+            # Add remaining transactions
+            if batch:
+                db.bulk_save_objects(batch)
+                db.commit()
+                transaction_count += len(batch)
+
+            print(f"[OK] Created {transaction_count} transactions spanning 90 days")
 
         # ── Summary ───────────────────────────────────────────────────────────
         from sqlalchemy import func
