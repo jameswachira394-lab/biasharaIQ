@@ -29,7 +29,7 @@ class Settings(BaseSettings):
     GEMINI_API_KEY: str = ""
     CLOUDINARY_URL: str = ""  # cloudinary://key:secret@cloud_name
 
-    # Document parser / Cloudinary credentials
+    # Veryfi Lens document parser credentials
     CLIENT_ID: str = ""
     CLIENT_SECRET: str = ""
     CLIENT_API: str = ""

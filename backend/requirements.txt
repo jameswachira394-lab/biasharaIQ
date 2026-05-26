@@ -20,5 +20,5 @@ redis==5.0.4
 # Document parsing
 pdfplumber==0.11.0
 pandas==2.2.0
-anthropic==0.28.0
+veryfi>=4.0.0
 cloudinary==1.40.0

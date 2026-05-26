@@ -434,71 +434,89 @@ def _parse_csv_row(row: pd.Series, headers: dict) -> Optional[dict]:
 # ─────────────────────────────────────────────
 
 def parse_invoice(file_bytes: bytes, mime_type: str = "application/pdf") -> list[dict]:
+    """
+    Parse an invoice or receipt using the Veryfi Lens API.
+    Requires CLIENT_ID, CLIENT_SECRET, CLIENT_API, CLIENT_USERNAME in environment.
+    """
     import os
-    api_key = os.environ.get("GEMINI_API_KEY", "")
-    if not api_key:
+    import base64
+
+    client_id     = os.environ.get("CLIENT_ID", "")
+    client_secret = os.environ.get("CLIENT_SECRET", "")
+    api_key       = os.environ.get("CLIENT_API", "")
+    username      = os.environ.get("CLIENT_USERNAME", "")
+
+    if not all([client_id, client_secret, api_key, username]):
         raise ValueError(
-            "Invoice/image parsing requires a GEMINI_API_KEY. "
-            "Please set it in your environment or upload a CSV/PDF bank statement instead."
+            "Invoice/image parsing requires Veryfi credentials. "
+            "Please set CLIENT_ID, CLIENT_SECRET, CLIENT_API, and CLIENT_USERNAME "
+            "in your environment, or upload a CSV/PDF bank statement instead."
         )
 
-    from google import genai
-    from google.genai import types
+    try:
+        from veryfi import Client as VeryfiClient
+    except ImportError:
+        raise RuntimeError("veryfi package is required: pip install veryfi")
 
-    client = genai.Client(api_key=api_key)
-
-    prompt = """Extract the following from this invoice and return ONLY valid JSON:
-{
-  "date": "YYYY-MM-DD or null",
-  "vendor": "vendor/supplier name",
-  "description": "brief description of goods/services",
-  "amount": 0.00,
-  "currency": "KES",
-  "invoice_number": "invoice number or null"
-}
-If you cannot determine a field, use null. Amount should be the total payable amount as a number."""
+    # Determine file extension for Veryfi
+    ext_map = {
+        "application/pdf": ".pdf",
+        "image/jpeg": ".jpg",
+        "image/png": ".png",
+        "image/webp": ".webp",
+    }
+    file_ext = ext_map.get(mime_type, ".pdf")
+    file_name = f"document{file_ext}"
 
     try:
-        response = client.models.generate_content(
-            model="gemini-2.0-flash",
-            contents=[
-                types.Part.from_bytes(data=file_bytes, mime_type=mime_type),
-                prompt
-            ],
-            config=types.GenerateContentConfig(
-                response_mime_type="application/json",
-                temperature=0.1,
-            )
+        veryfi_client = VeryfiClient(
+            client_id=client_id,
+            client_secret=client_secret,
+            username=username,
+            api_key=api_key,
         )
-        raw_text = response.text.strip()
+        file_b64 = base64.b64encode(file_bytes).decode("utf-8")
+        response = veryfi_client.process_document_from_base64(
+            base64_encoded_string=file_b64,
+            file_name=file_name,
+        )
     except Exception as e:
-        logger.error("[PARSER] Gemini content generation failed: %s", e)
-        raise ValueError(f"Failed to process document with Gemini: {e}")
+        logger.error("[PARSER] Veryfi API call failed: %s", e)
+        raise ValueError(f"Failed to process document with Veryfi: {e}")
 
-    import json
-    try:
-        data = json.loads(raw_text)
-    except Exception as e:
-        logger.error("[PARSER] Failed to parse JSON from Gemini: %s. Raw: %s", e, raw_text)
-        raise ValueError(f"Gemini returned an invalid JSON structure: {raw_text}")
+    # Extract key fields from Veryfi response
+    date_str  = response.get("date") or response.get("invoice_date") or ""
+    vendor    = (response.get("vendor") or {}).get("name") or response.get("bill_to") or "Unknown Vendor"
+    total     = response.get("total") or response.get("total_amount") or 0.0
+    invoice_no = response.get("invoice_number") or ""
+    description = response.get("description") or vendor
 
-    date_str = data.get("date")
-    date = _parse_date(date_str, ["%Y-%m-%d"]) if date_str else datetime.utcnow()
-    amount = _clean_amount(str(data.get("amount", 0))) or Decimal("0")
-    description = data.get("description") or data.get("vendor") or "Invoice"
+    # Parse date
+    date = None
+    for fmt in ["%Y-%m-%d", "%d/%m/%Y", "%m/%d/%Y", "%d-%m-%Y"]:
+        try:
+            date = datetime.strptime(date_str.strip(), fmt)
+            break
+        except (ValueError, AttributeError):
+            continue
+    if not date:
+        date = datetime.utcnow()
+
+    amount = _clean_amount(str(total)) or Decimal("0")
 
     if amount == 0:
+        logger.warning("[PARSER] Veryfi returned zero amount for document")
         return []
 
-    logger.info("[PARSER] Invoice: extracted 1 transaction (amount=%.2f)", float(amount))
+    logger.info("[PARSER] Veryfi invoice: vendor=%s amount=%.2f", vendor, float(amount))
     return [
         {
-            "date": (date or datetime.utcnow()).isoformat(),
+            "date": date.isoformat(),
             "description": description,
             "amount": float(amount),
             "type": "expense",
             "source": "invoice",
-            "raw": f"{data.get('vendor','')} | Invoice {data.get('invoice_number','')}",
+            "raw": f"{vendor} | Invoice {invoice_no}",
         }
     ]
 
