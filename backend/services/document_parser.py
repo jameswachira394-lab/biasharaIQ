@@ -1,6 +1,6 @@
 """
 Document parser service for BiasharaIQ.
-Handles M-Pesa PDFs, bank statements, CSVs, and invoices.
+Handles M-Pesa PDFs (password-protected), bank statements, CSVs, and invoices.
 """
 
 import re
@@ -20,7 +20,6 @@ logger = logging.getLogger(__name__)
 # ─────────────────────────────────────────────
 
 def _clean_amount(raw: str) -> Optional[Decimal]:
-    """Strip commas, currency symbols, and whitespace then parse as Decimal."""
     try:
         cleaned = re.sub(r"[^\d.]", "", str(raw).replace(",", ""))
         return Decimal(cleaned) if cleaned else None
@@ -29,7 +28,6 @@ def _clean_amount(raw: str) -> Optional[Decimal]:
 
 
 def _parse_date(raw: str, formats: list[str]) -> Optional[datetime]:
-    """Try multiple date formats and return the first that parses."""
     for fmt in formats:
         try:
             return datetime.strptime(raw.strip(), fmt)
@@ -42,40 +40,111 @@ def generate_batch_id() -> str:
     return str(uuid.uuid4())
 
 
+def _open_pdf(file_bytes: bytes, password: str = ""):
+    """
+    Open a PDF with pdfplumber, trying the given password.
+    Returns the pdfplumber PDF object (use as context manager).
+    Raises PDFPasswordIncorrect if the password is wrong.
+    """
+    import pdfplumber
+    return pdfplumber.open(io.BytesIO(file_bytes), password=password)
+
+
+def _extract_pdf_text(file_bytes: bytes, password: str = "") -> str:
+    """Extract all text from a PDF. Returns empty string on any error."""
+    try:
+        with _open_pdf(file_bytes, password) as pdf:
+            return " ".join(
+                (page.extract_text() or "") for page in pdf.pages
+            ).lower()
+    except Exception:
+        return ""
+
+
 # ─────────────────────────────────────────────
 # M-Pesa PDF parser
 # ─────────────────────────────────────────────
 
 MPESA_DATE_FORMATS = ["%d/%m/%Y %H:%M:%S", "%d/%m/%Y %H:%M", "%d-%m-%Y %H:%M:%S"]
 
-# Regex for M-Pesa statement rows:
-# Completion Time | Details | Transaction Status | Paid In | Withdrawn | Balance
 MPESA_ROW_RE = re.compile(
-    r"(\d{1,2}[\/\-]\d{1,2}[\/\-]\d{4}\s+\d{1,2}:\d{2}(?::\d{2})?)"  # date/time
-    r"\s+(.+?)"                                                           # details
-    r"\s+(Completed)"                                                     # status
-    r"\s+([\d,]+\.\d{2}|-)"                                              # paid in
-    r"\s+([\d,]+\.\d{2}|-)"                                              # withdrawn
-    r"\s+([\d,]+\.\d{2})",                                               # balance
+    r"(\d{1,2}[\/\-]\d{1,2}[\/\-]\d{4}\s+\d{1,2}:\d{2}(?::\d{2})?)"
+    r"\s+(.+?)"
+    r"\s+(Completed)"
+    r"\s+([\d,]+\.\d{2}|-)"
+    r"\s+([\d,]+\.\d{2}|-)"
+    r"\s+([\d,]+\.\d{2})",
     re.IGNORECASE,
 )
 
+# Common M-Pesa PDF passwords: phone number formats Safaricom uses
+MPESA_PASSWORD_FORMATS = [
+    "{phone}",           # 0712345678
+    "254{phone_local}",  # 254712345678
+]
 
-def parse_mpesa_pdf(file_bytes: bytes) -> list[dict]:
+
+def _candidate_passwords(phone: Optional[str]) -> list[str]:
     """
-    Parse an M-Pesa statement PDF and return a list of transaction dicts.
-    Handles the standard Safaricom statement format.
+    Build a list of passwords to try for an M-Pesa PDF.
+    Safaricom uses the subscriber's phone number as the password.
+    Tries both 07XXXXXXXX and 2547XXXXXXXX formats.
+    """
+    passwords = [""]  # always try no password first
+    if not phone:
+        return passwords
+    # Normalise: strip spaces, dashes, plus
+    p = re.sub(r"[\s\-\+]", "", phone)
+    if p.startswith("254") and len(p) == 12:
+        local = "0" + p[3:]   # 0712345678
+        passwords += [p, local]
+    elif p.startswith("0") and len(p) == 10:
+        intl = "254" + p[1:]  # 254712345678
+        passwords += [p, intl]
+    else:
+        passwords.append(p)
+    return passwords
+
+
+def parse_mpesa_pdf(file_bytes: bytes, phone: Optional[str] = None) -> list[dict]:
+    """
+    Parse a password-protected M-Pesa statement PDF.
+    `phone` should be the subscriber's phone number (e.g. '0712345678').
+    Tries multiple password formats automatically.
     """
     try:
         import pdfplumber
     except ImportError:
         raise RuntimeError("pdfplumber is required: pip install pdfplumber")
 
-    transactions = []
+    from pdfminer.pdfdocument import PDFPasswordIncorrect
 
-    with pdfplumber.open(io.BytesIO(file_bytes)) as pdf:
-        for page in pdf.pages:
-            # Try table extraction first (more reliable)
+    passwords = _candidate_passwords(phone)
+    pdf_obj = None
+    used_password = ""
+
+    for pwd in passwords:
+        try:
+            pdf_obj = pdfplumber.open(io.BytesIO(file_bytes), password=pwd)
+            used_password = pwd
+            break
+        except PDFPasswordIncorrect:
+            continue
+        except Exception as e:
+            logger.error("[PARSER] Failed to open M-Pesa PDF: %s", e)
+            raise
+
+    if pdf_obj is None:
+        raise ValueError(
+            "This M-Pesa PDF is password-protected. "
+            "Please provide your M-Pesa phone number so we can unlock it."
+        )
+
+    logger.info("[PARSER] Opened M-Pesa PDF with password format (len=%d)", len(used_password))
+
+    transactions = []
+    with pdf_obj:
+        for page in pdf_obj.pages:
             tables = page.extract_tables()
             for table in tables:
                 for row in table:
@@ -85,7 +154,6 @@ def parse_mpesa_pdf(file_bytes: bytes) -> list[dict]:
                     if tx:
                         transactions.append(tx)
 
-            # Fallback: regex on raw text
             if not transactions:
                 text = page.extract_text() or ""
                 for match in MPESA_ROW_RE.finditer(text):
@@ -98,14 +166,8 @@ def parse_mpesa_pdf(file_bytes: bytes) -> list[dict]:
 
 
 def _parse_mpesa_row(row: list) -> Optional[dict]:
-    """Parse a table row from an M-Pesa PDF."""
     try:
-        # Columns: Receipt No | Completion Time | Details | Status | Paid In | Withdrawn | Balance
-        # Some statements omit receipt no — handle both
-        offset = 0
-        if len(row) >= 7:
-            offset = 1  # receipt number present
-
+        offset = 1 if len(row) >= 7 else 0
         date_str = str(row[offset] or "").strip()
         details = str(row[offset + 1] or "").strip()
         status = str(row[offset + 2] or "").strip()
@@ -142,7 +204,6 @@ def _parse_mpesa_row(row: list) -> Optional[dict]:
 
 
 def _mpesa_match_to_dict(match: re.Match) -> Optional[dict]:
-    """Convert a regex match to a transaction dict."""
     try:
         date = _parse_date(match.group(1), MPESA_DATE_FORMATS)
         if not date:
@@ -171,7 +232,6 @@ def _mpesa_match_to_dict(match: re.Match) -> Optional[dict]:
 # Bank statement PDF parser
 # ─────────────────────────────────────────────
 
-# Known Kenyan bank column patterns
 BANK_COLUMN_ALIASES = {
     "date": ["date", "value date", "trans date", "transaction date", "posting date"],
     "description": ["description", "details", "narration", "particulars", "remarks", "reference"],
@@ -186,26 +246,30 @@ BANK_DATE_FORMATS = [
 ]
 
 
-def parse_bank_statement_pdf(file_bytes: bytes, bank_name: str = "generic") -> list[dict]:
-    """
-    Parse a bank statement PDF.
-    Supports KCB, Equity, Co-op, and generic formats.
-    """
+def parse_bank_statement_pdf(file_bytes: bytes, bank_name: str = "generic", password: str = "") -> list[dict]:
     try:
         import pdfplumber
     except ImportError:
         raise RuntimeError("pdfplumber is required: pip install pdfplumber")
 
-    transactions = []
+    from pdfminer.pdfdocument import PDFPasswordIncorrect
 
-    with pdfplumber.open(io.BytesIO(file_bytes)) as pdf:
+    try:
+        pdf_context = pdfplumber.open(io.BytesIO(file_bytes), password=password)
+    except PDFPasswordIncorrect:
+        raise ValueError(
+            "This bank statement PDF is password-protected. "
+            "Please provide the document password."
+        )
+
+    transactions = []
+    with pdf_context as pdf:
         headers = None
         for page in pdf.pages:
             tables = page.extract_tables()
             for table in tables:
                 if not table:
                     continue
-                # Detect header row
                 if headers is None:
                     headers = _detect_bank_headers(table[0])
                     start_row = 1
@@ -222,7 +286,6 @@ def parse_bank_statement_pdf(file_bytes: bytes, bank_name: str = "generic") -> l
 
 
 def _detect_bank_headers(header_row: list) -> dict:
-    """Map column indices to standard field names."""
     mapping = {}
     for i, cell in enumerate(header_row):
         if not cell:
@@ -230,13 +293,12 @@ def _detect_bank_headers(header_row: list) -> dict:
         cell_lower = str(cell).lower().strip()
         for field, aliases in BANK_COLUMN_ALIASES.items():
             if any(alias in cell_lower for alias in aliases):
-                if field not in mapping:  # first match wins
+                if field not in mapping:
                     mapping[field] = i
     return mapping
 
 
 def _parse_bank_row(row: list, headers: dict) -> Optional[dict]:
-    """Parse a single bank statement row using detected headers."""
     try:
         if not headers or "date" not in headers:
             return None
@@ -284,24 +346,17 @@ def _parse_bank_row(row: list, headers: dict) -> Optional[dict]:
 # CSV parser
 # ─────────────────────────────────────────────
 
-CSV_COLUMN_ALIASES = {**BANK_COLUMN_ALIASES}  # reuse same aliases
-
+CSV_COLUMN_ALIASES = {**BANK_COLUMN_ALIASES}
 CSV_DATE_FORMATS = BANK_DATE_FORMATS + ["%m/%d/%Y", "%Y/%m/%d"]
 
 
 def parse_csv(file_bytes: bytes) -> list[dict]:
-    """
-    Parse a CSV transaction export.
-    Auto-detects column layout using common aliases.
-    """
     try:
-        # Try UTF-8 first, fall back to latin-1 (common in Kenyan bank exports)
         try:
             df = pd.read_csv(io.BytesIO(file_bytes), encoding="utf-8", skip_blank_lines=True)
         except UnicodeDecodeError:
             df = pd.read_csv(io.BytesIO(file_bytes), encoding="latin-1", skip_blank_lines=True)
 
-        # Normalise column names
         df.columns = [str(c).lower().strip() for c in df.columns]
 
         headers = {}
@@ -330,7 +385,6 @@ def parse_csv(file_bytes: bytes) -> list[dict]:
 
 
 def _parse_csv_row(row: pd.Series, headers: dict) -> Optional[dict]:
-    """Parse a single CSV row."""
     try:
         date_raw = str(row.get(headers["date"], "")).strip()
         date = _parse_date(date_raw, CSV_DATE_FORMATS)
@@ -347,7 +401,6 @@ def _parse_csv_row(row: pd.Series, headers: dict) -> Optional[dict]:
         if "credit" in headers:
             credit = _clean_amount(str(row.get(headers["credit"], "0"))) or Decimal("0")
 
-        # Some CSVs use a single "amount" column with +/- signs
         if debit == 0 and credit == 0 and "amount" in row.index:
             raw = str(row["amount"]).strip()
             val = _clean_amount(raw)
@@ -377,15 +430,10 @@ def _parse_csv_row(row: pd.Series, headers: dict) -> Optional[dict]:
 
 
 # ─────────────────────────────────────────────
-# Invoice parser (PDF + image via Claude API)
+# Invoice parser (PDF + image via Gemini)
 # ─────────────────────────────────────────────
 
 def parse_invoice(file_bytes: bytes, mime_type: str = "application/pdf") -> list[dict]:
-    """
-    Parse an invoice using Gemini 2.0 Flash vision API.
-    Returns a list with a single transaction (the invoice total).
-    Raises ValueError if no Gemini API key is configured.
-    """
     import os
     api_key = os.environ.get("GEMINI_API_KEY", "")
     if not api_key:
@@ -431,12 +479,11 @@ If you cannot determine a field, use null. Amount should be the total payable am
     try:
         data = json.loads(raw_text)
     except Exception as e:
-        logger.error("[PARSER] Failed to parse JSON response from Gemini: %s. Raw text: %s", e, raw_text)
+        logger.error("[PARSER] Failed to parse JSON from Gemini: %s. Raw: %s", e, raw_text)
         raise ValueError(f"Gemini returned an invalid JSON structure: {raw_text}")
 
     date_str = data.get("date")
     date = _parse_date(date_str, ["%Y-%m-%d"]) if date_str else datetime.utcnow()
-
     amount = _clean_amount(str(data.get("amount", 0))) or Decimal("0")
     description = data.get("description") or data.get("vendor") or "Invoice"
 
@@ -456,14 +503,21 @@ If you cannot determine a field, use null. Amount should be the total payable am
     ]
 
 
-
 # ─────────────────────────────────────────────
 # Entry point — auto-detect and dispatch
 # ─────────────────────────────────────────────
 
-def parse_document(file_bytes: bytes, filename: str, mime_type: str) -> tuple[list[dict], str]:
+def parse_document(
+    file_bytes: bytes,
+    filename: str,
+    mime_type: str,
+    phone: Optional[str] = None,
+    password: str = "",
+) -> tuple[list[dict], str]:
     """
     Auto-detect document type and parse it.
+    - phone: subscriber phone for M-Pesa password-protected PDFs
+    - password: explicit password for bank statement PDFs
     Returns (transactions, detected_type).
     """
     fname = filename.lower()
@@ -472,14 +526,14 @@ def parse_document(file_bytes: bytes, filename: str, mime_type: str) -> tuple[li
         return parse_csv(file_bytes), "csv"
 
     if fname.endswith(".pdf") or mime_type == "application/pdf":
-        # Sniff the PDF text to distinguish M-Pesa vs bank vs invoice
-        doc_type = _detect_pdf_type(file_bytes)
+        doc_type = _detect_pdf_type(file_bytes, phone=phone, password=password)
+        logger.info("[PARSER] Detected PDF type: %s", doc_type)
         if doc_type == "mpesa":
-            return parse_mpesa_pdf(file_bytes), "mpesa"
+            return parse_mpesa_pdf(file_bytes, phone=phone), "mpesa"
         elif doc_type == "invoice":
             return parse_invoice(file_bytes, mime_type), "invoice"
         else:
-            return parse_bank_statement_pdf(file_bytes), "bank"
+            return parse_bank_statement_pdf(file_bytes, password=password), "bank"
 
     if mime_type in ("image/jpeg", "image/png", "image/webp"):
         return parse_invoice(file_bytes, mime_type), "invoice"
@@ -487,16 +541,40 @@ def parse_document(file_bytes: bytes, filename: str, mime_type: str) -> tuple[li
     raise ValueError(f"Unsupported file type: {mime_type}")
 
 
-def _detect_pdf_type(file_bytes: bytes) -> str:
-    """Sniff the first page of a PDF to determine its type."""
-    try:
-        import pdfplumber
-        with pdfplumber.open(io.BytesIO(file_bytes)) as pdf:
-            text = (pdf.pages[0].extract_text() or "").lower()
-            if any(kw in text for kw in ["safaricom", "m-pesa", "mpesa", "fuliza"]):
-                return "mpesa"
-            if any(kw in text for kw in ["invoice", "invoice no", "bill to", "amount due", "tax invoice"]):
-                return "invoice"
+def _detect_pdf_type(
+    file_bytes: bytes,
+    phone: Optional[str] = None,
+    password: str = "",
+) -> str:
+    """
+    Sniff the PDF to determine its type.
+    Handles password-protected M-Pesa PDFs by trying phone-derived passwords.
+    Falls back to 'bank' if the type cannot be determined.
+    """
+    import pdfplumber
+    from pdfminer.pdfdocument import PDFPasswordIncorrect
+
+    # First try: filename hint already handled upstream, try with no password
+    passwords_to_try = _candidate_passwords(phone)
+    if password and password not in passwords_to_try:
+        passwords_to_try.insert(0, password)
+
+    for pwd in passwords_to_try:
+        try:
+            with pdfplumber.open(io.BytesIO(file_bytes), password=pwd) as pdf:
+                text = (pdf.pages[0].extract_text() or "").lower()
+                if any(kw in text for kw in ["safaricom", "m-pesa", "mpesa", "fuliza"]):
+                    return "mpesa"
+                if any(kw in text for kw in ["invoice", "invoice no", "bill to", "amount due", "tax invoice"]):
+                    return "invoice"
+                return "bank"
+        except PDFPasswordIncorrect:
+            continue
+        except Exception as e:
+            logger.warning("[PARSER] _detect_pdf_type error: %s", e)
             return "bank"
-    except Exception:
-        return "bank"
+
+    # All passwords failed — it's almost certainly a password-protected M-Pesa PDF
+    # (Safaricom is the main source of password-protected statements in Kenya)
+    logger.warning("[PARSER] Could not open PDF with any password — assuming mpesa")
+    return "mpesa"

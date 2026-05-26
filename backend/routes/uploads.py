@@ -5,10 +5,11 @@ Handles file uploads, parsing, categorization, and transaction import.
 
 import json
 import logging
-from fastapi import APIRouter, UploadFile, File, HTTPException, Depends, Body
+from fastapi import APIRouter, UploadFile, File, HTTPException, Depends, Body, Form
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
 from datetime import datetime
+from typing import Optional
 import cloudinary
 import cloudinary.uploader
 
@@ -21,12 +22,10 @@ from services.document_parser import parse_document, generate_batch_id
 logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/uploads", tags=["uploads"])
 
-# Configure Cloudinary
 if settings.CLOUDINARY_URL:
     cloudinary.config(url=settings.CLOUDINARY_URL)
 
 
-# Pydantic models
 class TransactionUpdate(BaseModel):
     category: str = None
     description: str = None
@@ -43,30 +42,43 @@ class ConfirmBatchRequest(BaseModel):
 @router.post("/document")
 async def upload_document(
     file: UploadFile = File(...),
+    phone: Optional[str] = Form(None),   # M-Pesa phone number for password-protected PDFs
+    password: Optional[str] = Form(None), # explicit password for bank PDFs
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):
     """
     Upload a document (M-Pesa PDF, bank statement, CSV, or invoice).
-    Parse it, categorize transactions, and save as pending_review.
+    For M-Pesa PDFs, pass the subscriber's phone number as `phone` (e.g. 0712345678).
+    Parse it, categorize transactions, and save as confirmed.
     """
     try:
-        # Read file
         file_bytes = await file.read()
         filename = file.filename or "upload"
         mime_type = file.content_type or "application/octet-stream"
 
-        logger.info(f"[UPLOAD] User {current_user.id} uploading {filename} ({len(file_bytes)} bytes)")
+        logger.info(
+            "[UPLOAD] User %s uploading %s (%d bytes), phone_hint=%s",
+            current_user.id, filename, len(file_bytes), bool(phone)
+        )
 
-        # Parse document
-        transactions, doc_type = parse_document(file_bytes, filename, mime_type)
-        
+        # Parse document — pass phone so M-Pesa PDFs can be unlocked
+        try:
+            transactions, doc_type = parse_document(
+                file_bytes, filename, mime_type,
+                phone=phone,
+                password=password or "",
+            )
+        except ValueError as e:
+            # Surface friendly errors (wrong password, no transactions, etc.)
+            raise HTTPException(status_code=422, detail=str(e))
+
         if not transactions:
             raise HTTPException(status_code=400, detail="No transactions found in document")
 
-        logger.info(f"[UPLOAD] Parsed {len(transactions)} transactions from {doc_type}")
+        logger.info("[UPLOAD] Parsed %d transactions from %s", len(transactions), doc_type)
 
-        # Upload file to Cloudinary
+        # Upload to Cloudinary
         storage_url = ""
         if settings.CLOUDINARY_URL:
             try:
@@ -77,15 +89,15 @@ async def upload_document(
                     public_id=filename,
                 )
                 storage_url = upload_result["secure_url"]
-                logger.info(f"[UPLOAD] File stored at {storage_url}")
+                logger.info("[UPLOAD] File stored at %s", storage_url)
             except Exception as e:
-                logger.warning(f"[UPLOAD] Cloudinary upload failed: {e}. Continuing without storage.")
+                logger.warning("[UPLOAD] Cloudinary upload failed: %s. Continuing.", e)
                 storage_url = f"local://{filename}"
         else:
             storage_url = f"local://{filename}"
 
-        # Create batch ID and UploadedDocument record
         batch_id = generate_batch_id()
+        now = datetime.utcnow()
 
         doc_record = UploadedDocument(
             user_id=current_user.id,
@@ -95,13 +107,13 @@ async def upload_document(
             transaction_count=len(transactions),
             batch_id=batch_id,
             status="confirmed",
-            parsed_at=datetime.utcnow(),
+            parsed_at=now,          # ← always set explicitly
+            created_at=now,
             summary=json.dumps({"doc_type": doc_type, "transaction_count": len(transactions)}),
         )
         db.add(doc_record)
-        db.flush()  # Get the ID
+        db.flush()
 
-        # Create Transaction records directly as confirmed (no AI categorization)
         for tx_data in transactions:
             tx = Transaction(
                 user_id=current_user.id,
@@ -117,7 +129,7 @@ async def upload_document(
             db.add(tx)
 
         db.commit()
-        logger.info(f"[UPLOAD] Batch {batch_id} imported with {len(transactions)} confirmed transactions")
+        logger.info("[UPLOAD] Batch %s imported with %d confirmed transactions", batch_id, len(transactions))
 
         return {
             "batch_id": batch_id,
@@ -132,12 +144,12 @@ async def upload_document(
         raise
     except Exception as e:
         db.rollback()
-        logger.error(f"[UPLOAD] Error: {e}", exc_info=True)
+        logger.error("[UPLOAD] Unexpected error: %s", e, exc_info=True)
         raise HTTPException(status_code=500, detail=f"Failed to process document: {str(e)}")
 
 
 # ─────────────────────────────────────────────
-# GET /uploads/preview/{batch} — preview pending transactions
+# GET /uploads/preview/{batch_id}
 # ─────────────────────────────────────────────
 
 @router.get("/preview/{batch_id}")
@@ -146,10 +158,6 @@ async def preview_batch(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):
-    """
-    Return pending transactions from a batch for review.
-    User can see categorization and decide to confirm or edit.
-    """
     doc = db.query(UploadedDocument).filter(
         UploadedDocument.batch_id == batch_id,
         UploadedDocument.user_id == current_user.id,
@@ -170,7 +178,7 @@ async def preview_batch(
             "id": doc.id,
             "filename": doc.filename,
             "file_type": doc.file_type,
-            "parsed_at": doc.parsed_at.isoformat(),
+            "parsed_at": doc.parsed_at.isoformat() if doc.parsed_at else None,
         },
         "summary": json.loads(doc.summary) if doc.summary else {},
         "transactions": [
@@ -189,7 +197,7 @@ async def preview_batch(
 
 
 # ─────────────────────────────────────────────
-# POST /uploads/confirm/{batch} — confirm and save batch
+# POST /uploads/confirm/{batch_id}
 # ─────────────────────────────────────────────
 
 @router.post("/confirm/{batch_id}")
@@ -199,10 +207,6 @@ async def confirm_batch(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):
-    """
-    Confirm a batch: mark transactions as "confirmed" and move to live.
-    Optionally accept manual edits to categories/descriptions.
-    """
     doc = db.query(UploadedDocument).filter(
         UploadedDocument.batch_id == batch_id,
         UploadedDocument.user_id == current_user.id,
@@ -216,7 +220,6 @@ async def confirm_batch(
         Transaction.user_id == current_user.id,
     ).all()
 
-    # Apply updates if provided
     updates = request_body.updates
     if updates:
         for tx in transactions:
@@ -227,14 +230,12 @@ async def confirm_batch(
                 if update_data.description:
                     tx.description = update_data.description
 
-    # Mark all as confirmed
     for tx in transactions:
         tx.status = "confirmed"
 
     doc.status = "confirmed"
-
     db.commit()
-    logger.info(f"[UPLOAD] Batch {batch_id} confirmed with {len(transactions)} transactions")
+    logger.info("[UPLOAD] Batch %s confirmed with %d transactions", batch_id, len(transactions))
 
     return {
         "batch_id": batch_id,
@@ -244,7 +245,7 @@ async def confirm_batch(
 
 
 # ─────────────────────────────────────────────
-# DELETE /uploads/cancel/{batch} — cancel/discard batch
+# DELETE /uploads/cancel/{batch_id}
 # ─────────────────────────────────────────────
 
 @router.delete("/cancel/{batch_id}")
@@ -253,9 +254,6 @@ async def cancel_batch(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):
-    """
-    Cancel a pending batch: delete all pending_review transactions and the document record.
-    """
     doc = db.query(UploadedDocument).filter(
         UploadedDocument.batch_id == batch_id,
         UploadedDocument.user_id == current_user.id,
@@ -264,23 +262,20 @@ async def cancel_batch(
     if not doc:
         raise HTTPException(status_code=404, detail="Batch not found")
 
-    # Delete pending transactions
     db.query(Transaction).filter(
         Transaction.import_batch_id == batch_id,
         Transaction.status == "pending_review",
     ).delete()
 
-    # Mark document as cancelled
     doc.status = "cancelled"
     db.commit()
-
-    logger.info(f"[UPLOAD] Batch {batch_id} cancelled")
+    logger.info("[UPLOAD] Batch %s cancelled", batch_id)
 
     return {"batch_id": batch_id, "status": "cancelled"}
 
 
 # ─────────────────────────────────────────────
-# GET /uploads/history — list past uploads
+# GET /uploads/history
 # ─────────────────────────────────────────────
 
 @router.get("/history")
@@ -288,9 +283,6 @@ async def upload_history(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):
-    """
-    Get upload history for the current user.
-    """
     docs = db.query(UploadedDocument).filter(
         UploadedDocument.user_id == current_user.id,
     ).order_by(UploadedDocument.created_at.desc()).all()
@@ -303,7 +295,7 @@ async def upload_history(
             "file_type": doc.file_type,
             "transaction_count": doc.transaction_count,
             "status": doc.status,
-            "parsed_at": doc.parsed_at.isoformat(),
+            "parsed_at": doc.parsed_at.isoformat() if doc.parsed_at else None,
             "summary": json.loads(doc.summary) if doc.summary else {},
         }
         for doc in docs
