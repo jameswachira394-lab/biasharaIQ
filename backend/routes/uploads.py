@@ -17,7 +17,6 @@ from core.config import settings
 from middleware.auth import get_current_user
 from models.models import User, UploadedDocument, Transaction, TransactionType
 from services.document_parser import parse_document, generate_batch_id
-from services.ai_categorizer import categorize_transactions, generate_upload_summary
 
 logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/uploads", tags=["uploads"])
@@ -67,12 +66,6 @@ async def upload_document(
 
         logger.info(f"[UPLOAD] Parsed {len(transactions)} transactions from {doc_type}")
 
-        # Categorize transactions using Claude
-        categorized_txs = categorize_transactions(transactions)
-
-        # Generate summary
-        summary = generate_upload_summary(categorized_txs, doc_type)
-
         # Upload file to Cloudinary
         storage_url = ""
         if settings.CLOUDINARY_URL:
@@ -99,39 +92,39 @@ async def upload_document(
             filename=filename,
             file_type=doc_type,
             storage_url=storage_url,
-            transaction_count=len(categorized_txs),
+            transaction_count=len(transactions),
             batch_id=batch_id,
-            status="pending_review",
-            summary=json.dumps(summary),
+            status="confirmed",
+            summary=json.dumps({"doc_type": doc_type, "transaction_count": len(transactions)}),
         )
         db.add(doc_record)
         db.flush()  # Get the ID
 
-        # Create Transaction records with status="pending_review"
-        for tx_data in categorized_txs:
+        # Create Transaction records directly as confirmed (no AI categorization)
+        for tx_data in transactions:
             tx = Transaction(
                 user_id=current_user.id,
                 amount=tx_data["amount"],
                 type=TransactionType(tx_data["type"]),
-                category=tx_data["suggested_category"],
+                category="Uncategorized",
                 date=datetime.fromisoformat(tx_data["date"]),
                 description=tx_data["description"],
                 source=tx_data["source"],
                 import_batch_id=batch_id,
-                status="pending_review",
+                status="confirmed",
             )
             db.add(tx)
 
         db.commit()
-        logger.info(f"[UPLOAD] Batch {batch_id} saved with {len(categorized_txs)} pending transactions")
+        logger.info(f"[UPLOAD] Batch {batch_id} imported with {len(transactions)} confirmed transactions")
 
         return {
             "batch_id": batch_id,
             "document_id": doc_record.id,
             "doc_type": doc_type,
-            "transaction_count": len(categorized_txs),
-            "summary": summary,
-            "status": "pending_review",
+            "transaction_count": len(transactions),
+            "status": "confirmed",
+            "message": f"Successfully imported {len(transactions)} transactions",
         }
 
     except HTTPException:
