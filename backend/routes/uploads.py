@@ -95,6 +95,7 @@ async def upload_document(
             transaction_count=len(transactions),
             batch_id=batch_id,
             status="confirmed",
+            parsed_at=datetime.utcnow(),
             summary=json.dumps({"doc_type": doc_type, "transaction_count": len(transactions)}),
         )
         db.add(doc_record)
@@ -130,6 +131,7 @@ async def upload_document(
     except HTTPException:
         raise
     except Exception as e:
+        db.rollback()
         logger.error(f"[UPLOAD] Error: {e}", exc_info=True)
         raise HTTPException(status_code=500, detail=f"Failed to process document: {str(e)}")
 
