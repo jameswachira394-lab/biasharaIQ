@@ -22,8 +22,17 @@ from services.document_parser import parse_document, generate_batch_id
 logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/uploads", tags=["uploads"])
 
+# Configure Cloudinary — prefer explicit CLOUDINARY_URL, fall back to individual credentials
 if settings.CLOUDINARY_URL:
     cloudinary.config(url=settings.CLOUDINARY_URL)
+elif settings.CLIENT_ID and settings.CLIENT_SECRET and settings.CLIENT_USERNAME:
+    cloudinary.config(
+        cloud_name=settings.CLIENT_USERNAME,
+        api_key=settings.CLIENT_ID,
+        api_secret=settings.CLIENT_SECRET,
+        secure=True,
+    )
+    logger.info("[UPLOAD] Cloudinary configured via CLIENT credentials (cloud=%s)", settings.CLIENT_USERNAME)
 
 
 class TransactionUpdate(BaseModel):
@@ -79,8 +88,12 @@ async def upload_document(
         logger.info("[UPLOAD] Parsed %d transactions from %s", len(transactions), doc_type)
 
         # Upload to Cloudinary
+        _cloudinary_ready = bool(
+            settings.CLOUDINARY_URL
+            or (settings.CLIENT_ID and settings.CLIENT_SECRET and settings.CLIENT_USERNAME)
+        )
         storage_url = ""
-        if settings.CLOUDINARY_URL:
+        if _cloudinary_ready:
             try:
                 upload_result = cloudinary.uploader.upload(
                     file_bytes,

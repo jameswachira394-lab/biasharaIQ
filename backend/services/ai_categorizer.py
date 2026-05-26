@@ -1,6 +1,6 @@
 """
 AI-powered transaction categorization and summarization.
-Uses Claude to assign categories and generate upload summaries.
+Uses Gemini to assign categories and generate upload summaries.
 Falls back to rule-based categorization when no API key is available.
 """
 
@@ -11,33 +11,21 @@ from typing import Optional
 
 logger = logging.getLogger(__name__)
 
-# Only instantiate clients if API keys are present
+# Only instantiate Gemini client if API key is present
 _gemini_key = os.environ.get("GEMINI_API_KEY", "")
-_anthropic_key = os.environ.get("ANTHROPIC_API_KEY", "")
 
 client = None
-client_type = None
 
 if _gemini_key:
     try:
         from google import genai
         client = genai.Client(api_key=_gemini_key)
-        client_type = "gemini"
         logger.info("[AI] Gemini client initialized for categorization")
     except Exception as e:
         logger.warning(f"[AI] Failed to initialize Gemini client: {e}")
 
-if not client and _anthropic_key:
-    try:
-        import anthropic
-        client = anthropic.Anthropic(api_key=_anthropic_key)
-        client_type = "anthropic"
-        logger.info("[AI] Anthropic client initialized for categorization")
-    except Exception as e:
-        logger.warning(f"[AI] Failed to initialize Anthropic client: {e}")
-
 if not client:
-    logger.warning("[AI] No GEMINI_API_KEY or ANTHROPIC_API_KEY set — using rule-based categorization fallback")
+    logger.warning("[AI] No GEMINI_API_KEY set — using rule-based categorization fallback")
 
 
 # ─────────────────────────────────────────────
@@ -160,26 +148,17 @@ def _categorize_batch(items: list[dict], user_categories: list[str] = None) -> d
     prompt = f"Categorize these transactions:\n{json.dumps(items, indent=2)}"
 
     try:
-        if client_type == "gemini":
-            from google.genai import types
-            response = client.models.generate_content(
-                model="gemini-2.0-flash",
-                contents=[prompt],
-                config=types.GenerateContentConfig(
-                    system_instruction=system,
-                    response_mime_type="application/json",
-                    temperature=0.1,
-                )
+        from google.genai import types
+        response = client.models.generate_content(
+            model="gemini-2.0-flash",
+            contents=[prompt],
+            config=types.GenerateContentConfig(
+                system_instruction=system,
+                response_mime_type="application/json",
+                temperature=0.1,
             )
-            raw = response.text.strip()
-        else:
-            response = client.messages.create(
-                model="claude-sonnet-4-20250514",
-                max_tokens=1000,
-                system=system,
-                messages=[{"role": "user", "content": prompt}],
-            )
-            raw = response.content[0].text.strip()
+        )
+        raw = response.text.strip()
 
         # Strip markdown fences if present
         raw = raw.replace("```json", "").replace("```", "").strip()
@@ -287,19 +266,11 @@ def _generate_narrative(
             f"Top spending areas: {cat_str}"
         )
 
-        if client_type == "gemini":
-            response = client.models.generate_content(
-                model="gemini-2.0-flash",
-                contents=[prompt],
-            )
-            return response.text.strip()
-        else:
-            response = client.messages.create(
-                model="claude-sonnet-4-20250514",
-                max_tokens=200,
-                messages=[{"role": "user", "content": prompt}],
-            )
-            return response.content[0].text.strip()
+        response = client.models.generate_content(
+            model="gemini-2.0-flash",
+            contents=[prompt],
+        )
+        return response.text.strip()
 
     except Exception as e:
         logger.error("[AI] Narrative generation failed: %s", e)

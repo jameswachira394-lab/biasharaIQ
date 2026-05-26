@@ -26,9 +26,14 @@ class Settings(BaseSettings):
     IS_PRODUCTION: bool = False
     
     # API Keys
-    ANTHROPIC_API_KEY: str = ""
     GEMINI_API_KEY: str = ""
     CLOUDINARY_URL: str = ""  # cloudinary://key:secret@cloud_name
+
+    # Document parser / Cloudinary credentials
+    CLIENT_ID: str = ""
+    CLIENT_SECRET: str = ""
+    CLIENT_API: str = ""
+    CLIENT_USERNAME: str = ""
     
     # Frontend Configuration
     FRONTEND_URL: str = "https://biashara-iq.vercel.app"
