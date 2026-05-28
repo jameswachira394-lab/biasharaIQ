@@ -4,33 +4,27 @@ Run with: python migrate_db.py
 Safe to run multiple times (uses IF NOT EXISTS / IF NOT IN).
 """
 import os
-import sys
 from dotenv import load_dotenv
+import psycopg2
 
 load_dotenv()
 
-DATABASE_URL = os.getenv("DATABASE_URL", "")
-if not DATABASE_URL:
-    print("ERROR: DATABASE_URL not set in .env")
-    sys.exit(1)
-
-try:
-    import psycopg2
-except ImportError:
-    print("ERROR: psycopg2 not installed. Run: pip install psycopg2-binary")
-    sys.exit(1)
-
-# Parse DATABASE_URL
-url = DATABASE_URL.replace("postgresql://", "")
-user_pass, rest = url.split("@", 1)
-user, password = user_pass.split(":", 1)
-host_port, db_name = rest.split("/", 1)
-host = host_port.split(":")[0]
-port = int(host_port.split(":")[1]) if ":" in host_port else 5432
+host = os.getenv("DB_HOST")
+port = os.getenv("DB_PORT", "5432")
+user = os.getenv("DB_USER")
+password = os.getenv("DB_PASSWORD")
+db_name = os.getenv("DB_NAME")
 
 print(f"Connecting to {host}/{db_name}...")
 
-conn = psycopg2.connect(host=host, port=port, user=user, password=password, dbname=db_name)
+conn = psycopg2.connect(
+    host=host,
+    port=port,
+    user=user,
+    password=password,
+    dbname=db_name,
+    sslmode="require"
+)
 conn.autocommit = True
 cur = conn.cursor()
 
