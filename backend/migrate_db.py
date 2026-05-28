@@ -28,6 +28,23 @@ conn = psycopg2.connect(
 conn.autocommit = True
 cur = conn.cursor()
 
+# Check if users table exists, if not apply schema.sql first
+cur.execute("""
+    SELECT EXISTS (
+        SELECT FROM information_schema.tables 
+        WHERE table_schema = 'public'
+        AND table_name = 'users'
+    );
+""")
+users_exists = cur.fetchone()[0]
+if not users_exists:
+    print("Table 'users' does not exist. Applying schema.sql first...")
+    schema_path = os.path.join(os.path.dirname(__file__), "schema.sql")
+    with open(schema_path, "r") as f:
+        schema = f.read()
+        cur.execute(schema)
+    print("Schema applied successfully.")
+
 # ── 1. Add missing columns to users table ──────────────────────────────
 print("[TABLE] Adding missing columns to users table...")
 
