@@ -55,6 +55,15 @@ if not settings.DEBUG:
         for o in settings.cors_origins_list
         if o and o != "*" and urlparse(o).hostname
     ]
+    # Always allow Render's external hostname and subdomains
+    render_host = os.getenv("RENDER_EXTERNAL_HOSTNAME")
+    if render_host:
+        allowed_hosts.append(render_host)
+    allowed_hosts.append("*.onrender.com")
+    
+    # Remove duplicates and None values
+    allowed_hosts = list(set([h for h in allowed_hosts if h]))
+    
     app.add_middleware(
         TrustedHostMiddleware,
         allowed_hosts=allowed_hosts

@@ -63,6 +63,21 @@ class Settings(BaseSettings):
         """Update DEBUG and IS_PRODUCTION based on ENVIRONMENT"""
         object.__setattr__(self, 'DEBUG', self.ENVIRONMENT == "development")
         object.__setattr__(self, 'IS_PRODUCTION', self.ENVIRONMENT == "production")
+        
+        # Dynamically build DATABASE_URL if not set in env
+        import os
+        if not os.getenv("DATABASE_URL") or self.DATABASE_URL == "postgresql://localhost/biasharaiq":
+            db_user = os.getenv("DB_USER")
+            db_pass = os.getenv("DB_PASSWORD")
+            db_host = os.getenv("DB_HOST")
+            db_port = os.getenv("DB_PORT", "5432")
+            db_name = os.getenv("DB_NAME")
+            if db_user and db_pass and db_host and db_name:
+                object.__setattr__(
+                    self, 
+                    'DATABASE_URL', 
+                    f"postgresql://{db_user}:{db_pass}@{db_host}:{db_port}/{db_name}"
+                )
 
     class Config:
         env_file = backend_dir / ".env"
