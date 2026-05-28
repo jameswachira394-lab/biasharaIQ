@@ -26,6 +26,8 @@ engine_kwargs = {
 # Use QueuePool for better connection management in production
 if DATABASE_URL.startswith("postgresql"):
     engine_kwargs["poolclass"] = QueuePool
+    if "localhost" not in DATABASE_URL and "127.0.0.1" not in DATABASE_URL:
+        engine_kwargs["connect_args"] = {"sslmode": "require"}
 
 engine = create_engine(DATABASE_URL, **engine_kwargs)
 
