@@ -7,10 +7,6 @@ import { X, Smartphone, Loader2, CheckCircle2, AlertCircle } from 'lucide-react'
 export default function UpgradeModal({ isOpen, onClose }) {
   const { user, updateUser } = useAuth()
   const [phone, setPhone] = useState(user?.phone || '')
-  const [method, setMethod] = useState('personal') // personal, business
-  const [senderShortcode, setSenderShortcode] = useState('600000') // sandbox B2B shortcode default
-  const [initiatorName, setInitiatorName] = useState('testapi')
-  const [securityCredential, setSecurityCredential] = useState('')
   const [loading, setLoading] = useState(false)
   const [step, setStep] = useState('input') // input, pending, success, error
   const [checkoutId, setCheckoutId] = useState(null)
@@ -22,28 +18,22 @@ export default function UpgradeModal({ isOpen, onClose }) {
     e.preventDefault()
     setLoading(true)
     setError('')
+    
+    // Clean phone number input
+    let formattedPhone = phone.trim().replace(/\s+/g, '')
+    if (!formattedPhone) {
+      setError('Phone number is required')
+      setLoading(false)
+      return
+    }
+
     try {
-      let res;
-      if (method === 'personal') {
-        res = await paymentApi.initiate({ phone, amount: 499 })
-      } else {
-        if (!senderShortcode) {
-          setError('Sender shortcode is required')
-          setLoading(false)
-          return
-        }
-        res = await paymentApi.initiateB2b({
-          sender_shortcode: senderShortcode,
-          amount: 499,
-          initiator_name: initiatorName || undefined,
-          security_credential: securityCredential || undefined
-        })
-      }
+      const res = await paymentApi.initiate({ phone: formattedPhone, amount: 499 })
       setCheckoutId(res.data.checkout_id)
       setStep('pending')
       startPolling(res.data.checkout_id)
     } catch (err) {
-      setError(err.response?.data?.detail || 'Failed to initiate payment')
+      setError(err.response?.data?.detail || 'Failed to initiate M-Pesa payment')
       setLoading(false)
     }
   }
@@ -55,7 +45,7 @@ export default function UpgradeModal({ isOpen, onClose }) {
       if (attempts > 30) { // 2 minutes
         clearInterval(interval)
         setStep('error')
-        setError('Payment verification timed out. Please check your M-Pesa or contact support.')
+        setError('Payment verification timed out. Please check your phone or contact support.')
         return
       }
 
@@ -68,10 +58,10 @@ export default function UpgradeModal({ isOpen, onClose }) {
         } else if (res.data.status === 'failed') {
           clearInterval(interval)
           setStep('error')
-          setError('Transaction failed. Please try again.')
+          setError('Transaction failed or was cancelled. Please try again.')
         }
       } catch (err) {
-        // Continue polling
+        // Keep polling
       }
     }, 4000)
   }
@@ -80,121 +70,53 @@ export default function UpgradeModal({ isOpen, onClose }) {
     <div className="fixed inset-0 z-[60] flex items-center justify-center p-4">
       <div className="absolute inset-0 bg-black/80 backdrop-blur-sm" onClick={onClose} />
       
-      <div className="card w-full max-w-md relative z-10 p-8 animate-fade-in">
-        <button onClick={onClose} className="absolute top-4 right-4 text-semantic-textMuted hover:text-white">
+      <div className="card w-full max-w-md relative z-10 p-8 animate-fade-in border border-[#2E7D32]/20 shadow-[0_0_50px_-12px_rgba(46,125,50,0.15)] bg-gradient-to-b from-[#0A2540]/10 to-[#121821]">
+        <button onClick={onClose} className="absolute top-4 right-4 text-semantic-textMuted hover:text-white transition-colors">
           <X size={20} />
         </button>
 
         {step === 'input' && (
           <form onSubmit={handleInitiate} className="text-center">
-            <div className="w-16 h-16 rounded-full bg-semantic-accentBlue/10 flex items-center justify-center mx-auto mb-6">
-              <Smartphone className="text-semantic-accentBlue" size={32} />
+            <div className="w-16 h-16 rounded-full bg-[#2E7D32]/10 border border-[#2E7D32]/20 flex items-center justify-center mx-auto mb-6 shadow-[0_0_20px_rgba(46,125,50,0.1)]">
+              <Smartphone className="text-[#2E7D32] animate-pulse" size={32} />
             </div>
             <h2 className="text-xl font-display font-bold text-semantic-white mb-2">Upgrade to Pro</h2>
             <p className="text-sm text-semantic-textSecondary mb-6">
-              Select your payment method and confirm details to complete the upgrade.
+              Enter your M-Pesa phone number below to initiate a secure instant payment.
             </p>
 
-            {/* Payment Method Tabs */}
-            <div className="flex gap-2 mb-6 p-1 bg-[#121821] rounded-lg border border-[#0A2540]/30 w-full">
-              <button
-                type="button"
-                onClick={() => setMethod('personal')}
-                className={`flex-1 text-center py-2 rounded-md text-xs font-semibold transition-all ${
-                  method === 'personal'
-                    ? 'bg-[#2E7D32]/10 text-[#2E7D32] border border-[#2E7D32]/20'
-                    : 'text-semantic-textSecondary hover:text-white'
-                }`}
-              >
-                Personal M-Pesa
-              </button>
-              <button
-                type="button"
-                onClick={() => setMethod('business')}
-                className={`flex-1 text-center py-2 rounded-md text-xs font-semibold transition-all ${
-                  method === 'business'
-                    ? 'bg-[#2E7D32]/10 text-[#2E7D32] border border-[#2E7D32]/20'
-                    : 'text-semantic-textSecondary hover:text-white'
-                }`}
-              >
-                Business B2B
-              </button>
+            <div className="text-left mb-6">
+              <label className="block text-xs font-semibold text-semantic-textSecondary uppercase tracking-wider mb-2">
+                M-Pesa Phone Number
+              </label>
+              <input
+                type="tel"
+                required
+                className="input-dark text-lg py-3 tracking-widest text-center border-[#0A2540]/50 focus:border-[#2E7D32]/50"
+                placeholder="e.g. 0712345678 or 2547XXXXXXXX"
+                value={phone}
+                onChange={(e) => setPhone(e.target.value)}
+              />
+              <p className="text-[10px] text-semantic-textMuted mt-2 text-center">
+                A prompt will appear on your phone asking for your M-Pesa PIN.
+              </p>
             </div>
 
-            {method === 'personal' ? (
-              <div className="text-left mb-6">
-                <label className="block text-xs font-semibold text-semantic-textSecondary uppercase tracking-wider mb-2">
-                  M-Pesa Phone Number
-                </label>
-                <input
-                  type="tel"
-                  required
-                  className="input-dark text-lg py-3"
-                  placeholder="e.g. 0712345678"
-                  value={phone}
-                  onChange={(e) => setPhone(e.target.value)}
-                />
-              </div>
-            ) : (
-              <div className="space-y-4 text-left mb-6">
-                <div>
-                  <label className="block text-xs font-semibold text-semantic-textSecondary uppercase tracking-wider mb-1.5">
-                    Sender Business Shortcode *
-                  </label>
-                  <input
-                    type="text"
-                    required
-                    className="input-dark text-base py-2.5"
-                    placeholder="e.g. 600000"
-                    value={senderShortcode}
-                    onChange={(e) => setSenderShortcode(e.target.value)}
-                  />
-                </div>
-                <div className="grid grid-cols-2 gap-3">
-                  <div>
-                    <label className="block text-xs font-semibold text-semantic-textSecondary uppercase tracking-wider mb-1.5">
-                      Initiator User
-                    </label>
-                    <input
-                      type="text"
-                      className="input-dark text-sm py-2.5"
-                      placeholder="e.g. testapi"
-                      value={initiatorName}
-                      onChange={(e) => setInitiatorName(e.target.value)}
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-xs font-semibold text-semantic-textSecondary uppercase tracking-wider mb-1.5">
-                      Password/Credential
-                    </label>
-                    <input
-                      type="password"
-                      className="input-dark text-sm py-2.5"
-                      placeholder="Optional"
-                      value={securityCredential}
-                      onChange={(e) => setSecurityCredential(e.target.value)}
-                    />
-                  </div>
-                </div>
-                <p className="text-[10px] text-semantic-textMuted italic leading-normal">
-                  * Triggers a fund transfer from the business shortcode. In Sandbox, use 600000 as shortcode and testapi as initiator.
-                </p>
-              </div>
-            )}
-
             {error && (
-              <div className="mb-6 p-3 rounded-lg bg-semantic-error/10 border border-semantic-error/20 text-semantic-error text-xs flex items-center gap-2">
-                <AlertCircle size={14} /> {error}
+              <div className="mb-6 p-3 rounded-lg bg-semantic-error/10 border border-semantic-error/20 text-semantic-error text-xs flex items-center gap-2 text-left">
+                <AlertCircle size={14} className="shrink-0" /> {error}
               </div>
             )}
 
-            <button type="submit" disabled={loading} className="btn-primary w-full py-3.5 justify-center text-base">
+            <button 
+              type="submit" 
+              disabled={loading} 
+              className="w-full py-4 rounded-lg font-bold text-white transition-all bg-[#2E7D32] hover:bg-[#1B5E20] hover:shadow-[0_0_20px_rgba(46,125,50,0.4)] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+            >
               {loading ? (
-                <><Loader2 className="animate-spin" size={18} /> Processing...</>
-              ) : method === 'personal' ? (
-                'Send STK Push'
+                <><Loader2 className="animate-spin" size={18} /> Sending Push Prompt...</>
               ) : (
-                'Request B2B Transfer'
+                'Pay with M-Pesa'
               )}
             </button>
           </form>
@@ -202,44 +124,51 @@ export default function UpgradeModal({ isOpen, onClose }) {
 
         {step === 'pending' && (
           <div className="text-center py-6">
-            <div className="w-20 h-20 border-4 border-semantic-accentBlue/20 border-t-semantic-accentBlue rounded-full animate-spin mx-auto mb-8" />
+            <div className="relative w-24 h-24 mx-auto mb-8 flex items-center justify-center">
+              <div className="absolute inset-0 border-4 border-[#2E7D32]/20 border-t-[#2E7D32] rounded-full animate-spin" />
+              <Smartphone className="text-[#2E7D32]" size={36} />
+            </div>
             <h2 className="text-xl font-display font-bold text-semantic-white mb-2">
-              {method === 'personal' ? 'Awaiting Payment' : 'Processing Transfer'}
+              Awaiting Payment
             </h2>
-            <p className="text-sm text-semantic-textSecondary">
-              {method === 'personal'
-                ? 'Please check your phone for the M-Pesa prompt and enter your PIN to complete the payment.'
-                : 'The B2B transfer request has been submitted to M-Pesa. We are waiting for confirmation.'}
+            <p className="text-sm text-semantic-textSecondary px-2">
+              Please check your phone for the M-Pesa prompt and enter your <strong>PIN</strong> to complete the upgrade.
             </p>
-            <p className="mt-8 text-xs text-semantic-textMuted italic">
-              Verification may take up to 30 seconds...
-            </p>
+            <div className="mt-8 p-3 rounded-lg bg-[#2E7D32]/5 border border-[#2E7D32]/10 inline-block text-[11px] text-[#2E7D32] font-semibold animate-pulse">
+              Waiting for Safaricom confirmation...
+            </div>
           </div>
         )}
 
         {step === 'success' && (
-          <div className="text-center py-6">
-            <div className="w-16 h-16 rounded-full bg-semantic-success/10 flex items-center justify-center mx-auto mb-6">
-              <CheckCircle2 className="text-semantic-success" size={40} />
+          <div className="text-center py-6 animate-fade-in">
+            <div className="w-16 h-16 rounded-full bg-[#2E7D32]/15 border border-[#2E7D32]/30 flex items-center justify-center mx-auto mb-6 shadow-[0_0_30px_rgba(46,125,50,0.2)]">
+              <CheckCircle2 className="text-[#4CAF50]" size={40} />
             </div>
-            <h2 className="text-xl font-display font-bold text-semantic-white mb-2">Payment Successful!</h2>
+            <h2 className="text-2xl font-display font-bold text-semantic-white mb-2">Upgrade Successful!</h2>
             <p className="text-sm text-semantic-textSecondary mb-8">
-              Welcome to <strong>BiasharaIQ Pro</strong>. Your advanced financial intelligence features are now active.
+              Welcome to <strong>BiasharaIQ Pro</strong>. Your advanced business intelligence dashboard is now active.
             </p>
-            <button onClick={onClose} className="btn-primary w-full py-3 justify-center">
+            <button 
+              onClick={onClose} 
+              className="w-full py-3.5 rounded-lg font-bold text-white transition-all bg-[#2E7D32] hover:bg-[#1B5E20] shadow-[0_0_20px_rgba(46,125,50,0.3)] flex justify-center"
+            >
               Go to Dashboard
             </button>
           </div>
         )}
 
         {step === 'error' && (
-          <div className="text-center py-6">
-            <div className="w-16 h-16 rounded-full bg-semantic-error/10 flex items-center justify-center mx-auto mb-6">
+          <div className="text-center py-6 animate-fade-in">
+            <div className="w-16 h-16 rounded-full bg-semantic-error/10 border border-semantic-error/20 flex items-center justify-center mx-auto mb-6">
               <AlertCircle className="text-semantic-error" size={40} />
             </div>
-            <h2 className="text-xl font-display font-bold text-semantic-white mb-2">Payment Error</h2>
-            <p className="text-sm text-semantic-textSecondary mb-8">{error}</p>
-            <button onClick={() => setStep('input')} className="btn-secondary w-full py-3 justify-center">
+            <h2 className="text-xl font-display font-bold text-semantic-white mb-2">Payment Failed</h2>
+            <p className="text-sm text-semantic-textSecondary mb-8 px-4">{error}</p>
+            <button 
+              onClick={() => setStep('input')} 
+              className="w-full py-3.5 rounded-lg font-bold text-white transition-all bg-white/10 hover:bg-white/20 border border-white/10 flex justify-center"
+            >
               Try Again
             </button>
           </div>
