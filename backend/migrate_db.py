@@ -57,6 +57,8 @@ columns_to_add = [
     ("currency",                 "VARCHAR DEFAULT 'KES'"),
     ("is_active",                "BOOLEAN DEFAULT TRUE"),
     ("is_verified",              "BOOLEAN DEFAULT FALSE"),
+    ("verification_code",        "VARCHAR(10) NULL"),
+    ("verification_expires_at",  "TIMESTAMP NULL"),
 ]
 
 for col_name, col_def in columns_to_add:
@@ -66,6 +68,26 @@ for col_name, col_def in columns_to_add:
     """, (col_name,))
     if cur.fetchone() is None:
         cur.execute(f'ALTER TABLE users ADD COLUMN IF NOT EXISTS "{col_name}" {col_def}')
+        print(f"  [OK] Added column: {col_name}")
+    else:
+        print(f"  [SKIP] Column already exists: {col_name}")
+
+# ── 1.5. Add missing columns to transactions table ─────────────────────
+print("[TABLE] Adding missing columns to transactions table...")
+
+tx_columns_to_add = [
+    ("source",                   "VARCHAR DEFAULT 'manual'"),
+    ("import_batch_id",          "VARCHAR NULL"),
+    ("status",                   "VARCHAR DEFAULT 'confirmed'"),
+]
+
+for col_name, col_def in tx_columns_to_add:
+    cur.execute("""
+        SELECT column_name FROM information_schema.columns
+        WHERE table_name = 'transactions' AND column_name = %s
+    """, (col_name,))
+    if cur.fetchone() is None:
+        cur.execute(f'ALTER TABLE transactions ADD COLUMN IF NOT EXISTS "{col_name}" {col_def}')
         print(f"  [OK] Added column: {col_name}")
     else:
         print(f"  [SKIP] Column already exists: {col_name}")

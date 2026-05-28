@@ -11,6 +11,14 @@ CREATE TABLE IF NOT EXISTS users (
     business_type VARCHAR(100),
     currency VARCHAR(10) DEFAULT 'KES',
     is_active BOOLEAN DEFAULT TRUE,
+    is_verified BOOLEAN DEFAULT FALSE,
+    plan VARCHAR(50) DEFAULT 'FREE',
+    subscription_status VARCHAR(50) DEFAULT 'active',
+    subscription_start TIMESTAMP,
+    subscription_end TIMESTAMP,
+    monthly_transaction_count INTEGER DEFAULT 0,
+    verification_code VARCHAR(10),
+    verification_expires_at TIMESTAMP,
     created_at TIMESTAMP DEFAULT NOW(),
     updated_at TIMESTAMP DEFAULT NOW()
 );
@@ -35,6 +43,9 @@ CREATE TABLE IF NOT EXISTS transactions (
     category VARCHAR(100) NOT NULL,
     date TIMESTAMP NOT NULL DEFAULT NOW(),
     description TEXT,
+    source VARCHAR(50) DEFAULT 'manual',
+    import_batch_id VARCHAR(100),
+    status VARCHAR(50) DEFAULT 'confirmed',
     created_at TIMESTAMP DEFAULT NOW(),
     updated_at TIMESTAMP DEFAULT NOW()
 );
