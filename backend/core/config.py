@@ -50,6 +50,12 @@ class Settings(BaseSettings):
     MPESA_PASSKEY: str = ""
     MPESA_CALLBACK_URL: str = ""
     MPESA_ENVIRONMENT: str = "sandbox"
+    
+    # M-Pesa B2B Configuration
+    MPESA_B2B_INITIATOR: str = "testapi"
+    MPESA_B2B_SECURITY_CREDENTIAL: str = ""
+    MPESA_B2B_INITIATOR_PASSWORD: str = ""
+    MPESA_B2B_CERT_PATH: str = ""
 
     @property
     def cors_origins_list(self) -> List[str]:

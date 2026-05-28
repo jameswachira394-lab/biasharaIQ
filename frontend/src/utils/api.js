@@ -89,6 +89,7 @@ export const subscriptionApi = {
 // Payments
 export const paymentApi = {
   initiate: (data) => api.post('/payments/initiate', data),
+  initiateB2b: (data) => api.post('/payments/initiate-b2b', data),
   status: (checkoutId) => api.get(`/payments/status/${checkoutId}`),
 }
 
