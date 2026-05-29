@@ -84,11 +84,14 @@ class MpesaService:
         if not access_token:
             return {"error": "Failed to authenticate with M-Pesa. Check your credentials in .env", "status": 500}
 
-        # Format phone: 2547XXXXXXXX
-        if phone.startswith('0'):
-            phone = '254' + phone[1:]
-        elif phone.startswith('+'):
-            phone = phone[1:]
+        # Robustly format phone to Safaricom standard 254XXXXXXXXX
+        cleaned_phone = "".join(c for c in phone if c.isdigit())
+        if cleaned_phone.startswith('0') and len(cleaned_phone) == 10:
+            phone = '254' + cleaned_phone[1:]
+        elif cleaned_phone.startswith('254') and len(cleaned_phone) == 12:
+            phone = cleaned_phone
+        else:
+            phone = cleaned_phone
 
         timestamp = datetime.now().strftime('%Y%m%d%H%M%S')
         password = base64.b64encode(
@@ -149,7 +152,8 @@ class MpesaService:
             return {
                 "success": False,
                 "message": stk_callback.get("ResultDesc", "Transaction failed"),
-                "checkout_id": stk_callback.get("CheckoutRequestID")
+                "checkout_id": stk_callback.get("CheckoutRequestID"),
+                "result_code": result_code
             }
 
         # Parse metadata
@@ -165,6 +169,7 @@ class MpesaService:
             "receipt": metadata.get("MpesaReceiptNumber"),
             "amount": metadata.get("Amount"),
             "phone": metadata.get("PhoneNumber"),
-            "date": metadata.get("TransactionDate")
+            "date": metadata.get("TransactionDate"),
+            "result_code": result_code
         }
 

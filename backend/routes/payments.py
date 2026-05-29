@@ -108,8 +108,18 @@ async def mpesa_callback(request: Request, db: Session = Depends(get_db)):
         )
         logger.info(f"Payment {checkout_id} successful. User {payment.user_id} upgraded.")
     else:
-        payment.status = "failed"
-        logger.warning(f"Payment {checkout_id} failed: {result.get('message')}")
+        result_code = result.get("result_code")
+        # 1032 is the result code for user cancellation
+        if result_code == 1032:
+            payment.status = "cancelled"
+            logger.info(f"Payment {checkout_id} was cancelled by user.")
+        else:
+            payment.status = "failed"
+            logger.warning(f"Payment {checkout_id} failed with code {result_code}: {result.get('message')}")
+        
+        # Store callback's result description in mpesa_receipt for failure/cancellation cases
+        # so frontend status API can retrieve and display the exact reason (e.g. insufficient funds)
+        payment.mpesa_receipt = result.get("message") or "Transaction failed"
         
     db.commit()
     return {"status": "ok"}

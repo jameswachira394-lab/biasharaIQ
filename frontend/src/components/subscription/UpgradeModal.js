@@ -4,6 +4,20 @@ import { paymentApi } from '@/utils/api'
 import { useAuth } from '@/context/AuthContext'
 import { X, Smartphone, Loader2, CheckCircle2, AlertCircle } from 'lucide-react'
 
+const validateAndFormatPhone = (inputPhone) => {
+  if (!inputPhone) return null
+  // Strip all non-digit characters
+  const cleaned = inputPhone.trim().replace(/\D/g, '')
+  
+  // Check if it fits the Kenyan mobile number patterns
+  if (/^(07|01)\d{8}$/.test(cleaned)) {
+    return '254' + cleaned.substring(1)
+  } else if (/^(2547|2541)\d{8}$/.test(cleaned)) {
+    return cleaned
+  }
+  return null
+}
+
 export default function UpgradeModal({ isOpen, onClose }) {
   const { user, updateUser } = useAuth()
   const [phone, setPhone] = useState(user?.phone || '')
@@ -14,15 +28,18 @@ export default function UpgradeModal({ isOpen, onClose }) {
 
   if (!isOpen) return null
 
+  const isValidPhone = validateAndFormatPhone(phone) !== null
+
   const handleInitiate = async (e) => {
     e.preventDefault()
+    if (loading) return // Prevent duplicate payment requests
+    
     setLoading(true)
     setError('')
     
-    // Clean phone number input
-    let formattedPhone = phone.trim().replace(/\s+/g, '')
+    const formattedPhone = validateAndFormatPhone(phone)
     if (!formattedPhone) {
-      setError('Phone number is required')
+      setError('Please enter a valid Kenyan phone number (e.g. 07XXXXXXXX, 01XXXXXXXX, or 254XXXXXXXXX)')
       setLoading(false)
       return
     }
@@ -58,7 +75,11 @@ export default function UpgradeModal({ isOpen, onClose }) {
         } else if (res.data.status === 'failed') {
           clearInterval(interval)
           setStep('error')
-          setError('Transaction failed or was cancelled. Please try again.')
+          setError(res.data.receipt || 'Transaction failed. Please try again.')
+        } else if (res.data.status === 'cancelled') {
+          clearInterval(interval)
+          setStep('error')
+          setError('Cancelled by user')
         }
       } catch (err) {
         // Keep polling
@@ -110,7 +131,7 @@ export default function UpgradeModal({ isOpen, onClose }) {
 
             <button 
               type="submit" 
-              disabled={loading} 
+              disabled={loading || !isValidPhone} 
               className="w-full py-4 rounded-lg font-bold text-white transition-all bg-[#2E7D32] hover:bg-[#1B5E20] hover:shadow-[0_0_20px_rgba(46,125,50,0.4)] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
             >
               {loading ? (
@@ -132,10 +153,10 @@ export default function UpgradeModal({ isOpen, onClose }) {
               Awaiting Payment
             </h2>
             <p className="text-sm text-semantic-textSecondary px-2">
-              Please check your phone for the M-Pesa prompt and enter your <strong>PIN</strong> to complete the upgrade.
+              Check your phone and enter your M-Pesa PIN to complete the payment.
             </p>
             <div className="mt-8 p-3 rounded-lg bg-[#2E7D32]/5 border border-[#2E7D32]/10 inline-block text-[11px] text-[#2E7D32] font-semibold animate-pulse">
-              Waiting for Safaricom confirmation...
+              Status: Processing...
             </div>
           </div>
         )}
@@ -163,10 +184,18 @@ export default function UpgradeModal({ isOpen, onClose }) {
             <div className="w-16 h-16 rounded-full bg-semantic-error/10 border border-semantic-error/20 flex items-center justify-center mx-auto mb-6">
               <AlertCircle className="text-semantic-error" size={40} />
             </div>
-            <h2 className="text-xl font-display font-bold text-semantic-white mb-2">Payment Failed</h2>
-            <p className="text-sm text-semantic-textSecondary mb-8 px-4">{error}</p>
+            <h2 className="text-xl font-display font-bold text-semantic-white mb-2">
+              {error === 'Cancelled by user' ? 'Payment Cancelled' : 'Payment Failed'}
+            </h2>
+            <p className="text-sm text-semantic-textSecondary mb-8 px-4">
+              {error === 'Cancelled by user' ? 'The payment request was cancelled by the user.' : error}
+            </p>
             <button 
-              onClick={() => setStep('input')} 
+              onClick={() => {
+                setStep('input')
+                setLoading(false)
+                setError('')
+              }} 
               className="w-full py-3.5 rounded-lg font-bold text-white transition-all bg-white/10 hover:bg-white/20 border border-white/10 flex justify-center"
             >
               Try Again
