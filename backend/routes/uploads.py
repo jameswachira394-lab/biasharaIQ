@@ -108,7 +108,7 @@ async def upload_document(
             storage_url=storage_url,
             transaction_count=len(transactions),
             batch_id=batch_id,
-            status="confirmed",
+            status="pending_review",
             parsed_at=now,          # ← always set explicitly
             created_at=now,
             summary=json.dumps({"doc_type": doc_type, "transaction_count": len(transactions)}),
@@ -116,30 +116,42 @@ async def upload_document(
         db.add(doc_record)
         db.flush()
 
+        saved_transactions = []
         for tx_data in transactions:
             tx = Transaction(
                 user_id=current_user.id,
                 amount=tx_data["amount"],
                 type=TransactionType(tx_data["type"]),
-                category="Uncategorized",
+                category=tx_data.get("category", "Uncategorized"),
                 date=datetime.fromisoformat(tx_data["date"]),
                 description=tx_data["description"],
                 source=tx_data["source"],
                 import_batch_id=batch_id,
-                status="confirmed",
+                status="pending_review",
             )
             db.add(tx)
+            db.flush()  # get the id assigned
+            saved_transactions.append({
+                "id": tx.id,
+                "date": tx.date.isoformat(),
+                "description": tx.description,
+                "amount": tx.amount,
+                "type": tx.type.value,
+                "category": tx.category,
+                "source": tx.source,
+            })
 
         db.commit()
-        logger.info("[UPLOAD] Batch %s imported with %d confirmed transactions", batch_id, len(transactions))
+        logger.info("[UPLOAD] Batch %s saved with %d transactions for review", batch_id, len(saved_transactions))
 
         return {
             "batch_id": batch_id,
             "document_id": doc_record.id,
             "doc_type": doc_type,
-            "transaction_count": len(transactions),
-            "status": "confirmed",
-            "message": f"Successfully imported {len(transactions)} transactions",
+            "transaction_count": len(saved_transactions),
+            "status": "pending_review",
+            "message": f"Extracted {len(saved_transactions)} transactions — please review and confirm",
+            "transactions": saved_transactions,
         }
 
     except HTTPException:

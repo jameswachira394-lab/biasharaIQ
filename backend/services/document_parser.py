@@ -16,6 +16,88 @@ logger = logging.getLogger(__name__)
 
 
 # ─────────────────────────────────────────────
+# Smart Category Detection
+# ─────────────────────────────────────────────
+
+# Keyword → Category mapping (M-Pesa descriptions, case-insensitive)
+# Order matters: more specific rules should come first
+CATEGORY_RULES = [
+    # Income / Sales
+    ("funds received",           "Sales"),
+    ("customer payment",         "Sales"),
+    ("received from",            "Sales"),
+    ("payment received",         "Sales"),
+    # Payroll
+    ("salary",                   "Salary"),
+    ("payroll",                  "Salary"),
+    # Bank Transfers
+    ("kcb m-pesa",               "Bank Transfer"),
+    ("kcb mpesa",                "Bank Transfer"),
+    ("equity",                   "Bank Transfer"),
+    ("ncba",                     "Bank Transfer"),
+    ("coop",                     "Bank Transfer"),
+    ("cooperative bank",         "Bank Transfer"),
+    ("family bank",              "Bank Transfer"),
+    ("stanbic",                  "Bank Transfer"),
+    ("dtb",                      "Bank Transfer"),
+    ("i&m",                      "Bank Transfer"),
+    ("absa",                     "Bank Transfer"),
+    # Bills / Utilities
+    ("pay bill",                 "Bills"),
+    ("paybill",                  "Bills"),
+    ("kplc",                     "Bills"),
+    ("kenya power",              "Bills"),
+    ("nairobi water",            "Bills"),
+    ("dstv",                     "Bills"),
+    ("zuku",                     "Bills"),
+    ("safaricom home",           "Bills"),
+    ("gotv",                     "Bills"),
+    # Airtime / Data
+    ("airtime",                  "Airtime"),
+    ("data bundle",              "Airtime"),
+    ("okoa",                     "Airtime"),
+    # M-Pesa Savings / Loans
+    ("m-shwari",                 "Savings"),
+    ("mshwari",                  "Savings"),
+    ("lock savings",             "Savings"),
+    ("fuliza",                   "Loans"),
+    ("kcb m-pesa loan",          "Loans"),
+    # Shopping / Merchant
+    ("buy goods",                "Shopping"),
+    ("merchant payment",         "Shopping"),
+    ("lipa na mpesa",            "Shopping"),
+    ("till",                     "Shopping"),
+    # Cash / Agent
+    ("agent withdrawal",         "Cash Withdrawal"),
+    ("agent deposit",            "Cash Deposit"),
+    ("withdraw cash",            "Cash Withdrawal"),
+    # Transfers
+    ("transfer to",              "Transfer"),
+    ("transfer from",            "Transfer"),
+    ("sent to",                  "Transfer"),
+    ("customer transfer",        "Transfer"),
+    # Charges / Fees
+    ("charge",                   "Charges"),
+    ("transaction cost",         "Charges"),
+    ("fee",                      "Charges"),
+    # Reversals
+    ("reversal",                 "Refund"),
+    ("reversed",                 "Refund"),
+]
+
+def detect_category(description: str, tx_type: str = "expense") -> str:
+    """
+    Detect the most appropriate category for a transaction based on its description.
+    Falls back to 'Income' for income-type transactions and 'Uncategorized' for expenses.
+    """
+    desc_lower = (description or "").lower()
+    for keyword, category in CATEGORY_RULES:
+        if keyword.lower() in desc_lower:
+            return category
+    # Sensible defaults when no rule matches
+    return "Income" if tx_type == "income" else "Uncategorized"
+
+# ─────────────────────────────────────────────
 # Shared helpers
 # ─────────────────────────────────────────────
 
@@ -195,6 +277,7 @@ def _parse_mpesa_row(row: list) -> Optional[dict]:
             "description": details,
             "amount": float(abs(amount)),
             "type": tx_type,
+            "category": detect_category(details, tx_type),
             "source": "mpesa",
             "raw": details,
         }
@@ -216,11 +299,13 @@ def _mpesa_match_to_dict(match: re.Match) -> Optional[dict]:
         withdrawn = _clean_amount(withdrawn_raw) if withdrawn_raw != "-" else Decimal("0")
 
         amount = paid_in if paid_in > 0 else -withdrawn
+        tx_type = "income" if amount > 0 else "expense"
         return {
             "date": date.isoformat(),
             "description": details,
             "amount": float(abs(amount)),
-            "type": "income" if amount > 0 else "expense",
+            "type": tx_type,
+            "category": detect_category(details, tx_type),
             "source": "mpesa",
             "raw": details,
         }
@@ -334,6 +419,7 @@ def _parse_bank_row(row: list, headers: dict) -> Optional[dict]:
             "description": description,
             "amount": float(amount),
             "type": tx_type,
+            "category": detect_category(description, tx_type),
             "source": "bank",
             "raw": description,
         }
@@ -421,6 +507,7 @@ def _parse_csv_row(row: pd.Series, headers: dict) -> Optional[dict]:
             "description": description,
             "amount": float(amount),
             "type": tx_type,
+            "category": detect_category(description, tx_type),
             "source": "csv",
             "raw": description,
         }
