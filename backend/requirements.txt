@@ -20,5 +20,6 @@ redis==5.0.4
 # Document parsing
 pdfplumber==0.11.0
 pandas==2.2.0
+openpyxl==3.1.5
 veryfi>=4.0.0
 cloudinary==1.40.0
