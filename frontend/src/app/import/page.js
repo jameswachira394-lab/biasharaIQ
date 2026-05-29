@@ -47,11 +47,16 @@ export default function ImportPage() {
             'image/jpeg',
             'image/png',
             'image/webp',
+            'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', // .xlsx
+            'application/vnd.ms-excel', // .xls
         ]
-        if (!validTypes.includes(file.type)) {
+        // Also allow by extension for browsers that report wrong MIME for Excel
+        const validExtensions = ['.pdf', '.csv', '.jpg', '.jpeg', '.png', '.webp', '.xlsx', '.xls']
+        const fileExt = '.' + file.name.split('.').pop().toLowerCase()
+        if (!validTypes.includes(file.type) && !validExtensions.includes(fileExt)) {
             setToast({
                 type: 'error',
-                message: 'Invalid file type. Please upload PDF, CSV, JPG, PNG, or WebP.',
+                message: 'Invalid file type. Please upload PDF, CSV, Excel (.xlsx/.xls), JPG, or PNG.',
             })
             return
         }
@@ -162,7 +167,7 @@ export default function ImportPage() {
                             <label className="inline-block">
                                 <input
                                     type="file"
-                                    accept=".pdf,.csv,.jpg,.jpeg,.png,.webp"
+                                    accept=".pdf,.csv,.xlsx,.xls,.jpg,.jpeg,.png,.webp"
                                     onChange={(e) => {
                                         if (e.target.files?.[0]) {
                                             uploadFile(e.target.files[0])
@@ -176,7 +181,7 @@ export default function ImportPage() {
                                 </span>
                             </label>
                             <p className="text-sm text-[#A67B5B] mt-4">
-                                Max 50MB • Supports PDF, CSV, JPG, PNG, WebP
+                             Max 50MB • Supports PDF, CSV, Excel (.xlsx/.xls), JPG, PNG
                             </p>
                         </>
                     )}
@@ -203,6 +208,13 @@ export default function ImportPage() {
                         <h3 className="font-semibold mb-2 text-[#3C2A1E]">CSV Export</h3>
                         <p className="text-sm text-[#8B5E3C]">
                             Spreadsheet exports with transaction data
+                        </p>
+                    </div>
+                    <div className="p-4 bg-[#F5EFE6] rounded-lg">
+                        <FileText size={24} className="text-[#8B5E3C] mb-2" />
+                        <h3 className="font-semibold mb-2 text-[#3C2A1E]">Excel Statement</h3>
+                        <p className="text-sm text-[#8B5E3C]">
+                            Bank or M-Pesa exports in .xlsx or .xls format
                         </p>
                     </div>
                     <div className="p-4 bg-[#F5EFE6] rounded-lg">
