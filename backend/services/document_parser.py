@@ -430,6 +430,43 @@ def _parse_csv_row(row: pd.Series, headers: dict) -> Optional[dict]:
 
 
 # ─────────────────────────────────────────────
+# Excel parser
+# ─────────────────────────────────────────────
+
+def parse_excel(file_bytes: bytes) -> list[dict]:
+    """Parse an Excel statement (.xlsx or .xls) using pandas."""
+    try:
+        df = pd.read_excel(io.BytesIO(file_bytes))
+        df.columns = [str(c).lower().strip() for c in df.columns]
+
+        headers = {}
+        for field, aliases in CSV_COLUMN_ALIASES.items():
+            for alias in aliases:
+                matches = [c for c in df.columns if alias in c]
+                if matches:
+                    headers[field] = matches[0]
+                    break
+
+        if "date" not in headers:
+            raise ValueError("No date column detected in Excel statement")
+
+        transactions = []
+        for _, row in df.iterrows():
+            tx = _parse_csv_row(row, headers)
+            if tx:
+                # Map source to "excel"
+                tx["source"] = "excel"
+                transactions.append(tx)
+
+        logger.info("[PARSER] Excel: extracted %d transactions", len(transactions))
+        return transactions
+
+    except Exception as e:
+        logger.error("[PARSER] Excel parse error: %s", e)
+        raise
+
+
+# ─────────────────────────────────────────────
 # Invoice parser (PDF + image via Gemini)
 # ─────────────────────────────────────────────
 
@@ -475,11 +512,23 @@ def parse_invoice(file_bytes: bytes, mime_type: str = "application/pdf") -> list
             username=username,
             api_key=api_key,
         )
-        file_b64 = base64.b64encode(file_bytes).decode("utf-8")
-        response = veryfi_client.process_document_from_base64(
-            base64_encoded_string=file_b64,
-            file_name=file_name,
-        )
+        
+        import tempfile
+        import os
+        
+        # Write bytes to a temporary file for the Veryfi SDK to process
+        with tempfile.NamedTemporaryFile(suffix=file_ext, delete=False) as temp_file:
+            temp_file.write(file_bytes)
+            temp_file_path = temp_file.name
+            
+        try:
+            response = veryfi_client.process_document(temp_file_path)
+        finally:
+            try:
+                if os.path.exists(temp_file_path):
+                    os.remove(temp_file_path)
+            except Exception as cleanup_err:
+                logger.warning("[PARSER] Failed to remove temp file %s: %s", temp_file_path, cleanup_err)
     except Exception as e:
         logger.error("[PARSER] Veryfi API call failed: %s", e)
         raise ValueError(f"Failed to process document with Veryfi: {e}")
@@ -542,6 +591,12 @@ def parse_document(
 
     if fname.endswith(".csv"):
         return parse_csv(file_bytes), "csv"
+
+    if fname.endswith((".xlsx", ".xls")) or mime_type in (
+        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        "application/vnd.ms-excel"
+    ):
+        return parse_excel(file_bytes), "excel"
 
     if fname.endswith(".pdf") or mime_type == "application/pdf":
         doc_type = _detect_pdf_type(file_bytes, phone=phone, password=password)
