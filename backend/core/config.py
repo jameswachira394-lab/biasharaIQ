@@ -27,7 +27,6 @@ class Settings(BaseSettings):
     
     # API Keys
     GEMINI_API_KEY: str = ""
-    POLLINATIONS_API_KEY: str = ""
     CLOUDINARY_URL: str = ""  # cloudinary://key:secret@cloud_name
 
     # Veryfi Lens document parser credentials
