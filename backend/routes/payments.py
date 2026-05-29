@@ -10,7 +10,7 @@ from middleware.auth import get_current_user
 import logging
 
 logger = logging.getLogger(__name__)
-router = APIRouter(prefix="/payments", tags=["Payments"])
+router = APIRouter(tags=["Payments"])
 mpesa_service = MpesaService()
 
 class PaymentInitiateRequest(BaseModel):
@@ -18,7 +18,7 @@ class PaymentInitiateRequest(BaseModel):
     amount: int = 499  # Default Pro Plan price
 
 
-@router.post("/initiate")
+@router.post("/payments/initiate")
 async def initiate_payment(
     req: PaymentInitiateRequest,
     db: Session = Depends(get_db),
@@ -81,7 +81,9 @@ async def initiate_payment(
         "message": response.get("CustomerMessage", "STK Push initiated")
     }
 
-@router.post("/callback")
+@router.post("/payments/callback")
+@router.post("/api/payments/callback")
+@router.post("/api/mpesa/callback")
 async def mpesa_callback(request: Request, db: Session = Depends(get_db)):
     """Callback endpoint for M-Pesa to report transaction results."""
     data = await request.json()
@@ -124,7 +126,7 @@ async def mpesa_callback(request: Request, db: Session = Depends(get_db)):
     db.commit()
     return {"status": "ok"}
 
-@router.get("/status/{checkout_id}")
+@router.get("/payments/status/{checkout_id}")
 async def get_payment_status(
     checkout_id: str,
     db: Session = Depends(get_db),
