@@ -3,6 +3,11 @@ from services.financial_engine import FinancialEngine
 from models.models import Insight
 from datetime import datetime, timedelta
 from typing import List
+import json
+import logging
+from core.config import settings
+
+logger = logging.getLogger(__name__)
 
 
 class InsightsEngine:
@@ -105,7 +110,77 @@ class InsightsEngine:
                 "icon": "📋"
             })
 
+        # --- AI Insights ---
+        try:
+            ai_insights = self.generate_ai_insights(monthly, expense_breakdown)
+            insights.extend(ai_insights)
+        except Exception as e:
+            logger.error(f"[INSIGHTS] Error generating AI insights: {e}")
+
         return insights
+
+    def generate_ai_insights(self, monthly_summary: dict, expense_breakdown: list) -> List[dict]:
+        """Generate AI insights using Pollinations.ai API."""
+        api_key = settings.POLLINATIONS_API_KEY
+        if not api_key:
+            return []
+
+        try:
+            from openai import OpenAI
+            client = OpenAI(base_url="https://gen.pollinations.ai", api_key=api_key)
+
+            # Build a prompt using the financial data
+            prompt = (
+                "You are an expert financial advisor for a small business in Kenya. "
+                "Analyze the following monthly summary and expense breakdown, and provide 2 concise, actionable financial insights.\n\n"
+                f"Monthly Summary: {json.dumps(monthly_summary, default=str)}\n"
+                f"Expense Breakdown: {json.dumps(expense_breakdown, default=str)}\n\n"
+                "Return exactly a JSON array with this format:\n"
+                "[\n"
+                "  {\n"
+                '    "type": "ai_insight",\n'
+                '    "severity": "info" | "warning" | "critical",\n'
+                '    "message": "Your actionable insight here",\n'
+                '    "icon": "💡"\n'
+                "  }\n"
+                "]\n"
+                "Do not include any markdown formatting like ```json, just the raw JSON array."
+            )
+
+            response = client.chat.completions.create(
+                model="openai",
+                messages=[{"role": "user", "content": prompt}],
+                temperature=0.7,
+                max_tokens=300
+            )
+            
+            content = response.choices[0].message.content.strip()
+            
+            # Clean up potential markdown formatting
+            if content.startswith("```json"):
+                content = content[7:]
+            if content.startswith("```"):
+                content = content[3:]
+            if content.endswith("```"):
+                content = content[:-3]
+                
+            ai_insights = json.loads(content)
+            
+            # Ensure proper format
+            valid_insights = []
+            for item in ai_insights:
+                if isinstance(item, dict) and "message" in item:
+                    valid_insights.append({
+                        "type": "ai_insight",
+                        "severity": item.get("severity", "info"),
+                        "message": item["message"],
+                        "icon": item.get("icon", "💡")
+                    })
+            return valid_insights
+            
+        except Exception as e:
+            logger.error(f"[INSIGHTS] OpenAI API Error: {e}")
+            return []
 
     def save_insights(self):
         """Generate and persist insights to the database."""
