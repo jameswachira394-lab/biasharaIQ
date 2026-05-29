@@ -318,7 +318,7 @@ def _mpesa_match_to_dict(match: re.Match) -> Optional[dict]:
 # ─────────────────────────────────────────────
 
 BANK_COLUMN_ALIASES = {
-    "date": ["date", "value date", "trans date", "transaction date", "posting date"],
+    "date": ["date", "value date", "trans date", "transaction date", "posting date", "completion time", "completion date", "time", "date/time", "transaction time"],
     "description": ["description", "details", "narration", "particulars", "remarks", "reference"],
     "debit": ["debit", "dr", "withdrawals", "withdrawn", "debit amount"],
     "credit": ["credit", "cr", "deposits", "paid in", "credit amount"],
@@ -328,6 +328,8 @@ BANK_COLUMN_ALIASES = {
 BANK_DATE_FORMATS = [
     "%d/%m/%Y", "%d-%m-%Y", "%d %b %Y", "%d-%b-%Y",
     "%d/%m/%y", "%Y-%m-%d", "%d %B %Y",
+    "%Y-%m-%d %H:%M:%S", "%Y-%m-%d %H:%M:%S.%f",
+    "%d-%m-%Y %H:%M:%S", "%d/%m/%Y %H:%M:%S"
 ]
 
 
