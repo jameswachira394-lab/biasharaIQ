@@ -54,6 +54,8 @@ columns_to_add = [
     ("subscription_start",       "TIMESTAMP NULL"),
     ("subscription_end",         "TIMESTAMP NULL"),
     ("monthly_transaction_count","INTEGER DEFAULT 0"),
+    ("ai_queries_count",         "INTEGER DEFAULT 0"),
+    ("ai_queries_reset_date",    "TIMESTAMP NULL"),
     ("currency",                 "VARCHAR DEFAULT 'KES'"),
     ("is_active",                "BOOLEAN DEFAULT TRUE"),
     ("is_verified",              "BOOLEAN DEFAULT FALSE"),

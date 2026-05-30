@@ -12,6 +12,7 @@ from sqlalchemy.orm import Session
 
 from services.intent_classifier import classify_intent, get_intent_description
 from services.context_builder import ContextBuilder
+from models.models import User
 
 # =========================
 # LOGGING
@@ -203,6 +204,24 @@ def chat_with_ai_agent(
         )
 
     # ─────────────────────────────────────
+    # CHECK USAGE LIMITS
+    # ─────────────────────────────────────
+    user = db.query(User).filter(User.id == user_id).first()
+    if not user:
+        raise ValueError("User not found.")
+
+    now = datetime.utcnow()
+    # Reset counts if it's a new month
+    if user.ai_queries_reset_date is None or user.ai_queries_reset_date.month != now.month or user.ai_queries_reset_date.year != now.year:
+        user.ai_queries_count = 0
+        user.ai_queries_reset_date = now
+        db.commit()
+
+    limit = 100 if user.plan == 'PRO' else 10
+    if user.ai_queries_count >= limit:
+        return f"You have reached your AI Advisor limit for this month ({limit} queries). Please upgrade your plan for more insights."
+
+    # ─────────────────────────────────────
     # CLASSIFY INTENT
     # ─────────────────────────────────────
 
@@ -260,6 +279,11 @@ def chat_with_ai_agent(
         logger.info(
             f"[AI] User {user_id} ({intent_name}): {len(response_text)} char response"
         )
+        
+        # Increment usage count
+        user.ai_queries_count += 1
+        db.commit()
+        
         return response_text
 
     except Exception as e:

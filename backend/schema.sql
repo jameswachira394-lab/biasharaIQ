@@ -17,6 +17,8 @@ CREATE TABLE IF NOT EXISTS users (
     subscription_start TIMESTAMP,
     subscription_end TIMESTAMP,
     monthly_transaction_count INTEGER DEFAULT 0,
+    ai_queries_count INTEGER DEFAULT 0,
+    ai_queries_reset_date TIMESTAMP,
     verification_code VARCHAR(10),
     verification_expires_at TIMESTAMP,
     created_at TIMESTAMP DEFAULT NOW(),

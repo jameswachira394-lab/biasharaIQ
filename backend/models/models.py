@@ -40,6 +40,8 @@ class User(Base):
     subscription_start = Column(DateTime, nullable=True)
     subscription_end = Column(DateTime, nullable=True)
     monthly_transaction_count = Column(Integer, default=0)
+    ai_queries_count = Column(Integer, default=0)
+    ai_queries_reset_date = Column(DateTime, nullable=True)
     
     created_at = Column(DateTime, default=datetime.utcnow)
     is_active = Column(Boolean, default=True)
