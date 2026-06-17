@@ -15,6 +15,11 @@ fi
 
 cd frontend
 
+if [ -f "../.env" ]; then
+    cp "../.env" ".env.production"
+    echo -e "\033[0;36mCopied root .env to frontend/.env.production\033[0m"
+fi
+
 echo -e "\n\033[0;33m[1/4] Installing dependencies...\033[0m"
 npm install
 

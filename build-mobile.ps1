@@ -31,6 +31,12 @@ try {
 # Navigate to frontend
 Set-Location "frontend"
 
+# Ensure frontend has access to environment variables for the build
+if (Test-Path "..\.env") {
+    Copy-Item "..\.env" -Destination ".env.production" -Force
+    Write-Host "Copied root .env to frontend/.env.production" -ForegroundColor Cyan
+}
+
 Write-Host "`n[1/4] Installing dependencies..." -ForegroundColor Yellow
 npm install
 
