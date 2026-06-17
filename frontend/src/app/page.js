@@ -146,18 +146,82 @@ export default function Home() {
         </div>
       </section>
 
-      {/* SECTION 7: TRUST / SOCIAL PROOF */}
+      {/* SECTION 7: DOWNLOAD APP */}
+      <section id="download-app" className="download-section">
+        <div className="container">
+          <div className="download-grid">
+            <div className="download-content">
+              <span className="trust-badge" style={{ marginBottom: '16px' }}>📱 Now Available on Android</span>
+              <h2>Take BiasharaIQ Everywhere.</h2>
+              <p style={{ fontSize: '1.1rem', marginBottom: '24px', color: 'var(--text-secondary)' }}>
+                Track your business finances on the go. Get instant profit updates, cash flow alerts, 
+                and AI insights — right from your phone.
+              </p>
+              <ul className="download-features">
+                <li>✅ Works offline — record sales anywhere</li>
+                <li>✅ Instant notifications on cash flow changes</li>
+                <li>✅ Lightweight — only {(9227868 / (1024 * 1024)).toFixed(1)}MB download</li>
+                <li>✅ No Play Store needed — install directly</li>
+              </ul>
+              <a href="/biasharaiq.apk" download className="btn-download" id="download-apk-btn">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                  <polyline points="7 10 12 15 17 10" />
+                  <line x1="12" y1="15" x2="12" y2="3" />
+                </svg>
+                Download for Android
+              </a>
+              <p className="download-hint">Android 5.0+ required • Allow &quot;Install from unknown sources&quot; in settings</p>
+            </div>
+            <div className="download-visual">
+              <div className="phone-mockup">
+                <div className="phone-notch"></div>
+                <div className="phone-screen">
+                  <div className="phone-header">
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <div style={{ width: '28px', height: '28px', borderRadius: '6px', background: 'linear-gradient(135deg, #8B5E3C, #A67B5B)' }}></div>
+                      <span style={{ fontWeight: '700', fontSize: '0.85rem' }}>BiasharaIQ</span>
+                    </div>
+                  </div>
+                  <div className="phone-stats">
+                    <div className="phone-stat">
+                      <div style={{ fontSize: '0.6rem', opacity: 0.7 }}>Today&apos;s Profit</div>
+                      <div style={{ fontSize: '1rem', fontWeight: '800', color: '#4A7C59' }}>+KSh 3,200</div>
+                    </div>
+                    <div className="phone-stat">
+                      <div style={{ fontSize: '0.6rem', opacity: 0.7 }}>Cash Left</div>
+                      <div style={{ fontSize: '1rem', fontWeight: '800', color: '#8B5E3C' }}>KSh 15,400</div>
+                    </div>
+                  </div>
+                  <div className="phone-bars">
+                    <div className="phone-bar" style={{ height: '45px' }}></div>
+                    <div className="phone-bar" style={{ height: '30px', opacity: 0.7 }}></div>
+                    <div className="phone-bar" style={{ height: '55px' }}></div>
+                    <div className="phone-bar" style={{ height: '25px', opacity: 0.7 }}></div>
+                    <div className="phone-bar" style={{ height: '40px' }}></div>
+                  </div>
+                  <div className="phone-alert">
+                    <span>🔔</span> Cash runway: <strong>18 days left</strong>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* SECTION 8: TRUST / SOCIAL PROOF */}
       <section style={{ paddingTop: '32px' }}>
         <div className="container social-proof">
           <div className="trust-badge" style={{ marginBottom: '24px' }}>🇰🇪 Built for small businesses in Kenya</div>
           <div className="landing-card" style={{ maxWidth: '700px', margin: '0 auto' }}>
-            <p style={{ fontWeight: 500, fontSize: '1rem' }}>“Designed for real-world biashara — from mama mboga to boutique owners. Already helping 500+ businesses track profit and sleep better.”</p>
+            <p style={{ fontWeight: 500, fontSize: '1rem' }}>&quot;Designed for real-world biashara — from mama mboga to boutique owners. Already helping 500+ businesses track profit and sleep better.&quot;</p>
             <p style={{ marginTop: '12px', color: '#8B5E3C' }}>— BiasharaIQ early access community</p>
           </div>
         </div>
       </section>
 
-      {/* SECTION 8: PRICING */}
+      {/* SECTION 9: PRICING */}
       <section>
         <div className="container text-center">
           <h2>Simple, transparent pricing</h2>

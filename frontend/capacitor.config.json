@@ -2,5 +2,8 @@
   "appId": "com.biasharaiq.app",
   "appName": "BiasharaIQ",
   "webDir": "out",
-  "bundledWebRuntime": false
+  "bundledWebRuntime": false,
+  "server": {
+    "cleartext": true
+  }
 }
