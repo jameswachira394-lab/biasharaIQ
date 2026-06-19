@@ -5,9 +5,31 @@ A financial intelligence + decision system for real-world small businesses in Ke
 ---
 
 
-## Architecture
 
-```
+## 🏛️ System Architecture
+
+BiasharaIQ follows a modern decoupled architecture separating the client-side presentation layer from the API-driven backend and database.
+
+### Logical Architecture
+
+1.  **Frontend (Next.js + React + Tailwind CSS)**
+    *   Handles the user interface, routing, and client-side state.
+    *   Communicates with the backend via RESTful APIs.
+    *   Deployed as a static or server-rendered application.
+    *   *Mobile App*: Wrapped via Capacitor to build the Android application.
+
+2.  **Backend (Python + FastAPI)**
+    *   Serves as the core logic handler, authenticating users and managing transactions.
+    *   Interfaces with the database using SQLAlchemy ORM.
+    *   Integrates with external services like Anthropic's Claude AI for financial insights and M-Pesa for payment integrations.
+
+3.  **Database (PostgreSQL)**
+    *   Relational database storing user profiles, transaction records, and cached AI insights.
+    *   Ensures data integrity and handles complex queries for reporting.
+
+### Directory Structure
+
+```text
 biasharaiq/
 ├── backend/
 │   ├── main.py                 # FastAPI entry point
@@ -16,44 +38,51 @@ biasharaiq/
 │   ├── requirements.txt        # Python dependencies
 │   ├── .env.example            # Environment template
 │   ├── middleware/auth.py      # JWT authentication
-│   ├── models/
-│   │   ├── models.py           # SQLAlchemy ORM models
-│   │   └── database.py         # DB connection
-│   ├── routes/
-│   │   ├── auth.py             # Register / Login
-│   │   ├── transactions.py     # CRUD transactions
-│   │   └── routes.py           # Dashboard, AI, Reports, etc.
-│   └── services/
-│       ├── financial_engine.py # Profit, cash flow, metrics
-│       ├── insights_engine.py  # Rule-based insights
-│       └── ai_agent.py         # Claude AI integration
-└── frontend/
-    └── src/
-        ├── app/                # Next.js pages
-        │   ├── dashboard/      # Main dashboard
-        │   ├── transactions/   # CRUD transactions
-        │   ├── insights/       # Financial insights
-        │   ├── ai/             # AI chat advisor
-        │   ├── reports/        # Charts & reports
-        │   └── settings/       # Profile & categories
-        ├── components/         # Reusable UI components
-        ├── hooks/              # Data fetching hooks
-        ├── utils/              # API client, formatting
-        └── context/            # Auth state
+│   ├── models/                 # SQLAlchemy ORM models & DB connection
+│   ├── routes/                 # API Endpoints (Auth, Transactions, etc.)
+│   └── services/               # Core Logic (Financial Engine, AI Agent, M-Pesa)
+├── frontend/
+│   └── src/
+│       ├── app/                # Next.js pages
+│       ├── components/         # Reusable UI components
+│       ├── hooks/              # Data fetching hooks
+│       ├── utils/              # API client, formatting
+│       └── context/            # Auth state
+├── android/                    # Capacitor Android App build context
+├── biasharaiq-debug.apk        # Compiled Android APK
+├── setup_mpesa.py              # M-Pesa integration setup
+└── render.yaml                 # Render infrastructure-as-code deployment
 ```
 
-## Tech Stack
-- **Frontend**: Next.js 14, React 18, Tailwind CSS, Recharts
+## 🛠️ Tech Stack
+- **Frontend**: Next.js 14, React 18, Tailwind CSS, Recharts, Capacitor (for Android)
 - **Backend**: Python FastAPI
 - **Database**: PostgreSQL + SQLAlchemy ORM
 - **Auth**: JWT (bcrypt password hashing)
 - **AI**: Anthropic Claude API (claude-sonnet-4)
+- **Payments**: M-Pesa API integration
 
 ---
 
 ## 🏭 Production Deployment
 
-### One-Command Docker Deployment
+BiasharaIQ is deployed using a distributed modern cloud infrastructure, leveraging Vercel, Render, and AWS for high availability and scalability.
+
+### Deployment Architecture
+
+*   **Frontend 🌍 (Vercel)**
+    *   The Next.js frontend is deployed to **Vercel** for optimal edge-caching and fast content delivery.
+    *   Connects to the backend via the `NEXT_PUBLIC_API_URL` environment variable.
+*   **Backend ⚙️ (Render)**
+    *   The FastAPI Python application runs as a Web Service on **Render**.
+    *   Configured to scale horizontally, running behind Render's load balancer.
+    *   Handles M-Pesa callbacks and API requests from the Vercel frontend and mobile app.
+*   **Database 🗄️ (AWS RDS)**
+    *   The PostgreSQL database is hosted on **Amazon Web Services (AWS) RDS**.
+    *   Configured for automated backups, multi-AZ deployment (optional for production), and high performance.
+    *   The backend on Render connects to the AWS RDS instance securely.
+
+### One-Command Docker Deployment (Local / Self-hosted)
 
 ```bash
 # Copy environment file and update with production secrets
@@ -92,6 +121,7 @@ docker-compose -f docker-compose.prod.yml logs -f backend
 - Database backup strategy
 
 ✅ **Scalability**
+- Decoupled cloud infrastructure (Vercel + Render + AWS RDS)
 - Docker Compose for multi-container orchestration
 - Kubernetes manifests available
 - Load balancer ready
@@ -102,7 +132,7 @@ docker-compose -f docker-compose.prod.yml logs -f backend
 - **Docker Compose** (Self-hosted): [PRODUCTION_DEPLOYMENT.md](docs/PRODUCTION_DEPLOYMENT.md#option-a-docker-compose-self-hosted)
 - **Kubernetes**: [PRODUCTION_DEPLOYMENT.md](docs/PRODUCTION_DEPLOYMENT.md#option-b-kubernetes)
 - **Render.com** (Free Tier): [render.yaml](render.yaml)
-- **AWS EC2 + RDS**: [PRODUCTION_DEPLOYMENT.md](docs/PRODUCTION_DEPLOYMENT.md#option-d-aws-ec2--rds)
+- **Vercel / Render / AWS Architecture**: Refer to the architectural configuration above.
 
 ### Pre-Deployment Checklist
 
