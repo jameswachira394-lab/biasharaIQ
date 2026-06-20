@@ -60,9 +60,12 @@ if not settings.DEBUG:
     if render_host:
         allowed_hosts.append(render_host)
     allowed_hosts.append("*.onrender.com")
+    # Also allow localhost for health checks
+    allowed_hosts.extend(["localhost", "127.0.0.1"])
     
     # Remove duplicates and None values
     allowed_hosts = list(set([h for h in allowed_hosts if h]))
+    logger.info(f"Trusted Hosts: {allowed_hosts}")
     
     app.add_middleware(
         TrustedHostMiddleware,
@@ -77,17 +80,22 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=cors_origins,
     allow_credentials=True,
-    allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"],
     allow_headers=["*"],
+    expose_headers=["*"],
     max_age=3600,
 )
 
 
 @app.middleware("http")
 async def add_security_headers(request: Request, call_next):
+    # Skip security headers for CORS preflight — let CORSMiddleware own the response
+    if request.method == "OPTIONS":
+        return await call_next(request)
+
     response = await call_next(request)
     
-    # Add security headers
+    # Add security headers (non-preflight requests only)
     response.headers["X-Content-Type-Options"] = "nosniff"
     response.headers["X-Frame-Options"] = "DENY"
     response.headers["X-XSS-Protection"] = "1; mode=block"
