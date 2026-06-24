@@ -10,6 +10,7 @@ A financial intelligence + decision system for real-world small businesses in Ke
 
 BiasharaIQ follows a modern decoupled architecture separating the client-side presentation layer from the API-driven backend and database.
 
+auto deployed into the AWS ECS using terraform 
 ### Logical Architecture
 
 1.  **Frontend (Next.js + React + Tailwind CSS)**
