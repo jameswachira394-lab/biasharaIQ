@@ -54,7 +54,7 @@ biasharaiq/
 └── render.yaml                 # Render infrastructure-as-code deployment
 ```
 
-## 🛠️ Tech Stack
+## 🛠️ Tech Stacks
 - **Frontend**: Next.js 14, React 18, Tailwind CSS, Recharts, Capacitor (for Android)
 - **Backend**: Python FastAPI
 - **Database**: PostgreSQL + SQLAlchemy ORM
