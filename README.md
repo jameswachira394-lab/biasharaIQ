@@ -99,6 +99,8 @@ curl http://localhost:8000/health
 # View logs
 docker-compose -f docker-compose.prod.yml logs -f backend
 ```
+#aws build 
+the system is deployed through the internal developer platform deploying into aws via terraform CLI 
 
 ### Production Features Included
 
