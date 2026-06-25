@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-M-Pesa Configuration Setup Wizards
+M-Pesa Configurations Setup Wizards
 Helps you configure and validate M-Pesa credentials and send stks
 """
 
