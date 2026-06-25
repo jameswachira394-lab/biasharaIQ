@@ -52,7 +52,7 @@ biasharaiq/
 ├── android/                    # Capacitor Android App build context
 ├── biasharaiq-debug.apk        # Compiled Android APK
 ├── setup_mpesa.py              # M-Pesa integration setup
-└── render.yaml                 # Render infrastructure-as-code deployment
+└── render.yaml                 # Render infrastructure-as-code deployments
 ```
 
 ## 🛠️ Tech Stacks
