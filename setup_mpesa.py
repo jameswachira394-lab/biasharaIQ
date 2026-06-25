@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 M-Pesa Configuration Setup Wizard
-Helps you configure and validate M-Pesa credentials
+Helps you configure and validate M-Pesa credentials and send stks
 """
 
 import os
