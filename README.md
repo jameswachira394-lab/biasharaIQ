@@ -67,21 +67,22 @@ biasharaiq/
 
 ## 🏭 Production Deployment
 
-BiasharaIQ is deployed using a distributed modern cloud infrastructure, leveraging Vercel, Render, and AWS for high availability and scalability.
+BiasharaIQ is deployed using a modern cloud infrastructure, leveraging Amazon Web Services (AWS) for high availability, security, and scalability.
 
 ### Deployment Architecture
 
-*   **Frontend 🌍 (Vercel)**
-    *   The Next.js frontend is deployed to **Vercel** for optimal edge-caching and fast content delivery.
-    *   Connects to the backend via the `NEXT_PUBLIC_API_URL` environment variable.
-*   **Backend ⚙️ (Render)**
-    *   The FastAPI Python application runs as a Web Service on **Render**.
-    *   Configured to scale horizontally, running behind Render's load balancer.
-    *   Handles M-Pesa callbacks and API requests from the Vercel frontend and mobile app.
+*   **Frontend 🌍 (AWS ECR / ECS)**
+    *   The Next.js frontend is containerized and its image is stored in **AWS ECR (Elastic Container Registry)**.
+    *   It is deployed and orchestrated via **AWS ECS (Elastic Container Service)**.
+    *   Connects to the backend securely within the AWS environment or via a load balancer.
+*   **Backend ⚙️ (AWS ECR / ECS)**
+    *   The FastAPI Python application is containerized and pushed to **AWS ECR**.
+    *   Runs as a scalable web service on **AWS ECS**, typically using AWS Fargate for serverless compute.
+    *   Handles M-Pesa callbacks and API requests from the frontend and mobile app.
 *   **Database 🗄️ (AWS RDS)**
-    *   The PostgreSQL database is hosted on **Amazon Web Services (AWS) RDS**.
+    *   The PostgreSQL database is hosted on **AWS RDS (Relational Database Service)**.
     *   Configured for automated backups, multi-AZ deployment (optional for production), and high performance.
-    *   The backend on Render connects to the AWS RDS instance securely.
+    *   The backend securely connects to the RDS instance within the AWS Virtual Private Cloud (VPC).
 
 ### One-Command Docker Deployment (Local / Self-hosted)
 
