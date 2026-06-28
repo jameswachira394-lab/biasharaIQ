@@ -9,8 +9,8 @@ A financial intelligence + decision system for real-world small businesses in Ke
 ## 🏛️ System Architectures
 
 BiasharaIQ follows a modern decoupled architecture separating the client-side presentation layer from the API-driven backend and databases.
+It is auto-deployed into AWS ECS using Terraform.
 
-auto deployed into the AWS ECS using terraform 
 ### Logical Architecture
 
 1.  **Frontend (Next.js + React + Tailwind CSS)**
@@ -99,8 +99,6 @@ curl http://localhost:8000/health
 # View logs
 docker-compose -f docker-compose.prod.yml logs -f backend
 ```
-#aws build 
-the system is deployed through the internal developer platform deploying into aws via terraform CLI 
 
 ### Production Features Included
 
@@ -135,7 +133,20 @@ the system is deployed through the internal developer platform deploying into aw
 - **Docker Compose** (Self-hosted): [PRODUCTION_DEPLOYMENT.md](docs/PRODUCTION_DEPLOYMENT.md#option-a-docker-compose-self-hosted)
 - **Kubernetes**: [PRODUCTION_DEPLOYMENT.md](docs/PRODUCTION_DEPLOYMENT.md#option-b-kubernetes)
 - **Render.com** (Free Tier): [render.yaml](render.yaml)
+- **AWS via Terraform**: The system is deployed through the internal developer platform into AWS ECS using the Terraform CLI.
 - **Vercel / Render / AWS Architecture**: Refer to the architectural configuration above.
+
+### Mobile App Build (Capacitor)
+
+To build the Android APK using Capacitor, run the provided scripts from the project root:
+
+```bash
+# Windows
+.\build-mobile.ps1
+
+# Linux / macOS
+./build-mobile.sh
+```
 
 ### Pre-Deployment Checklist
 
