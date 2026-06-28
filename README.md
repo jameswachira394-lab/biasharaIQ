@@ -84,22 +84,7 @@ BiasharaIQ is deployed using a modern cloud infrastructure, leveraging Amazon We
     *   Configured for automated backups, multi-AZ deployment (optional for production), and high performance.
     *   The backend securely connects to the RDS instance within the AWS Virtual Private Cloud (VPC).
 
-### One-Command Docker Deployment (Local / Self-hosted)
 
-```bash
-# Copy environment file and update with production secrets
-cp .env.example .env
-# Edit .env with your production values
-
-# Start production services
-docker-compose -f docker-compose.prod.yml up -d
-
-# Verify deployment
-curl http://localhost:8000/health
-
-# View logs
-docker-compose -f docker-compose.prod.yml logs -f backend
-```
 
 ### Production Features Included
 
@@ -123,39 +108,11 @@ docker-compose -f docker-compose.prod.yml logs -f backend
 - Database backup strategy
 
 ✅ **Scalability**
-- Decoupled cloud infrastructure (Vercel + Render + AWS RDS)
+- Decoupled cloud infrastructure (AWS ECR/ECS + RDS)
 - Docker Compose for multi-container orchestration
 - Kubernetes manifests available
 - Load balancer ready
 - Configurable pool sizes
-
-### Deployment Guides
-
-- **Docker Compose** (Self-hosted): [PRODUCTION_DEPLOYMENT.md](docs/PRODUCTION_DEPLOYMENT.md#option-a-docker-compose-self-hosted)
-- **Kubernetes**: [PRODUCTION_DEPLOYMENT.md](docs/PRODUCTION_DEPLOYMENT.md#option-b-kubernetes)
-- **Render.com** (Free Tier): [render.yaml](render.yaml)
-- **AWS via Terraform**: The system is deployed through the internal developer platform into AWS ECS using the Terraform CLI.
-- **Vercel / Render / AWS Architecture**: Refer to the architectural configuration above.
-
-### Mobile App Build (Capacitor)
-
-To build the Android APK using Capacitor, run the provided scripts from the project root:
-
-```bash
-# Windows
-.\build-mobile.ps1
-
-# Linux / macOS
-./build-mobile.sh
-```
-
-### Pre-Deployment Checklist
-
-```bash
-# Run health checks
-./health_check.sh http://localhost:8000  # Linux/Mac
-.\health_check.ps1 -EnvironmentUrl "http://localhost:8000"  # Windows
-```
 
 See [PRODUCTION_DEPLOYMENT.md](docs/PRODUCTION_DEPLOYMENT.md) for complete deployment guide.
 
