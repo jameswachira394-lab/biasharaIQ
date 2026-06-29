@@ -142,7 +142,7 @@ Once running, visit: http://localhost:8000/docs
 ### Testing
 
 ```bash
-# Backend tests
+
 cd backend
 pytest
 
