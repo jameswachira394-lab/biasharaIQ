@@ -146,7 +146,7 @@ Once running, visit: http://localhost:8000/docs
 cd backend
 pytest
 
-# Frontend tests  
+
 cd frontend
 npm test
 ```
