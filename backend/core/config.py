@@ -37,9 +37,9 @@ class Settings(BaseSettings):
     CLIENT_USERNAME: str = ""
     
     # Frontend Configuration
-    FRONTEND_URL: str = "https://biashara-iq.vercel.app"
+    FRONTEND_URL: str = "http://localhost:3000"
     
-    CORS_ORIGINS: str = "https://biashara-iq.vercel.app"
+    CORS_ORIGINS: str = "http://localhost:3000,http://127.0.0.1:3000,https://biashara-iq.vercel.app"
     
     # Logging
     LOG_LEVEL: str = "INFO"

@@ -25,11 +25,11 @@ services:
       dockerfile: Dockerfile
     container_name: biasharaiq_api
     environment:
-      DATABASE_URL: postgresql://biasharaiq_user:HNGUx7rn1527Utk6SAFtEffp7tUrI85z@dpg-d7p4gi5ckfvc73f23k20-a.oregon-postgres.render.com/biasharaiq
+      DATABASE_URL: postgresql://biasharaiq:biasharaiq_pass@db:5432/biasharaiq
       SECRET_KEY: ${SECRET_KEY:-change-me-in-production-32chars-min}
       ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY}
       JWT_SECRET: ${SECRET_KEY:-change-me-in-production-32chars-min}
-      CORS_ORIGINS: https://biashara-iq.vercel.app
+      CORS_ORIGINS: "http://localhost:3000,http://127.0.0.1:3000,https://biashara-iq.vercel.app"
     ports:
       - "8000:8000"
     depends_on:
@@ -42,7 +42,7 @@ services:
       context: ./frontend
       dockerfile: Dockerfile
       args:
-        NEXT_PUBLIC_API_URL: https://biasharaiq.onrender.com
+        NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-http://localhost:8000}
     container_name: biasharaiq_web
     ports:
       - "3000:3000"
