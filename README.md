@@ -34,25 +34,29 @@ It is auto-deployed into AWS ECS using Terraform.
 biasharaiq/
 ├── backend/
 │   ├── main.py                 # FastAPI entry point
-│   ├── schema.sql              # PostgreSQL schema
-│   ├── seed_demo.py            # Demo data (90 days)
-│   ├── requirements.txt        # Python dependencies
-│   ├── .env.example            # Environment template
-│   ├── middleware/auth.py      # JWT authentication
-│   ├── models/                 # SQLAlchemy ORM models & DB connection
-│   ├── routes/                 # API Endpoints (Auth, Transactions, etc.)
-│   └── services/               # Core Logic (Financial Engine, AI Agent, M-Pesa)
+│   ├── core/                   # Core configuration and DB setup
+│   ├── middleware/             # Middleware (JWT, CORS, etc.)
+│   ├── models/                 # SQLAlchemy ORM models
+│   ├── routes/                 # API Endpoints
+│   ├── services/               # Core logic (Financial Engine, AI, M-Pesa)
+│   ├── migrate_to_aws.py       # AWS RDS migration scripts
+│   ├── Dockerfile / .prod      # Docker build configurations
+│   └── requirements.txt        # Python dependencies
 ├── frontend/
-│   └── src/
-│       ├── app/                # Next.js pages
-│       ├── components/         # Reusable UI components
-│       ├── hooks/              # Data fetching hooks
-│       ├── utils/              # API client, formatting
-│       └── context/            # Auth state
-├── android/                    # Capacitor Android App build context
+│   ├── src/                    # Next.js app source
+│   ├── android/                # Capacitor Android App build context
+│   ├── Dockerfile              # Docker build configuration
+│   └── vercel.json             # Vercel deployment config
+├── terraform/                  # Terraform IaC for AWS ECS/RDS
+├── docker-compose.yml          # Local multi-container orchestration
 ├── biasharaiq-debug.apk        # Compiled Android APK
+├── render.yaml                 # Render configuration
 ├── setup_mpesa.py              # M-Pesa integration setup
-└── render.yaml                 # Render infrastructure-as-code deployments
+├── validate_mpesa.py           # M-Pesa validation testing
+├── build-mobile.*              # Mobile build scripts (sh/ps1)
+├── health_check.*              # Health check scripts (sh/ps1)
+├── setup-dev.*                 # Dev setup scripts (sh/ps1)
+└── verify-deployment.*         # Deployment verification (sh/ps1)
 ```
 
 ## 🛠️ Tech Stacks
@@ -62,6 +66,8 @@ biasharaiq/
 - **Auth**: JWT (bcrypt password hashing)
 - **AI**: Anthropic Claude API (claude-sonnet-4)
 - **Payments**: M-Pesa API integration
+- **Infrastructure**: AWS (ECR/ECS/RDS), Terraform, Docker Compose
+- **Scripting**: Bash and PowerShell utilities for cross-platform support
 
 ---
 
@@ -114,7 +120,7 @@ BiasharaIQ is deployed using a modern cloud infrastructure, leveraging Amazon We
 - Load balancer ready
 - Configurable pool sizes
 
-See [PRODUCTION_DEPLOYMENT.md](docs/PRODUCTION_DEPLOYMENT.md) for complete deployment guide.
+*(Deployment documentation is being integrated into Terraform states and setup scripts)*
 
 ---
 
@@ -149,9 +155,9 @@ npm test
 
 ## 📚 Documentation
 
-- [API Documentation](docs/API.md)
-- [Production Deployment](docs/PRODUCTION_DEPLOYMENT.md)
-- [Development Deployment](docs/DEPLOYMENT.md)
+*(Note: Extended documentation is currently being ported)*
+- API documentation is available locally via Swagger UI (`http://localhost:8000/docs`).
+- See scripts like `setup-dev.ps1` and `verify-deployment.sh` for infrastructure reference.
 
 ---
 
