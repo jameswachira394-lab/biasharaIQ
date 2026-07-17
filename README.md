@@ -184,5 +184,36 @@ For issues and questions:
 
 ---
 
-**Version**: 1.0.0  
-**Last Updated**: April 2024
+**Version**: 1.1.0  
+**Last Updated**: July 17, 2026
+
+---
+
+## 🚀 Getting Started
+
+These instructions will get a copy of the project running locally for development and testing purposes.
+
+Prerequisites:
+- Python 3.10+ and pip
+- Node.js 18+ and npm or yarn
+- Docker (optional, for containerized development)
+
+Quickstart (local):
+
+```bash
+# Backend: create virtualenv, install, run
+cd backend
+python -m venv .venv
+source .venv/Scripts/activate    # PowerShell: .venv\Scripts\Activate.ps1
+pip install -r requirements.txt
+uvicorn main:app --reload --port 8000
+
+# Frontend: install and run
+cd ../frontend
+npm install
+npm run dev
+```
+
+API docs are available at `http://localhost:8000/docs` when the backend is running.
+
+For containerized development, see `docker-compose.yml`.
