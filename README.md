@@ -206,7 +206,7 @@ cd backend
 python -m venv .venv
 source .venv/Scripts/activate    # PowerShell: .venv\Scripts\Activate.ps1
 pip install -r requirements.txt
-uvicorn main:app --reload --port 8000s
+uvicorn main:app --reload --port 8000
 
 # Frontend: install and run
 cd ../frontend
