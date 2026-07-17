@@ -3,6 +3,13 @@ from services.financial_engine import FinancialEngine
 from models.models import Insight
 from datetime import datetime, timedelta
 from typing import List
+import json
+import logging
+import os
+from google import genai
+from google.genai import types
+
+logger = logging.getLogger(__name__)
 
 
 class InsightsEngine:

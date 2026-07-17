@@ -11,10 +11,10 @@ const ICONS = {
 }
 
 const STYLES = {
-  success: 'bg-emerald-500/10 border-emerald-500/25 text-emerald-300',
-  error:   'bg-red-500/10 border-red-500/25 text-red-300',
-  warning: 'bg-amber-500/10 border-amber-500/25 text-amber-300',
-  info:    'bg-blue-500/10 border-blue-500/25 text-blue-300',
+  success: 'bg-[#2E7D32]/10 border-[#2E7D32]/25 text-[#2E7D32]',
+  error: 'bg-[#D32F2F]/10 border-[#D32F2F]/25 text-[#D32F2F]',
+  warning: 'bg-[#F9A825]/10 border-[#F9A825]/25 text-[#F9A825]',
+  info: 'bg-[#1A1F71]/10 border-[#1A1F71]/25 text-[#1A1F71]',
 }
 
 export function Toast({ toasts, dismiss }) {
@@ -55,9 +55,28 @@ export function useToast() {
   }, [dismiss])
 
   const success = useCallback((msg) => toast(msg, 'success'), [toast])
-  const error   = useCallback((msg) => toast(msg, 'error', 5000), [toast])
+  const error = useCallback((msg) => toast(msg, 'error', 5000), [toast])
   const warning = useCallback((msg) => toast(msg, 'warning'), [toast])
-  const info    = useCallback((msg) => toast(msg, 'info'), [toast])
+  const info = useCallback((msg) => toast(msg, 'info'), [toast])
 
   return { toasts, dismiss, toast, success, error, warning, info }
 }
+
+export default function SingleToast({ type, message, onClose }) {
+  const Icon = ICONS[type] || Info
+  return (
+    <div className="fixed bottom-4 right-4 z-50 flex flex-col gap-2 pointer-events-none">
+      <div className={clsx(
+        'flex items-center gap-3 px-4 py-3 rounded-xl border text-sm shadow-xl backdrop-blur pointer-events-auto animate-fade-in max-w-xs',
+        STYLES[type] || STYLES.info
+      )}>
+        <Icon size={15} className="flex-shrink-0" />
+        <span className="flex-1">{message}</span>
+        <button onClick={onClose} className="opacity-60 hover:opacity-100 ml-1">
+          <X size={13} />
+        </button>
+      </div>
+    </div>
+  )
+}
+

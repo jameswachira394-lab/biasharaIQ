@@ -4,143 +4,216 @@ A financial intelligence + decision system for real-world small businesses in Ke
 
 ---
 
-## Windows Quick Start
 
-### Step 1 – Install PostgreSQL
-Download and install from: https://www.postgresql.org/download/windows/
-- Remember the password you set for the `postgres` user
-- Make sure to check "Add to PATH" during install
 
-### Step 2 – Create the database
-Open **psql** (installed with PostgreSQL) or pgAdmin, then run:
-```sql
-CREATE DATABASE biasharaiq;
-```
+## 🏛️ System Architecture
 
-### Step 3 – Backend setup
-```powershell
-cd backend
+BiasharaIQ follows a modern decoupled architecture separating the client-side presentation layer from the API-driven backend and databases.
+It is auto-deployed into AWS ECS using Terraform.
 
-# Create virtual environment
-python -m venv venv
-venv\Scripts\activate
+### Logical Architectures
 
-# Install psycopg2 first (pre-built binary, no compilation needed)
-pip install psycopg2-binary --only-binary :all:
+1.  **Frontend (Next.js + React + Tailwind CSS)**
+    *   Handles the user interface, routing, and client-side state.
+    *   Communicates with the backend via RESTful APIs.
+    *   Deployed as a static or server-rendered application.
+    *   *Mobile App*: Wrapped via Capacitor to build the Android application.
 
-# Install remaining packages
-pip install -r requirements.txt
+2.  **Backend (Python + FastAPI)**
+    *   Serves as the core logic handler, authenticating users and managing transactions.
+    *   Interfaces with the database using SQLAlchemy ORM.
+    *   Integrates with external services like Anthropic's Claude AI for financial insights and M-Pesa for payment integrations.
 
-# Copy and edit environment file
-copy .env.example .env
-notepad .env
-```
+3.  **Database (PostgreSQL)**
+    *   Relational database storing user profiles, transaction records, and cached AI insights.
+    *   Ensures data integrity and handles complex queries for reporting.
 
-Edit `.env` with your values:
-```
-DATABASE_URL=postgresql://postgres:YOUR_PASSWORD@localhost/biasharaiq
-SECRET_KEY=any-random-string-at-least-32-characters-long
-ANTHROPIC_API_KEY=sk-ant-YOUR_KEY_HERE
-```
+### Directory Structure
 
-### Step 4 – Set up the database schema
-```powershell
-# Still in the backend folder with venv active
-psql -U postgres -d biasharaiq -f schema.sql
-```
-
-### Step 5 – Start the backend
-```powershell
-uvicorn main:app --reload --port 8000
-```
-✅ API running at http://localhost:8000
-✅ API docs at http://localhost:8000/docs
-
-### Step 6 – Frontend setup (new terminal)
-```powershell
-cd frontend
-npm install
-copy .env.example .env.local
-```
-Edit `.env.local`:
-```
-NEXT_PUBLIC_API_URL=http://localhost:8000
-```
-Then:
-```powershell
-npm run dev
-```
-✅ App running at http://localhost:3000
-
-### Step 7 – Load demo data (optional)
-```powershell
-cd backend
-venv\Scripts\activate
-python seed_demo.py
-```
-Login with: `demo@biasharaiq.com` / `demo1234`
-
----
-
-## Mac/Linux Quick Start
-
-```bash
-cd backend
-python3 -m venv venv && source venv/bin/activate
-pip install psycopg2-binary -r requirements.txt
-
-cp .env.example .env   # edit with your values
-createdb biasharaiq
-psql biasharaiq < schema.sql
-uvicorn main:app --reload --port 8000 &
-
-cd ../frontend
-npm install && cp .env.example .env.local
-npm run dev
-```
-
----
-
-## Architecture
-
-```
+```text
 biasharaiq/
 ├── backend/
 │   ├── main.py                 # FastAPI entry point
-│   ├── schema.sql              # PostgreSQL schema
-│   ├── seed_demo.py            # Demo data (90 days)
-│   ├── requirements.txt        # Python dependencies
-│   ├── .env.example            # Environment template
-│   ├── middleware/auth.py      # JWT authentication
-│   ├── models/
-│   │   ├── models.py           # SQLAlchemy ORM models
-│   │   └── database.py         # DB connection
-│   ├── routes/
-│   │   ├── auth.py             # Register / Login
-│   │   ├── transactions.py     # CRUD transactions
-│   │   └── routes.py           # Dashboard, AI, Reports, etc.
-│   └── services/
-│       ├── financial_engine.py # Profit, cash flow, metrics
-│       ├── insights_engine.py  # Rule-based insights
-│       └── ai_agent.py         # Claude AI integration
-└── frontend/
-    └── src/
-        ├── app/                # Next.js pages
-        │   ├── dashboard/      # Main dashboard
-        │   ├── transactions/   # CRUD transactions
-        │   ├── insights/       # Financial insights
-        │   ├── ai/             # AI chat advisor
-        │   ├── reports/        # Charts & reports
-        │   └── settings/       # Profile & categories
-        ├── components/         # Reusable UI components
-        ├── hooks/              # Data fetching hooks
-        ├── utils/              # API client, formatting
-        └── context/            # Auth state
+│   ├── core/                   # Core configuration and DB setup
+│   ├── middleware/             # Middleware (JWT, CORS, etc.)
+│   ├── models/                 # SQLAlchemy ORM models
+│   ├── routes/                 # API Endpoints
+│   ├── services/               # Core logic (Financial Engine, AI, M-Pesa)
+│   ├── migrate_to_aws.py       # AWS RDS migration scripts
+│   ├── Dockerfile / .prod      # Docker build configurations
+│   └── requirements.txt        # Python dependencies
+├── frontend/
+│   ├── src/                    # Next.js app source
+│   ├── android/                # Capacitor Android App build context
+│   ├── Dockerfile              # Docker build configuration
+│   └── vercel.json             # Vercel deployment config
+├── terraform/                  # Terraform IaC for AWS ECS/RDS
+├── docker-compose.yml          # Local multi-container orchestration
+├── biasharaiq-debug.apk        # Compiled Android APK
+├── render.yaml                 # Render configuration
+├── setup_mpesa.py              # M-Pesa integration setup
+├── validate_mpesa.py           # M-Pesa validation testing
+├── build-mobile.*              # Mobile build scripts (sh/ps1)
+├── health_check.*              # Health check scripts (sh/ps1)
+├── setup-dev.*                 # Dev setup scripts (sh/ps1)
+└── verify-deployment.*         # Deployment verification (sh/ps1)
 ```
 
-## Tech Stack
-- **Frontend**: Next.js 14, React 18, Tailwind CSS, Recharts
+## 🛠️ Tech Stacks
+- **Frontend**: Next.js 14, React 18, Tailwind CSS, Recharts, Capacitor (for Android)
 - **Backend**: Python FastAPI
 - **Database**: PostgreSQL + SQLAlchemy ORM
 - **Auth**: JWT (bcrypt password hashing)
 - **AI**: Anthropic Claude API (claude-sonnet-4)
+- **Payments**: M-Pesa API integration
+- **Infrastructure**: AWS (ECR/ECS/RDS), Terraform, Docker Compose
+- **Scripting**: Bash and PowerShell utilities for cross-platform support
+
+---
+
+## 🏭 Production Deployment
+
+BiasharaIQ is deployed using a modern cloud infrastructure, leveraging Amazon Web Services (AWS) for high availability, security, and scalability.
+
+### Deployment Architecture
+
+*   **Frontend 🌍 (AWS ECR / ECS)**
+    *   The Next.js frontend is containerized and its image is stored in **AWS ECR (Elastic Container Registry)**.
+    *   It is deployed and orchestrated via **AWS ECS (Elastic Container Service)**.
+    *   Connects to the backend securely within the AWS environment or via a load balancer.
+*   **Backend ⚙️ (AWS ECR / ECS)**
+    *   The FastAPI Python application is containerized and pushed to **AWS ECR**.
+    *   Runs as a scalable web service on **AWS ECS**, typically using AWS Fargate for serverless compute.
+    *   Handles M-Pesa callbacks and API requests from the frontend and mobile app.
+*   **Database 🗄️ (AWS RDS)**
+    *   The PostgreSQL database is hosted on **AWS RDS (Relational Database Service)**.
+    *   Configured for automated backups, multi-AZ deployment (optional for production), and high performance.
+    *   The backend securely connects to the RDS instance within the AWS Virtual Private Cloud (VPC).
+
+
+
+### Production Features Included
+
+✅ **Security**
+- CORS whitelist (no wildcards in production)
+- Security headers (X-Frame-Options, HSTS, etc.)
+- Non-root Docker user
+- JWT authentication
+
+✅ **Performance**
+- Database connection pooling (configurable)
+- Gunicorn + Uvicorn workers
+- Optimized Docker images
+- Response time monitoring
+
+✅ **Reliability**
+- Health checks with database verification
+- Automatic restart policies
+- Request/response logging
+- Error tracking integration (Sentry)
+- Database backup strategy
+
+✅ **Scalability**
+- Decoupled cloud infrastructure (AWS ECR/ECS + RDS)
+- Docker Compose for multi-container orchestration
+- Kubernetes manifests available
+- Load balancer ready
+- Configurable pool sizes
+
+*(Deployment documentation is being integrated into Terraform states and setup scripts)*
+
+---
+
+## 🛠 Development
+
+### Environment Variables
+
+All environment variables are documented in `.env.example`. Create a `.env` file:
+
+```bash
+cp .env.example .env
+# Edit with your values
+```
+
+### API Documentation
+
+Once running, visit: http://localhost:8000/docs
+
+### Testing
+
+```bash
+
+cd backend
+pytest
+
+
+cd frontend
+npm test
+```
+
+---
+
+## 📚 Documentation
+
+*(Note: Extended documentation is currently being ported)*
+- API documentation is available locally via Swagger UI (`http://localhost:8000/docs`).
+- See scripts like `setup-dev.ps1` and `verify-deployment.sh` for infrastructure reference.
+
+---
+
+## 🤝 Contributing
+
+1. Create a feature branch: `git checkout -b feature/your-feature`
+2. Commit changes: `git commit -am 'Add feature'`
+3. Push to branch: `git push origin feature/your-feature`
+4. Submit a pull request
+
+---
+
+## 📝 License
+
+This project is licensed under the MIT License - see the LICENSE file for details.
+
+---
+
+## 🙋 Support
+
+For issues and questions:
+- GitHub Issues: [Create an issue](https://github.com/yourusername/biasharaiq/issues)
+- Documentation: [docs/](docs/)
+
+---
+
+**Version**: 1.1.0  
+**Last Updated**: July 17, 2026
+
+---
+
+## 🚀 Getting Started
+
+These instructions will get a copy of the project running locally for development and testing purposes.
+
+Prerequisites:
+- Python 3.10+ and pip
+- Node.js 18+ and npm or yarn
+- Docker (optional, for containerized development)
+
+Quickstart (local):
+
+```bash
+# Backend: create virtualenv, install, run
+cd backend
+python -m venv .venv
+source .venv/Scripts/activate    # PowerShell: .venv\Scripts\Activate.ps1
+pip install -r requirements.txt
+uvicorn main:app --reload --port 8000
+
+# Frontend: install and run
+cd ../frontend
+npm install
+npm run dev
+```
+
+API docs are available at `http://localhost:8000/docs` when the backend is running.
+
+For containerized development, see `docker-compose.yml`.

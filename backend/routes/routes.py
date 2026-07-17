@@ -3,11 +3,12 @@ from sqlalchemy.orm import Session
 from pydantic import BaseModel
 from typing import Optional, List
 from models.database import get_db
-from models.models import User, Category, Insight, TransactionType
+from models.models import User, Category, Insight, TransactionType, UserPlan
 from middleware.auth import get_current_user
 from services.financial_engine import FinancialEngine
 from services.insights_engine import InsightsEngine
 from services.ai_agent import chat_with_ai_agent
+from middleware.subscription_guard import require_pro
 
 # ──────────────────────────────────────────────
 # Dashboard
@@ -22,8 +23,13 @@ def get_dashboard(
 ):
     engine = FinancialEngine(db, current_user.id)
     metrics = engine.get_full_metrics()
-    insights_engine = InsightsEngine(db, current_user.id)
-    insights = insights_engine.generate_insights()
+    
+    # Only generate insights for PRO users
+    insights = None
+    if current_user.plan == UserPlan.pro:
+        insights_engine = InsightsEngine(db, current_user.id)
+        insights = insights_engine.generate_insights()
+    
     trend = engine.get_weekly_trend(8)
 
     return {
@@ -35,13 +41,11 @@ def get_dashboard(
     }
 
 
-# ──────────────────────────────────────────────
-# Insights
-# ──────────────────────────────────────────────
+
 insights_router = APIRouter(prefix="/insights", tags=["insights"])
 
 
-@insights_router.get("/")
+@insights_router.get("/", dependencies=[Depends(require_pro)])
 def get_insights(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user)
@@ -54,7 +58,7 @@ def get_insights(
 def get_insight_history(
     limit: int = Query(20, le=100),
     db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user)
+    current_user: User = Depends(require_pro)
 ):
     items = (
         db.query(Insight)
@@ -81,16 +85,24 @@ class ChatMessage(BaseModel):
 def chat(
     req: ChatMessage,
     db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user)
+    current_user: User = Depends(require_pro)
 ):
-    response = chat_with_ai_agent(
-        db=db,
-        user_id=current_user.id,
-        business_name=current_user.business_name,
-        user_message=req.message,
-        conversation_history=req.history
-    )
-    return {"response": response}
+    try:
+        response = chat_with_ai_agent(
+            db=db,
+            user_id=current_user.id,
+            business_name=current_user.business_name,
+            user_message=req.message
+        )
+        return {"response": response}
+    except ValueError as e:
+        if "API key" in str(e):
+            return {"error": str(e)}, 500
+        raise
+    except Exception as e:
+        print(f"AI Chat Error: {str(e)}")
+        # If it's a known error from our ai_agent.py, it will have a clear message
+        return {"error": str(e)}, 500
 
 
 # ──────────────────────────────────────────────
@@ -210,7 +222,12 @@ def get_profile(current_user: User = Depends(get_current_user)):
         "owner_name": current_user.owner_name,
         "phone": current_user.phone,
         "business_type": current_user.business_type,
-        "created_at": current_user.created_at
+        "created_at": current_user.created_at,
+        "plan": current_user.plan,
+        "subscription_status": current_user.subscription_status,
+        "subscription_end": current_user.subscription_end,
+        "monthly_transaction_count": current_user.monthly_transaction_count,
+        "is_verified": current_user.is_verified
     }
 
 

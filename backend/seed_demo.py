@@ -1,16 +1,3 @@
-"""
-BiasharaIQ Demo Seed Script
----------------------------
-Creates a demo user account and populates realistic transaction data
-for a Kenyan small business (a retail shop called "Mama Jane's General Store").
-
-Usage:
-    cd backend
-    python seed_demo.py
-
-    Or with a custom DATABASE_URL:
-    DATABASE_URL=postgresql://... python seed_demo.py
-"""
 
 import os
 import sys
@@ -18,16 +5,15 @@ import random
 from datetime import datetime, timedelta
 from dotenv import load_dotenv
 
+# Setup environment and paths
 load_dotenv()
-
-# Must be run from the backend directory
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
+# Single import statement for all models and dependencies
 from models.database import SessionLocal, engine
 from models.models import Base, User, Transaction, Category, TransactionType
 from middleware.auth import hash_password
 
-# ─── Config ───────────────────────────────────────────────────────────────────
 
 DEMO_EMAIL = "demo@biasharaiq.com"
 DEMO_PASSWORD = "demo1234"
@@ -82,7 +68,7 @@ def seed():
         # ── User ──────────────────────────────────────────────────────────────
         existing = db.query(User).filter(User.email == DEMO_EMAIL).first()
         if existing:
-            print(f"⚠  Demo user already exists ({DEMO_EMAIL}). Skipping user creation.")
+            print(f"[SKIP] Demo user already exists ({DEMO_EMAIL}). Skipping user creation.")
             user = existing
         else:
             user = User(
@@ -103,15 +89,17 @@ def seed():
                 db.add(Category(user_id=user.id, name=name, type=TransactionType.income, is_default=True))
 
             db.commit()
-            print(f"✓  Created demo user: {DEMO_EMAIL} / {DEMO_PASSWORD}")
+            print(f"[OK] Created demo user: {DEMO_EMAIL} / {DEMO_PASSWORD}")
 
         # ── Transactions ──────────────────────────────────────────────────────
         existing_count = db.query(Transaction).filter(Transaction.user_id == user.id).count()
         if existing_count > 0:
-            print(f"⚠  {existing_count} transactions already exist. Skipping transaction seed.")
+            print(f"[SKIP] {existing_count} transactions already exist. Skipping transaction seed.")
         else:
             now = datetime.utcnow()
-            transactions = []
+            transaction_count = 0
+            batch = []
+            batch_size = 100  # Add transactions in batches of 100
 
             # Generate 90 days of data
             for day_offset in range(90, 0, -1):
@@ -125,7 +113,7 @@ def seed():
                     # Slow months have lower income
                     multiplier = 0.75 if day_offset > 60 else 1.0
                     amount = round(random.uniform(low * multiplier, high * multiplier), -1)
-                    transactions.append(Transaction(
+                    batch.append(Transaction(
                         user_id=user.id,
                         amount=amount,
                         type=TransactionType.income,
@@ -139,7 +127,7 @@ def seed():
                 for _ in range(expense_count):
                     cat, low, high, desc = random.choice(EXPENSE_TEMPLATES)
                     amount = round(random.uniform(low, high), -1)
-                    transactions.append(Transaction(
+                    batch.append(Transaction(
                         user_id=user.id,
                         amount=amount,
                         type=TransactionType.expense,
@@ -155,15 +143,26 @@ def seed():
                         ("Salaries", 12000, "Employee salary - Kamau"),
                         ("Loan Repayment", 5000, "Equity Bank microfinance"),
                     ]:
-                        transactions.append(Transaction(
+                        batch.append(Transaction(
                             user_id=user.id, amount=amount,
                             type=TransactionType.expense, category=cat,
                             date=date.replace(hour=9, minute=0), description=desc,
                         ))
 
-            db.bulk_save_objects(transactions)
-            db.commit()
-            print(f"✓  Created {len(transactions)} transactions spanning 90 days")
+                # Add batch to database when it reaches batch_size
+                if len(batch) >= batch_size:
+                    db.bulk_save_objects(batch)
+                    db.commit()
+                    transaction_count += len(batch)
+                    batch = []
+
+            # Add remaining transactions
+            if batch:
+                db.bulk_save_objects(batch)
+                db.commit()
+                transaction_count += len(batch)
+
+            print(f"[OK] Created {transaction_count} transactions spanning 90 days")
 
         # ── Summary ───────────────────────────────────────────────────────────
         from sqlalchemy import func
@@ -176,19 +175,19 @@ def seed():
             Transaction.type == TransactionType.expense
         ).scalar() or 0
 
-        print("\n── Demo Account Summary ───────────────────────────")
+        print("\n-- Demo Account Summary ---------------------------")
         print(f"   Email:      {DEMO_EMAIL}")
         print(f"   Password:   {DEMO_PASSWORD}")
         print(f"   Business:   {DEMO_BUSINESS}")
         print(f"   Total In:   KES {income:,.0f}")
         print(f"   Total Out:  KES {expenses:,.0f}")
         print(f"   Net Profit: KES {income - expenses:,.0f}")
-        print("────────────────────────────────────────────────────")
-        print("\n✓  Seed complete. Start the server and log in with the credentials above.")
+        print("----------------------------------------------------")
+        print("\n[OK] Seed complete. Start the server and log in with the credentials above.")
 
     except Exception as e:
         db.rollback()
-        print(f"✗  Seed failed: {e}")
+        print(f"[ERROR] Seed failed: {e}")
         raise
     finally:
         db.close()

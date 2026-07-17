@@ -8,33 +8,64 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        /* ── Brand palette ── */
-        brand: {
-          50:  '#ECFDF5',
-          100: '#D1FAE5',
-          200: '#A7F3D0',
-          300: '#6EE7B7',
-          400: '#34D399',
-          500: '#10B981',   /* Emerald Accent */
-          600: '#059669',
-          700: '#0F6B4F',   /* Deep Green */
-          800: '#065F46',
-          900: '#064E3B',
+        white: 'var(--pure-white)',
+        /* ── Cream Palette ── */
+        cream: {
+          50: '#FFFDF8',
+          100: '#FDF6EC',
+          200: '#FAF3E0',
+          300: '#F5EFE6',
+          400: '#EDE3D8',
+          500: '#E0D0BC',
         },
-        /* ── Surface palette ── */
-        surface: {
-          900: '#0B0F14',   /* Dark Background */
-          800: '#0D1117',
-          700: '#121821',   /* Card Background */
-          600: '#161E2A',
-          500: '#1A2535',   /* Border */
-          400: '#243347',
+        /* ── Brown Palette ── */
+        brown: {
+          900: '#2C1810',
+          800: '#3C2A1E',
+          700: '#5C4033',
+          600: '#6F4A2D',
+          500: '#8B5E3C',
+          400: '#A67B5B',
+          300: '#C4A484',
+          200: '#DCC9B0',
+        },
+        /* ── Semantic Colors ── */
+        semantic: {
+          white: 'var(--text-white)',
+          success: 'var(--success-green)',
+          error: 'var(--error-red)',
+          textDark: '#2C1810',
+          textSecondary: 'var(--text-secondary)',
+          textMuted: 'var(--text-muted)',
+          textLight: 'var(--text-light)',
+          accentBlue: 'var(--accent-primary)',
+          accentPurple: 'var(--accent-secondary)',
+          accentGold: 'var(--accent-yellow)',
+          bgMain: 'var(--bg-main)',
+          bgSidebar: 'var(--bg-sidebar)',
+        },
+        /* ── Chart Palette (warm tones) ── */
+        chart: {
+          brown: '#8B5E3C',
+          mocha: '#A67B5B',
+          teal: '#14B8A6',
+          amber: '#D97706',
+          rose: '#E11D48',
+          forest: '#4A7C59',
+        },
+        /* ── Text Colors ── */
+        text: {
+          white: 'var(--text-white)',
+          dark: '#2C1810',
+          secondary: 'var(--text-secondary)',
+          muted: 'var(--text-muted)',
+          light: 'var(--text-light)',
         },
       },
       fontFamily: {
-        sans:    ['var(--font-inter)', 'system-ui', 'sans-serif'],
-        display: ['var(--font-syne)',  'sans-serif'],
-        mono:    ['var(--font-jetbrains)', 'monospace'],
+        sans: ['var(--font-inter)', 'system-ui', 'sans-serif'],
+        display: ['var(--font-syne)', 'sans-serif'],
+        mono: ['var(--font-jetbrains)', 'monospace'],
       },
     },
   },

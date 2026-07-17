@@ -1,7 +1,4 @@
-#!/usr/bin/env python
-"""
-Reset the database schema. Drops and recreates the biasharaiq database.
-"""
+
 import os
 import psycopg2
 from psycopg2 import sql
@@ -58,3 +55,4 @@ cursor.close()
 conn.close()
 
 print("✅ Database reset complete!")
+#hehehe

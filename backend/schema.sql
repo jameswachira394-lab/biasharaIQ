@@ -11,6 +11,16 @@ CREATE TABLE IF NOT EXISTS users (
     business_type VARCHAR(100),
     currency VARCHAR(10) DEFAULT 'KES',
     is_active BOOLEAN DEFAULT TRUE,
+    is_verified BOOLEAN DEFAULT FALSE,
+    plan VARCHAR(50) DEFAULT 'FREE',
+    subscription_status VARCHAR(50) DEFAULT 'active',
+    subscription_start TIMESTAMP,
+    subscription_end TIMESTAMP,
+    monthly_transaction_count INTEGER DEFAULT 0,
+    ai_queries_count INTEGER DEFAULT 0,
+    ai_queries_reset_date TIMESTAMP,
+    verification_code VARCHAR(10),
+    verification_expires_at TIMESTAMP,
     created_at TIMESTAMP DEFAULT NOW(),
     updated_at TIMESTAMP DEFAULT NOW()
 );
@@ -35,6 +45,9 @@ CREATE TABLE IF NOT EXISTS transactions (
     category VARCHAR(100) NOT NULL,
     date TIMESTAMP NOT NULL DEFAULT NOW(),
     description TEXT,
+    source VARCHAR(50) DEFAULT 'manual',
+    import_batch_id VARCHAR(100),
+    status VARCHAR(50) DEFAULT 'confirmed',
     created_at TIMESTAMP DEFAULT NOW(),
     updated_at TIMESTAMP DEFAULT NOW()
 );
@@ -80,18 +93,18 @@ CREATE TABLE IF NOT EXISTS default_categories (
 
 INSERT INTO default_categories (name, type, color, icon) VALUES
 -- Income categories
-('Sales', 'income', '#10b981', 'trending-up'),
-('Services', 'income', '#06b6d4', 'briefcase'),
-('Loans Received', 'income', '#8b5cf6', 'credit-card'),
-('Other Income', 'income', '#84cc16', 'plus-circle'),
+('Sales', 'income', '#2E7D32', 'trending-up'),
+('Services', 'income', '#1A1F71', 'briefcase'),
+('Loans Received', 'income', '#0A2540', 'credit-card'),
+('Other Income', 'income', '#F9A825', 'plus-circle'),
 -- Expense categories
-('Stock / Inventory', 'expense', '#f59e0b', 'package'),
-('Rent', 'expense', '#ef4444', 'home'),
-('Salaries', 'expense', '#f97316', 'users'),
-('Transport', 'expense', '#6366f1', 'truck'),
-('Utilities', 'expense', '#14b8a6', 'zap'),
-('Marketing', 'expense', '#ec4899', 'megaphone'),
-('Loan Repayment', 'expense', '#dc2626', 'credit-card'),
-('Equipment', 'expense', '#7c3aed', 'tool'),
-('Other Expenses', 'expense', '#94a3b8', 'more-horizontal')
+('Stock / Inventory', 'expense', '#F9A825', 'package'),
+('Rent', 'expense', '#D32F2F', 'home'),
+('Salaries', 'expense', '#0A2540', 'users'),
+('Transport', 'expense', '#1A1F71', 'truck'),
+('Utilities', 'expense', '#2E7D32', 'zap'),
+('Marketing', 'expense', '#F9A825', 'megaphone'),
+('Loan Repayment', 'expense', '#D32F2F', 'credit-card'),
+('Equipment', 'expense', '#0A2540', 'tool'),
+('Other Expenses', 'expense', '#1E1E1E', 'more-horizontal')
 ON CONFLICT DO NOTHING;

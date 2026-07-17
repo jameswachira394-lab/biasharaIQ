@@ -14,10 +14,10 @@ export default function AppLayout({ children }) {
 
   if (loading || !user) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center bg-cream-300">
         <div className="flex items-center gap-3">
-          <div className="w-6 h-6 rounded-full border-2 border-emerald-500 border-t-transparent animate-spin" />
-          <span className="text-slate-400 text-sm">Loading...</span>
+          <div className="w-6 h-6 rounded-full border-2 border-[#8B5E3C] border-t-transparent animate-spin" />
+          <span className="text-semantic-textSecondary text-sm">Loading...</span>
         </div>
       </div>
     )

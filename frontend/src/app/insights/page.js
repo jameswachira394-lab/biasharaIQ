@@ -15,7 +15,7 @@ export default function InsightsPage() {
     try {
       const res = await insightsApi.get()
       setInsights(res.data || [])
-    } catch {}
+    } catch { }
     finally { setLoading(false); setRefreshing(false) }
   }, [])
 
@@ -47,8 +47,8 @@ export default function InsightsPage() {
       <div className="space-y-6 stagger-children">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="font-display font-bold text-2xl text-slate-100">Financial Insights</h1>
-            <p className="text-slate-500 text-sm mt-0.5">Rule-based analysis of your business health</p>
+            <h1 className="font-display font-bold text-2xl text-[#1E1E1E]">Financial Insights</h1>
+            <p className="text-semantic-textSecondary text-sm mt-0.5">Rule-based analysis of your business health</p>
           </div>
           <button onClick={() => load(true)} disabled={refreshing} className="btn-secondary p-2">
             <RefreshCw size={15} className={refreshing ? 'animate-spin' : ''} />
@@ -56,27 +56,27 @@ export default function InsightsPage() {
         </div>
 
         {loading ? (
-          <div className="flex items-center justify-center h-40 text-slate-500 text-sm">
-            <div className="w-4 h-4 border-2 border-emerald-500 border-t-transparent rounded-full animate-spin mr-2" /> Analyzing your finances...
+          <div className="flex items-center justify-center h-40 text-semantic-textSecondary text-sm">
+            <div className="w-4 h-4 border-2 border-[#2E7D32] border-t-transparent rounded-full animate-spin mr-2" /> Analyzing your finances...
           </div>
         ) : insights.length === 0 ? (
           <div className="card p-12 text-center">
-            <Lightbulb size={32} className="text-slate-600 mx-auto mb-3" />
-            <p className="text-slate-400 font-medium">No insights yet</p>
-            <p className="text-slate-600 text-sm mt-1">Add transactions to start receiving financial insights</p>
+            <Lightbulb size={32} className="text-semantic-textSecondary mx-auto mb-3" />
+            <p className="text-semantic-textSecondary font-medium">No insights yet</p>
+            <p className="text-semantic-textSecondary text-sm mt-1">Add transactions to start receiving financial insights</p>
           </div>
         ) : (
           <div className="space-y-6">
-            <Section title="⚠ Critical Issues" items={bySeverity.critical} color="text-red-400" />
-            <Section title="⚡ Warnings" items={bySeverity.warning} color="text-amber-400" />
-            <Section title="ℹ Information" items={bySeverity.info} color="text-blue-400" />
+            <Section title="⚠ Critical Issues" items={bySeverity.critical} color="text-[#D32F2F]" />
+            <Section title="⚡ Warnings" items={bySeverity.warning} color="text-[#F9A825]" />
+            <Section title="ℹ Information" items={bySeverity.info} color="text-[#1A1F71]" />
           </div>
         )}
 
-        <div className="card p-4 border-dashed border-[#1e2d3d]">
-          <p className="text-xs text-slate-600 text-center">
+        <div className="card p-4 border-dashed border-[#F5F5F5]">
+          <p className="text-xs text-semantic-textSecondary text-center">
             Insights are generated from your actual transaction data using rule-based analysis.
-            For AI-powered advice, visit the <a href="/ai" className="text-emerald-500 hover:text-emerald-400">AI Advisor</a>.
+            For AI-powered advice, visit the <a href="/ai" className="text-[#2E7D32] hover:text-[#2E7D32]">AI Advisor</a>.
           </p>
         </div>
       </div>

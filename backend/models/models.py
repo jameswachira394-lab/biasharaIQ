@@ -6,6 +6,17 @@ import enum
 Base = declarative_base()
 
 
+class UserPlan(str, enum.Enum):
+    free = "FREE"
+    pro = "PRO"
+
+
+class SubscriptionStatus(str, enum.Enum):
+    active = "active"
+    expired = "expired"
+    pending = "pending"
+
+
 class TransactionType(str, enum.Enum):
     income = "income"
     expense = "expense"
@@ -22,12 +33,28 @@ class User(Base):
     phone = Column(String, nullable=True)
     business_type = Column(String, nullable=True)
     currency = Column(String, default="KES")
+    
+    # Subscription fields
+    plan = Column(String, default=UserPlan.free)
+    subscription_status = Column(String, default=SubscriptionStatus.active)
+    subscription_start = Column(DateTime, nullable=True)
+    subscription_end = Column(DateTime, nullable=True)
+    monthly_transaction_count = Column(Integer, default=0)
+    ai_queries_count = Column(Integer, default=0)
+    ai_queries_reset_date = Column(DateTime, nullable=True)
+    
     created_at = Column(DateTime, default=datetime.utcnow)
     is_active = Column(Boolean, default=True)
+    is_verified = Column(Boolean, default=False)
+    verification_code = Column(String(10), nullable=True)
+    verification_expires_at = Column(DateTime, nullable=True)
 
     transactions = relationship("Transaction", back_populates="user", cascade="all, delete-orphan")
     insights = relationship("Insight", back_populates="user", cascade="all, delete-orphan")
     categories = relationship("Category", back_populates="user", cascade="all, delete-orphan")
+    subscriptions = relationship("Subscription", back_populates="user", cascade="all, delete-orphan")
+    payments = relationship("Payment", back_populates="user", cascade="all, delete-orphan")
+    uploaded_documents = relationship("UploadedDocument", back_populates="user", cascade="all, delete-orphan")
 
 
 class Transaction(Base):
@@ -40,10 +67,61 @@ class Transaction(Base):
     category = Column(String, nullable=False)
     date = Column(DateTime, nullable=False)
     description = Column(Text, nullable=True)
+    source = Column(String, default="manual")  # "manual", "mpesa", "bank", "csv", "invoice"
+    import_batch_id = Column(String, nullable=True)  # groups transactions from same upload
+    status = Column(String, default="confirmed")  # "pending_review" | "confirmed"
     created_at = Column(DateTime, default=datetime.utcnow)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
     user = relationship("User", back_populates="transactions")
+
+
+class Subscription(Base):
+    __tablename__ = "subscriptions"
+
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+    plan = Column(String, nullable=False)
+    amount = Column(Float, nullable=False)
+    status = Column(String, nullable=False)
+    started_at = Column(DateTime, default=datetime.utcnow)
+    expires_at = Column(DateTime, nullable=False)
+
+    user = relationship("User", back_populates="subscriptions")
+
+
+class Payment(Base):
+    __tablename__ = "payments"
+
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+    phone_number = Column(String, nullable=False)
+    amount = Column(Float, nullable=False)
+    status = Column(String, default="pending")  # pending, completed, failed
+    mpesa_receipt = Column(String, nullable=True)
+    checkout_request_id = Column(String, unique=True, index=True)
+    merchant_request_id = Column(String, nullable=True)
+    created_at = Column(DateTime, default=datetime.utcnow)
+
+    user = relationship("User", back_populates="payments")
+
+
+class UploadedDocument(Base):
+    __tablename__ = "uploaded_documents"
+
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+    filename = Column(String, nullable=False)
+    file_type = Column(String, nullable=False)  # "mpesa", "bank", "csv", "invoice"
+    storage_url = Column(String, nullable=False)  # Cloudinary or S3 URL
+    parsed_at = Column(DateTime, default=datetime.utcnow)
+    transaction_count = Column(Integer, default=0)
+    batch_id = Column(String, unique=True, index=True)  # links to transactions
+    status = Column(String, default="pending_review")  # "pending_review" | "confirmed" | "cancelled"
+    summary = Column(Text, nullable=True)  # JSON string with summary data
+    created_at = Column(DateTime, default=datetime.utcnow)
+
+    user = relationship("User", back_populates="uploaded_documents")
 
 
 class Insight(Base):
