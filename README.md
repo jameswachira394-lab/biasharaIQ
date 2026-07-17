@@ -6,12 +6,12 @@ A financial intelligence + decision system for real-world small businesses in Ke
 
 
 
-## 🏛️ System Architecture
+## 🏛️ System Architectures
 
 BiasharaIQ follows a modern decoupled architecture separating the client-side presentation layer from the API-driven backend and databases.
 It is auto-deployed into AWS ECS using Terraform.
 
-### Logical Architectures
+### Logical Architecture
 
 1.  **Frontend (Next.js + React + Tailwind CSS)**
     *   Handles the user interface, routing, and client-side state.
@@ -206,7 +206,7 @@ cd backend
 python -m venv .venv
 source .venv/Scripts/activate    # PowerShell: .venv\Scripts\Activate.ps1
 pip install -r requirements.txt
-uvicorn main:app --reload --port 8000
+uvicorn main:app --reload --port 8000s
 
 # Frontend: install and run
 cd ../frontend
