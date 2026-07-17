@@ -6,7 +6,7 @@ A financial intelligence + decision system for real-world small businesses in Ke
 
 
 
-## 🏛️ System Architectures
+## 🏛️ System Architecture
 
 BiasharaIQ follows a modern decoupled architecture separating the client-side presentation layer from the API-driven backend and databases.
 It is auto-deployed into AWS ECS using Terraform.
