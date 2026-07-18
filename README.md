@@ -60,7 +60,7 @@ biasharaiq/
 ```
 
 ## 🛠️ Tech Stacks
-- **Frontend**: Next.js 14, React 18, Tailwind CSS, Recharts, Capacitor (for Android)
+- **Frontend**: Next.js 14, React 18, Tailwind CSS, Recharts, Capacitor (for Android)bdhdjd
 - **Backend**: Python FastAPI
 - **Database**: PostgreSQL + SQLAlchemy ORM
 - **Auth**: JWT (bcrypt password hashing)
