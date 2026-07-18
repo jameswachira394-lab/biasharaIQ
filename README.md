@@ -1,4 +1,4 @@
-# BiasharaIQ – Financial Intelligence Platform
+# BiasharaIbdhdjjdQ – Financial Intelligence Platform
 
 A financial intelligence + decision system for real-world small businesses in Kenya.
 
