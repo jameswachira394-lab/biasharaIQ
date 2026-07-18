@@ -59,7 +59,7 @@ biasharaiq/
 └── verify-deployment.*         # Deployment verification (sh/ps1)
 ```
 
-## 🛠️ Tech Stacks
+## 🛠️ Tech Stacksbshshsbbdbdb
 - **Frontend**: Next.js 14, React 18, Tailwind CSS, Recharts, Capacitor (for Android)bdhdjd
 - **Backend**: Python FastAPI
 - **Database**: PostgreSQL + SQLAlchemy ORM
