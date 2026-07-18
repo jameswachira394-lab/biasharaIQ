@@ -1,4 +1,4 @@
-bshshsv djdbdhdyebbdhshshehhebdhduuhr# BiasharaIbdhdjjdQ – Financial Intelligence Platform
+bshsbsbydhrbshshsv djdbdhdyebbdhshshehhebdhduuhr# BiasharaIbdhdjjdQ – Financial Intelligence Platform
 
 A financial intelligence + decision system for real-world small businesses in Kenya.
 
