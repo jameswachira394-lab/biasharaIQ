@@ -1,219 +1,165 @@
- hdjdjdhyddbshsbsbydhrbshshsv djdbdhdyebbdhshshehhebdhduuhr# BiasharaIbdhdjjdQ – Financial Intelligence Platform
+# BiasharaIQ – Financial Intelligence Platform
 
-A financial intelligence + decision system for real-world small businesses in Kenya.
+BiasharaIQ is a financial intelligence system built for Kenyan micro, small, and medium enterprises (SMEs). It combines transaction tracking, AI-assisted categorization, M-Pesa payment integration, analytics, and a mobile-ready user experience.
 
 ---
 
+## ✅ What This Project Does
 
+- Tracks business transactions, income, and expenses
+- Automates categorization using Google GenAI / Gemini
+- Supports M-Pesa payment flows and callback handling
+- Provides analytics, dashboards, and insights
+- Includes a web app and an Android-capable mobile app via Capacitor
+- Is designed for deployment on AWS ECS/RDS with Terraform and Docker
 
-## 🏛️ System Architectures
+---
 
-BiasharaIQ follows a modern decoupled architecture separating the client-side presentation layer from the API-driven backend and databases.
-It is auto-deployed into AWS ECS using Terraform.
+## 🏗️ Architecture Overview
 
-### Logical Architecture
+BiasharaIQ is built with a decoupled frontend and backend:
 
-1.  **Frontend (Next.js + React + Tailwind CSS)**
-    *   Handles the user interface, routing, and client-side state.
-    *   Communicates with the backend via RESTful APIs.
-    *   Deployed as a static or server-rendered application.
-    *   *Mobile App*: Wrapped via Capacitor to build the Android application.
+1. **Frontend**
+   - Next.js 14, React 18, Tailwind CSS
+   - Recharts for visualization
+   - Capacitor-powered Android mobile packaging
+   - React client communicates with the backend over REST
 
-2.  **Backend (Python + FastAPI)**
-    *   Serves as the core logic handler, authenticating users and managing transactions.
-    *   Interfaces with the database using SQLAlchemy ORM.
-    *   Integrates with external services like Anthropic's Claude AI for financial insights and M-Pesa for payment integrations.
+2. **Backend**
+   - Python FastAPI
+   - SQLAlchemy ORM for PostgreSQL
+   - AI services powered by Google GenAI / Gemini
+   - M-Pesa integration for payments and transaction imports
 
-3.  **Database (PostgreSQL)**
-    *   Relational database storing user profiles, transaction records, and cached AI insights.
-    *   Ensures data integrity and handles complex queries for reporting.
+3. **Database**
+   - PostgreSQL stores users, transactions, subscriptions, uploads, and insights
 
-### Directory Structure
+---
+
+## 📁 Project Structure
 
 ```text
-biasharaiq/
-├── backend/
-│   ├── main.py                 # FastAPI entry point
-│   ├── core/                   # Core configuration and DB setup
-│   ├── middleware/             # Middleware (JWT, CORS, etc.)
-│   ├── models/                 # SQLAlchemy ORM models
-│   ├── routes/                 # API Endpoints
-│   ├── services/               # Core logic (Financial Engine, AI, M-Pesa)
-│   ├── migrate_to_aws.py       # AWS RDS migration scripts
-│   ├── Dockerfile / .prod      # Docker build configurations
-│   └── requirements.txt        # Python dependencies
-├── frontend/
-│   ├── src/                    # Next.js app source
-│   ├── android/                # Capacitor Android App build context
-│   ├── Dockerfile              # Docker build configuration
-│   └── vercel.json             # Vercel deployment config
-├── terraform/                  # Terraform IaC for AWS ECS/RDS
-├── docker-compose.yml          # Local multi-container orchestration
-├── biasharaiq-debug.apk        # Compiled Android APK
-├── render.yaml                 # Render configuration
-├── setup_mpesa.py              # M-Pesa integration setup
-├── validate_mpesa.py           # M-Pesa validation testing
-├── build-mobile.*              # Mobile build scripts (sh/ps1)
-├── health_check.*              # Health check scripts (sh/ps1)
-├── setup-dev.*                 # Dev setup scripts (sh/ps1)
-└── verify-deployment.*         # Deployment verification (sh/ps1)
+biasharaIQ/
+├── backend/              # FastAPI backend service
+│   ├── core/             # config, authentication, database setup
+│   ├── middleware/       # request guards, auth, subscription checks
+│   ├── models/           # SQLAlchemy ORM models and DB helpers
+│   ├── routes/           # API endpoint definitions
+│   ├── services/         # AI, payments, insights, parsing, and business logic
+│   ├── requirements.txt  # backend dependencies
+│   ├── Dockerfile
+│   └── Dockerfile.prod
+├── frontend/             # Next.js frontend app and Capacitor mobile wrapper
+│   ├── src/              # application pages and components
+│   ├── android/          # Capacitor Android app project
+│   ├── package.json
+│   └── next.config.js
+├── terraform/            # AWS infrastructure as code
+├── docker-compose.yml    # local development orchestration
+├── setup-dev.ps1         # Windows development setup script
+├── build-mobile.ps1      # Android build helper
+├── setup_mpesa.py        # M-Pesa setup helper
+└── verify-deployment.ps1 # deployment validation script
 ```
 
-## 🛠️ Tech Stacksbshshsbbdbdb
-- **Frontend**: Next.js 14, React 18, Tailwind CSS, Recharts, Capacitor (for Android)bdhdjd
-- **Backend**: Python FastAPI
-- **Database**: PostgreSQL + SQLAlchemy ORM
-- **Auth**: JWT (bcrypt password hashing)
-- **AI**: Anthropic Claude API (claude-sonnet-4)
-- **Payments**: M-Pesa API integration
-- **Infrastructure**: AWS (ECR/ECS/RDS), Terraform, Docker Compose
-- **Scripting**: Bash and PowerShell utilities for cross-platform support
+---
+
+## 🧰 Tech Stack
+
+- Frontend: Next.js, React, Tailwind CSS, Recharts, Capacitor
+- Backend: Python, FastAPI, SQLAlchemy
+- Database: PostgreSQL
+- AI: Google GenAI / Gemini with rule-based fallback
+- Payments: M-Pesa integration
+- Deployment: Docker, Docker Compose, Terraform, AWS ECS/RDS
+- Scripting: PowerShell and Bash utilities
 
 ---
 
-## 🏭 Production Deployment
+## 🚀 Local Development
 
-BiasharaIQ is deployed using a modern cloud infrastructure, leveraging Amazon Web Services (AWS) for high availability, security, and scalability.
+### Prerequisites
 
-### Deployment Architecture
+- Python 3.10+
+- Node.js 18+
+- npm
+- Docker (optional)
+- `.env` configuration with local settings and API keys
 
-*   **Frontend 🌍 (AWS ECR / ECS)**
-    *   The Next.js frontend is containerized and its image is stored in **AWS ECR (Elastic Container Registry)**.
-    *   It is deployed and orchestrated via **AWS ECS (Elastic Container Service)**.
-    *   Connects to the backend securely within the AWS environment or via a load balancer.
-*   **Backend ⚙️ (AWS ECR / ECS)**
-    *   The FastAPI Python application is containerized and pushed to **AWS ECR**.
-    *   Runs as a scalable web service on **AWS ECS**, typically using AWS Fargate for serverless compute.
-    *   Handles M-Pesa callbacks and API requests from the frontend and mobile app.
-*   **Database 🗄️ (AWS RDS)**
-    *   The PostgreSQL database is hosted on **AWS RDS (Relational Database Service)**.
-    *   Configured for automated backups, multi-AZ deployment (optional for production), and high performance.
-    *   The backend securely connects to the RDS instance within the AWS Virtual Private Cloud (VPC).
-
-
-
-### Production Features Included
-
-✅ **Security**
-- CORS whitelist (no wildcards in production)
-- Security headers (X-Frame-Options, HSTS, etc.)
-- Non-root Docker user
-- JWT authentication
-
-✅ **Performance**
-- Database connection pooling (configurable)
-- Gunicorn + Uvicorn workers
-- Optimized Docker images
-- Response time monitoring
-
-✅ **Reliability**
-- Health checks with database verification
-- Automatic restart policies
-- Request/response logging
-- Error tracking integration (Sentry)
-- Database backup strategy
-
-✅ **Scalability**
-- Decoupled cloud infrastructure (AWS ECR/ECS + RDS)
-- Docker Compose for multi-container orchestration
-- Kubernetes manifests available
-- Load balancer ready
-- Configurable pool sizes
-
-*(Deployment documentation is being integrated into Terraform states and setup scripts)*
-
----
-
-## 🛠 Development
-
-### Environment Variables
-
-All environment variables are documented in `.env.example`. Create a `.env` file:
+### Run Backend
 
 ```bash
-cp .env.example .env
-# Edit with your values
+cd backend
+python -m venv .venv
+# PowerShell
+.\.venv\Scripts\Activate.ps1
+# Bash
+# source .venv/bin/activate
+pip install -r requirements.txt
+uvicorn main:app --reload --port 8000
+```
+
+### Run Frontend
+
+```bash
+cd frontend
+npm install
+npm run dev
 ```
 
 ### API Documentation
 
-Once running, visit: http://localhost:8000/docs
+Once the backend is running, open:
 
-### Testing
+`http://localhost:8000/docs`
+
+---
+
+## 📦 Mobile App
+
+The frontend supports Capacitor and can be built for Android using the included `android/` project.
+
+From `frontend/`:
 
 ```bash
+npm run build:mobile
+```
 
-cd backend
-pytest
+Or use the provided PowerShell helper:
 
-
-cd frontend
-npm test
+```powershell
+./build-mobile.ps1
 ```
 
 ---
 
-## 📚 Documentation
+## 💡 Important Scripts
 
-*(Note: Extended documentation is currently being ported)*
-- API documentation is available locally via Swagger UI (`http://localhost:8000/docs`).
-- See scripts like `setup-dev.ps1` and `verify-deployment.sh` for infrastructure reference.
+- `setup-dev.ps1` / `setup-dev.sh` — prepare local development environment
+- `docker-compose.yml` — run backend and frontend together in containers
+- `setup_mpesa.py` — M-Pesa setup helper
+- `health_check.ps1` / `health_check.sh` — service health checks
+- `verify-deployment.ps1` / `verify-deployment.sh` — deployment validation
 
 ---
 
 ## 🤝 Contributing
 
-1. Create a feature branch: `git checkout -b feature/your-feature`
-2. Commit changes: `git commit -am 'Add feature'`
-3. Push to branch: `git push origin feature/your-feature`
-4. Submit a pull request
+1. Fork the repository
+2. Create a feature branch: `git checkout -b feature/your-feature`
+3. Commit your changes
+4. Push the branch and open a pull request
 
 ---
 
-## 📝 License
+## 📌 Notes
 
-This project is licensed under the MIT License - see the LICENSE file for details.
-
----
-
-## 🙋 Support
-
-For issues and questions:
-- GitHub Issues: [Create an issue](https://github.com/yourusername/biasharaiq/issues)
-- Documentation: [docs/](docs/)
+- This repository currently uses Google GenAI / Gemini for AI transaction categorization.
+- M-Pesa support is configured through keys in the backend environment and sandbox settings.
+- Terraform is included for AWS ECS/RDS deployment automation.
 
 ---
 
-**Version**: 1.1.0  
-**Last Updated**: July 17, 2026
+## 📄 License
 
----
-
-## 🚀 Getting Started
-
-These instructions will get a copy of the project running locally for development and testing purposes.
-
-Prerequisites:
-- Python 3.10+ and pip
-- Node.js 18+ and npm or yarn
-- Docker (optional, for containerized development)
-
-Quickstart (local):
-
-```bash
-# Backend: create virtualenv, install, run
-cd backend
-python -m venv .venv
-source .venv/Scripts/activate    # PowerShell: .venv\Scripts\Activate.ps1
-pip install -r requirements.txt
-uvicorn main:app --reload --port 8000
-
-# Frontend: install and run
-cd ../frontend
-npm install
-npm run dev
-```
-
-API docs are available at `http://localhost:8000/docs` when the backend is running.
-
-For containerized development, see `docker-compose.yml`.
+See `LICENSE` if present in the repository.
