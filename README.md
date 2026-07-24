@@ -1,4 +1,4 @@
-hshshdbhdbuehehehhehehehehehdhhdheehhehjehehehehhehshshehhhehdhdjherhheheuhe# BiasharaIQ – Financial Intelligence Platform
+hehehehhehshshdbhdbuehehehhehehehehehdhhdheehhehjehehehehhehshshehhhehdhdjherhheheuhe# BiasharaIQ – Financial Intelligence Platform
 
 BiasharaIQ is a financial intelligence system built for Kenyan micro, small, and medium enterprises (SMEs). It combines transaction tracking, AI-assisted categorization, M-Pesa payment integration, analytics, and a mobile-ready user experience.
 
