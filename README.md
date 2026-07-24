@@ -53,7 +53,7 @@ biasharaIQ/
 │   ├── src/              # application pages and components
 │   ├── android/          # Capacitor Android app project
 │   ├── package.json
-│   └── next.config.js
+│   └── next.config.jsehhshdhhr
 ├── terraform/            # AWS infrastructure as code
 ├── docker-compose.yml    # local development orchestration
 ├── setup-dev.ps1         # Windows development setup script
