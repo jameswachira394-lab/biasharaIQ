@@ -1,0 +1,70 @@
+# ─────────────────────────────────────────────
+# Redis Deployment + Service
+# Mirrors: docker-compose service "redis"
+#   image: redis:7-alpine
+#   port:  6379
+# ─────────────────────────────────────────────
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: biasharaiq-redis
+  namespace: biasharaiq
+  labels:
+    app.kubernetes.io/name: biasharaiq
+    app.kubernetes.io/component: cache
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: biasharaiq-redis
+  template:
+    metadata:
+      labels:
+        app: biasharaiq-redis
+        app.kubernetes.io/component: cache
+    spec:
+      containers:
+        - name: redis
+          image: redis:7-alpine
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 6379
+          command: ["redis-server", "--save", "60", "1", "--loglevel", "warning"]
+          livenessProbe:
+            exec:
+              command: ["redis-cli", "ping"]
+            initialDelaySeconds: 20
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 6
+          readinessProbe:
+            exec:
+              command: ["redis-cli", "ping"]
+            initialDelaySeconds: 5
+            periodSeconds: 5
+            timeoutSeconds: 5
+            failureThreshold: 10
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "128Mi"
+            limits:
+              cpu: "250m"
+              memory: "256Mi"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: biasharaiq-redis
+  namespace: biasharaiq
+  labels:
+    app.kubernetes.io/name: biasharaiq
+    app.kubernetes.io/component: cache
+spec:
+  selector:
+    app: biasharaiq-redis
+  ports:
+    - name: redis
+      port: 6379
+      targetPort: 6379
+  type: ClusterIP
