@@ -35,8 +35,9 @@ class User(Base):
     currency = Column(String, default="KES")
     
     # Subscription fields
-    plan = Column(String, default=UserPlan.free)
-    subscription_status = Column(String, default=SubscriptionStatus.active)
+    # Use SQLAlchemy Enum columns mapped to Python enums for consistent comparisons
+    plan = Column(Enum(UserPlan), default=UserPlan.free, nullable=False)
+    subscription_status = Column(Enum(SubscriptionStatus), default=SubscriptionStatus.active, nullable=False)
     subscription_start = Column(DateTime, nullable=True)
     subscription_end = Column(DateTime, nullable=True)
     monthly_transaction_count = Column(Integer, default=0)

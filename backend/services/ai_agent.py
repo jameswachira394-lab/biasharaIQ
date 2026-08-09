@@ -25,10 +25,13 @@ logger = logging.getLogger(__name__)
 # =========================
 
 api_key = os.getenv("GEMINI_API_KEY")
-if not api_key:
-    raise ValueError("GEMINI_API_KEY not found in environment variables.")
-
-client = genai.Client(api_key=api_key)
+# Do NOT raise at import time — allow app to start without AI configured.
+# Initialize client only when an API key is present.
+client = None
+if api_key:
+    client = genai.Client(api_key=api_key)
+else:
+    logger.warning("GEMINI_API_KEY not set — AI features disabled at import time.")
 
 # =========================
 # REDIS CONFIGURATION
@@ -152,6 +155,9 @@ def create_chat_session() -> genai.chats.Chat:
     Financial context will be provided per-question based on intent,
     not upfront. This reduces token usage and improves accuracy.
     """
+    if client is None:
+        raise ValueError("API key not configured for Gemini")
+
     chat = client.chats.create(
         model="gemini-2.0-flash",
         config=types.GenerateContentConfig(
