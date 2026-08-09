@@ -1,6 +1,7 @@
 from fastapi import APIRouter, Depends, Query, HTTPException
 from sqlalchemy.orm import Session
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
+import logging
 from typing import Optional, List
 from models.database import get_db
 from models.models import User, Category, Insight, TransactionType, UserPlan
@@ -9,6 +10,8 @@ from services.financial_engine import FinancialEngine
 from services.insights_engine import InsightsEngine
 from services.ai_agent import chat_with_ai_agent
 from middleware.subscription_guard import require_pro
+
+logger = logging.getLogger(__name__)
 
 # ──────────────────────────────────────────────
 # Dashboard
@@ -78,7 +81,7 @@ ai_router = APIRouter(prefix="/ai", tags=["ai"])
 
 class ChatMessage(BaseModel):
     message: str
-    history: Optional[List[dict]] = []
+    history: Optional[List[dict]] = Field(default_factory=list)
 
 
 @ai_router.post("/chat")
@@ -97,12 +100,12 @@ def chat(
         return {"response": response}
     except ValueError as e:
         if "API key" in str(e):
-            return {"error": str(e)}, 500
+            raise HTTPException(status_code=503, detail=str(e))
         raise
     except Exception as e:
-        print(f"AI Chat Error: {str(e)}")
-        # If it's a known error from our ai_agent.py, it will have a clear message
-        return {"error": str(e)}, 500
+        logger.exception("AI Chat Error: %s", e)
+        # Do not return raw exception details in production responses
+        raise HTTPException(status_code=500, detail="AI service error")
 
 
 # ──────────────────────────────────────────────

@@ -11,7 +11,7 @@ from datetime import datetime
 
 load_dotenv()
 
-from models.database import engine, get_db
+from models.database import engine, get_db, SessionLocal
 from models.models import Base
 from routes.auth import router as auth_router
 from routes.email_verification import router as email_verification_router
@@ -160,10 +160,12 @@ async def root():
 async def health_check():
     """Comprehensive health check including database connectivity"""
     try:
-        db = next(get_db())
-        db.execute(text("SELECT 1"))
-        db.close()
-        
+        db = SessionLocal()
+        try:
+            db.execute(text("SELECT 1"))
+        finally:
+            db.close()
+
         return {
             "status": "healthy",
             "timestamp": datetime.now().isoformat(),
