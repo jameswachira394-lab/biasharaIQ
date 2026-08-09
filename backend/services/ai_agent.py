@@ -209,6 +209,10 @@ def chat_with_ai_agent(
             f"Message too long. Please keep it under {MAX_MESSAGE_LENGTH} characters."
         )
 
+    # Ensure AI client is configured
+    if client is None:
+        raise ValueError("API key not configured for Gemini")
+
     # ─────────────────────────────────────
     # CHECK USAGE LIMITS
     # ─────────────────────────────────────
