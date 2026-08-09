@@ -1,5 +1,23 @@
 # Python
 __pycache__/
+*.pyc
+
+# Environment files
+.env
+
+# Terraform state
+terraform.tfstate
+terraform.tfstate.backup
+
+# Docker
+docker-compose.override.yml
+**/node_modules/
+
+# Editor
+.vscode/
+.idea/
+# Python
+__pycache__/
 *.py[cod]
 *.pyo
 *.pyd
