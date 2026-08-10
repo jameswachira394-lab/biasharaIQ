@@ -14,7 +14,7 @@ This document maps the key project URLs, route structure, and deployment flow fo
 
 ---
 ss
-## 2. Architecturesddd URL Flowd
+## 2. Architecture URL Flowd
 
 ```mermaid
 flowchart LR
