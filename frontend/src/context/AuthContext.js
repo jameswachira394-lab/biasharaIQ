@@ -38,7 +38,8 @@ export function AuthProvider({ children }) {
 
   const register = async (data) => {
     const res = await authApi.register(data)
-    const { access_token, user: userData } = res.data
+    const userData = res.data?.user ?? res.data
+    const access_token = res.data?.access_token
 
     // ✅ Only store token if provided (token comes after email verification)
     if (access_token) {

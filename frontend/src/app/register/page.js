@@ -36,7 +36,13 @@ export default function RegisterPage() {
         router.push(`/verify-email?email=${encodeURIComponent(form.email)}`)
       }
     } catch (err) {
-      setError(err.response?.data?.detail || 'Registration failed. Please try again.')
+      setError(
+        err.response?.data?.detail ||
+        err.response?.data?.error ||
+        err.response?.data?.message ||
+        err.message ||
+        'Registration failed. Please try again.'
+      )
     } finally {
       setLoading(false)
     }
