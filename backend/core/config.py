@@ -55,10 +55,10 @@ class Settings(BaseSettings):
     # Email / Brevo Configuration
     SMTP_SERVER: str = "smtp-relay.brevo.com"
     SMTP_PORT: int = 587
-    SMTP_USERNAME: str = "acd261001@smtp-brevo.com"
+    SMTP_USERNAME: str = "b5c3d3001@smtp-brevo.com"
     SMTP_PASSWORD: str = ""
     BREVO_API_KEY: str = ""
-    SENDER_EMAIL: str = "jameswachira394@gmail.com"
+    SENDER_EMAIL: str = "biasharaiq@yahoo.com"
     SENDER_NAME: str = "Biashara IQ"
 
 

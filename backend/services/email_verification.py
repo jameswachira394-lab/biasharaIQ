@@ -33,7 +33,7 @@ def _send_via_brevo_api(recipient: str, subject: str, text_body: str) -> bool:
     if not brevo_key:
         return False
 
-    sender_email = os.getenv("SENDER_EMAIL") or settings.SENDER_EMAIL or "jameswachira394@gmail.com"
+    sender_email = os.getenv("SENDER_EMAIL") or settings.SENDER_EMAIL or "biasharaiq@yahoo.com"
     sender_name = os.getenv("SENDER_NAME") or settings.SENDER_NAME or "Biashara IQ"
 
     url = "https://api.brevo.com/v3/smtp/email"
@@ -69,14 +69,14 @@ def _send_via_smtp(msg: MIMEMultipart, recipient: str) -> bool:
     """Attempt SMTP delivery via Brevo SMTP relay or configured SMTP server."""
     smtp_server = os.getenv("SMTP_SERVER") or settings.SMTP_SERVER or "smtp-relay.brevo.com"
     smtp_port = int(os.getenv("SMTP_PORT") or settings.SMTP_PORT or 587)
-    smtp_user = os.getenv("SMTP_USERNAME") or settings.SMTP_USERNAME or "acd261001@smtp-brevo.com"
+    smtp_user = os.getenv("SMTP_USERNAME") or settings.SMTP_USERNAME or "b5c3d3001@smtp-brevo.com"
     smtp_pass = os.getenv("SMTP_PASSWORD") or settings.SMTP_PASSWORD
 
     # Fallback to legacy Gmail if SMTP_PASSWORD not set but GMAIL_APP_PASSWORD is
     if not smtp_pass:
         smtp_pass = os.getenv("GMAIL_APP_PASSWORD")
         if smtp_pass:
-            smtp_user = os.getenv("GMAIL_ADDRESS", "jameswachira394@gmail.com")
+            smtp_user = os.getenv("GMAIL_ADDRESS", "biasharaiq@yahoo.com")
             smtp_server = "smtp.gmail.com"
 
     if not smtp_pass:
@@ -107,7 +107,7 @@ def _send_via_smtp(msg: MIMEMultipart, recipient: str) -> bool:
 def send_email(email: str, code: str) -> bool:
     """Send a verification code email using Brevo REST API first, then Brevo SMTP as fallback."""
     subject = "Verify Your Biashara IQ Account"
-    sender_email = os.getenv("SENDER_EMAIL") or settings.SENDER_EMAIL or "jameswachira394@gmail.com"
+    sender_email = os.getenv("SENDER_EMAIL") or settings.SENDER_EMAIL or "biasharaiq@yahoo.com"
     sender_name = os.getenv("SENDER_NAME") or settings.SENDER_NAME or "Biashara IQ"
 
     text_body = (

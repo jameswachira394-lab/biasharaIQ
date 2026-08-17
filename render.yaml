@@ -46,13 +46,13 @@ services:
       - key: SMTP_PORT
         value: "587"
       - key: SMTP_USERNAME
-        value: acd261001@smtp-brevo.com
+        value: b5c3d3001@smtp-brevo.com
       - key: SMTP_PASSWORD
         sync: false
       - key: BREVO_API_KEY
         sync: false
       - key: SENDER_EMAIL
-        value: jameswachira394@gmail.com
+        value: biasharaiq@yahoo.com
       - key: SENDER_NAME
         value: Biashara IQ
 
