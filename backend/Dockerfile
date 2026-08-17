@@ -22,13 +22,5 @@ USER appuser
 
 EXPOSE 8000
 
-CMD ["gunicorn", \
-    "main:app", \
-    "--workers=4", \
-    "--worker-class=uvicorn.workers.UvicornWorker", \
-    "--bind=0.0.0.0:8000", \
-    "--access-logfile=-", \
-    "--error-logfile=-", \
-    "--log-level=info", \
-    "--timeout=120", \
-    "--keep-alive=5"]
+# Use shell form so $PORT can be expanded at runtime by platforms like Render
+CMD ["sh", "-c", "gunicorn main:app -k uvicorn.workers.UvicornWorker --workers 1 --bind 0.0.0.0:$PORT --access-logfile=- --error-logfile=- --log-level=info --timeout=120 --keep-alive=5"]
