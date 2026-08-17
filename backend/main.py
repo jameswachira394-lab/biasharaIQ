@@ -38,6 +38,31 @@ try:
 except Exception as e:
     logger.error(f"[FAIL] Failed to initialize database: {e}")
 
+# ── Inline migration: safely add columns that may not exist yet ────────────
+_COLUMN_MIGRATIONS = [
+    ("users", "reset_token_hash",       "VARCHAR(128)"),
+    ("users", "reset_token_expires_at", "TIMESTAMP"),
+]
+try:
+    with engine.connect() as _conn:
+        for _table, _col, _col_type in _COLUMN_MIGRATIONS:
+            _exists = _conn.execute(
+                text(
+                    "SELECT 1 FROM information_schema.columns "
+                    "WHERE table_name=:t AND column_name=:c"
+                ),
+                {"t": _table, "c": _col},
+            ).fetchone()
+            if not _exists:
+                _conn.execute(text(f'ALTER TABLE {_table} ADD COLUMN IF NOT EXISTS "{_col}" {_col_type}'))
+                _conn.commit()
+                logger.info(f"[MIGRATION] Added column {_table}.{_col}")
+            else:
+                logger.debug(f"[MIGRATION] Column {_table}.{_col} already exists — skipped")
+    logger.info("[MIGRATION] Column check complete")
+except Exception as _e:
+    logger.error(f"[MIGRATION] Column migration failed: {_e}")
+
 app = FastAPI(
     title="BiasharaIQ API",
     description="Financial Intelligence Platform for Kenyan SMEs",
