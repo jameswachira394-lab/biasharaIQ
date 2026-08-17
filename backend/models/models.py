@@ -49,6 +49,8 @@ class User(Base):
     is_verified = Column(Boolean, default=False)
     verification_code = Column(String(10), nullable=True)
     verification_expires_at = Column(DateTime, nullable=True)
+    reset_token_hash = Column(String(128), nullable=True)
+    reset_token_expires_at = Column(DateTime, nullable=True)
 
     transactions = relationship("Transaction", back_populates="user", cascade="all, delete-orphan")
     insights = relationship("Insight", back_populates="user", cascade="all, delete-orphan")

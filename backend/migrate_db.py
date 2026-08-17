@@ -61,6 +61,8 @@ columns_to_add = [
     ("is_verified",              "BOOLEAN DEFAULT FALSE"),
     ("verification_code",        "VARCHAR(10) NULL"),
     ("verification_expires_at",  "TIMESTAMP NULL"),
+    ("reset_token_hash",         "VARCHAR(128) NULL"),
+    ("reset_token_expires_at",   "TIMESTAMP NULL"),
 ]
 
 for col_name, col_def in columns_to_add:

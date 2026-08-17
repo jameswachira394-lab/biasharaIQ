@@ -1,22 +1,31 @@
 'use client'
-import { useState } from 'react'
-import { useRouter } from 'next/navigation'
+import { useState, useEffect, Suspense } from 'react'
+import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { useAuth } from '@/context/AuthContext'
-import { TrendingUp, Eye, EyeOff, AlertCircle } from 'lucide-react'
+import { TrendingUp, Eye, EyeOff, AlertCircle, CheckCircle } from 'lucide-react'
 
-export default function LoginPage() {
+function LoginForm() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [showPw, setShowPw] = useState(false)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
+  const [successMsg, setSuccessMsg] = useState('')
   const { login } = useAuth()
   const router = useRouter()
+  const searchParams = useSearchParams()
+
+  useEffect(() => {
+    if (searchParams.get('reset') === 'success') {
+      setSuccessMsg('Your password has been reset successfully. You can now log in.')
+    }
+  }, [searchParams])
 
   const handleSubmit = async (e) => {
     e.preventDefault()
     setError('')
+    setSuccessMsg('')
     setLoading(true)
     try {
       await login(email, password)
@@ -46,6 +55,13 @@ export default function LoginPage() {
 
         {/* Card */}
         <div className="card p-8">
+          {successMsg && (
+            <div className="mb-5 flex items-center gap-2 p-3 rounded-lg bg-green-500/10 border border-green-500/20 text-green-400 text-sm">
+              <CheckCircle size={16} />
+              {successMsg}
+            </div>
+          )}
+
           {error && (
             <div className="mb-5 flex items-center gap-2 p-3 rounded-lg bg-[#D32F2F]/10 border border-[#D32F2F]/20 text-[#D32F2F] text-sm">
               <AlertCircle size={16} />
@@ -67,7 +83,15 @@ export default function LoginPage() {
             </div>
 
             <div>
-              <label className="block text-sm text-semantic-white mb-1.5 font-medium">Password</label>
+              <div className="flex items-center justify-between mb-1.5">
+                <label className="block text-sm text-semantic-white font-medium">Password</label>
+                <Link
+                  href="/forgot-password"
+                  className="text-xs text-[#8B5E3C] hover:text-[#6F4A2D] font-medium transition-colors"
+                >
+                  Forgot Password?
+                </Link>
+              </div>
               <div className="relative">
                 <input
                   type={showPw ? 'text' : 'password'}
@@ -107,5 +131,13 @@ export default function LoginPage() {
         </p>
       </div>
     </div>
+  )
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen flex items-center justify-center"><div className="w-8 h-8 border-2 border-[#8B5E3C]/30 border-t-[#8B5E3C] rounded-full animate-spin" /></div>}>
+      <LoginForm />
+    </Suspense>
   )
 }

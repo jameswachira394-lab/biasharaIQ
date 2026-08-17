@@ -1,13 +1,17 @@
 from datetime import datetime, timedelta
+import hashlib
+import hmac
+import os
+import secrets
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Request
 from pydantic import BaseModel, EmailStr
 from sqlalchemy.orm import Session
 
 from middleware.auth import hash_password, verify_password, create_access_token
 from models.database import get_db
 from models.models import User, Category, TransactionType
-from services.email_verification import generate_verification_code, send_email
+from services.email_verification import generate_verification_code, send_email, send_password_reset_email
 
 router = APIRouter(prefix="/auth", tags=["auth"])
 
@@ -118,3 +122,105 @@ def login(req: LoginRequest, db: Session = Depends(get_db)):
             "is_verified": True,
         },
     }
+
+
+# ─── Simple in-memory rate limiting for forgot-password ───────────────────────
+# Maps email → list of request timestamps (UTC)
+_reset_attempts: dict[str, list[datetime]] = {}
+_RATE_LIMIT_MAX = 3          # max requests
+_RATE_LIMIT_WINDOW = 3600    # per hour (seconds)
+FRONTEND_URL = os.getenv("FRONTEND_URL", "https://biasharaiq.netlify.app")
+
+
+class ForgotPasswordRequest(BaseModel):
+    email: EmailStr
+
+
+class ResetPasswordRequest(BaseModel):
+    token: str
+    email: EmailStr
+    new_password: str
+
+
+@router.post("/forgot-password")
+def forgot_password(req: ForgotPasswordRequest, db: Session = Depends(get_db)):
+    """
+    Send a password-reset link. Always returns a generic response to prevent
+    user-enumeration attacks. Rate-limited to 3 requests per hour per email.
+    """
+    now = datetime.utcnow()
+    email_lower = req.email.lower()
+
+    # Rate-limit check
+    attempts = _reset_attempts.get(email_lower, [])
+    cutoff = now - timedelta(seconds=_RATE_LIMIT_WINDOW)
+    attempts = [t for t in attempts if t > cutoff]  # drop old entries
+    if len(attempts) >= _RATE_LIMIT_MAX:
+        # Return generic message even when rate-limited to avoid leaking info
+        return {
+            "message": "If an account exists with this email address, you will receive a password reset link shortly."
+        }
+    attempts.append(now)
+    _reset_attempts[email_lower] = attempts
+
+    # Look up user without revealing existence
+    user = db.query(User).filter(User.email == email_lower).first()
+    if user:
+        # Generate cryptographically secure token
+        raw_token = secrets.token_urlsafe(32)
+        token_hash = hashlib.sha256(raw_token.encode()).hexdigest()
+
+        user.reset_token_hash = token_hash
+        user.reset_token_expires_at = now + timedelta(minutes=15)
+        db.commit()
+
+        # Build reset link
+        reset_link = f"{FRONTEND_URL}/reset-password?token={raw_token}&email={email_lower}"
+        try:
+            send_password_reset_email(email_lower, reset_link)
+        except Exception:
+            pass  # Never fail the response — email errors are logged internally
+
+    return {
+        "message": "If an account exists with this email address, you will receive a password reset link shortly."
+    }
+
+
+@router.post("/reset-password")
+def reset_password(req: ResetPasswordRequest, db: Session = Depends(get_db)):
+    """
+    Validate reset token, hash and save new password, then invalidate token.
+    """
+    if len(req.new_password) < 8:
+        raise HTTPException(status_code=400, detail="Password must be at least 8 characters.")
+
+    email_lower = req.email.lower()
+    user = db.query(User).filter(User.email == email_lower).first()
+
+    # Constant-time token validation — always compute hash even if no user found
+    incoming_hash = hashlib.sha256(req.token.encode()).hexdigest()
+    dummy_hash = "0" * 64  # fallback for constant-time comparison when user not found
+
+    stored_hash = user.reset_token_hash if user else dummy_hash
+    token_valid = hmac.compare_digest(incoming_hash, stored_hash if stored_hash else dummy_hash)
+
+    now = datetime.utcnow()
+    expired = (
+        not user
+        or not user.reset_token_expires_at
+        or user.reset_token_expires_at < now
+    )
+
+    if not token_valid or expired:
+        raise HTTPException(
+            status_code=400,
+            detail="This password reset link is invalid or has expired. Please request a new one.",
+        )
+
+    # Update password and invalidate token
+    user.password_hash = hash_password(req.new_password)
+    user.reset_token_hash = None
+    user.reset_token_expires_at = None
+    db.commit()
+
+    return {"message": "Your password has been reset successfully. You can now log in."}

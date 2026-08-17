@@ -151,3 +151,44 @@ def send_email(email: str, code: str) -> bool:
         email, code,
     )
     return True
+
+
+def send_password_reset_email(email: str, reset_link: str) -> bool:
+    """Send a password reset link email using Brevo REST API, then Brevo SMTP fallback."""
+    subject = "Reset Your Biashara IQ Password"
+    sender_email = os.getenv("SENDER_EMAIL") or getattr(settings, "SENDER_EMAIL", "") or "biasharaiq@yahoo.com"
+    sender_name = os.getenv("SENDER_NAME") or getattr(settings, "SENDER_NAME", "") or "Biashara IQ"
+
+    text_body = (
+        "Hello,\n\n"
+        "We received a request to reset your Biashara IQ password.\n\n"
+        f"Click the link below to reset your password:\n{reset_link}\n\n"
+        "This link will expire in 15 minutes.\n\n"
+        "If you did not request a password reset, please ignore this email.\n\n"
+        "---\n"
+        "Biashara IQ - Financial Intelligence for Kenyan SMEs\n"
+    )
+
+    # 1. Try Brevo API first
+    if _send_via_brevo_api(email, subject, text_body):
+        return True
+
+    # 2. Try SMTP fallback
+    msg = MIMEMultipart()
+    msg["From"] = f"{sender_name} <{sender_email}>"
+    msg["To"] = email
+    msg["Subject"] = subject
+    msg.attach(MIMEText(text_body, "plain"))
+
+    if IS_PRODUCTION or os.getenv("SMTP_PASSWORD") or settings.BREVO_API_KEY:
+        if _send_via_smtp(msg, email):
+            return True
+
+    # Development fallback
+    logger.warning(
+        "[EMAIL] → DEVELOPMENT MODE: Password reset link logged locally.\n"
+        "  Recipient : %s\n"
+        "  Reset Link: %s",
+        email, reset_link,
+    )
+    return True

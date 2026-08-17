@@ -21,6 +21,8 @@ CREATE TABLE IF NOT EXISTS users (
     ai_queries_reset_date TIMESTAMP,
     verification_code VARCHAR(10),
     verification_expires_at TIMESTAMP,
+    reset_token_hash VARCHAR(128),
+    reset_token_expires_at TIMESTAMP,
     created_at TIMESTAMP DEFAULT NOW(),
     updated_at TIMESTAMP DEFAULT NOW()
 );
