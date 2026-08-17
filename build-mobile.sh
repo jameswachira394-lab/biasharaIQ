@@ -44,12 +44,13 @@ fi
 
 cd ../..
 
-echo -e "\n\033[0;33m[4/4] Copying APK to root directory...\033[0m"
+echo -e "\n\033[0;33m[4/4] Copying APK to root and frontend public directories...\033[0m"
 APK_PATH="frontend/android/app/build/outputs/apk/debug/app-debug.apk"
 
 if [ -f "$APK_PATH" ]; then
     cp "$APK_PATH" "./biasharaiq-debug.apk"
-    echo -e "\n\033[0;32m✅ Build Successful! The APK is available at: $(pwd)/biasharaiq-debug.apk\033[0m"
+    cp "$APK_PATH" "./frontend/public/biasharaiq.apk"
+    echo -e "\n\033[0;32m✅ Build Successful! The APK is available at: $(pwd)/biasharaiq-debug.apk and $(pwd)/frontend/public/biasharaiq.apk\033[0m"
 else
     echo -e "\n\033[0;31m❌ Build Failed! Could not find the generated APK at $APK_PATH.\033[0m"
 fi

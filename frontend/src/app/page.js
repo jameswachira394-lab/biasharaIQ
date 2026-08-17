@@ -160,7 +160,7 @@ export default function Home() {
               <ul className="download-features">
                 <li>✅ Works offline — record sales anywhere</li>
                 <li>✅ Instant notifications on cash flow changes</li>
-                <li>✅ Lightweight — only {(9227868 / (1024 * 1024)).toFixed(1)}MB download</li>
+                <li>✅ Lightweight — only {(18116522 / (1024 * 1024)).toFixed(1)}MB download</li>
                 <li>✅ No Play Store needed — install directly</li>
               </ul>
               <a href="/biasharaiq.apk" download className="btn-download" id="download-apk-btn">

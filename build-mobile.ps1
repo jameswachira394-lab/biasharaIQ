@@ -66,12 +66,15 @@ if (Test-Path $androidStudioJbr) {
 # Navigate back to root
 Set-Location "..\.."
 
-Write-Host "`n[4/4] Copying APK to root directory..." -ForegroundColor Yellow
+Write-Host "`n[4/4] Copying APK to root and frontend public directories..." -ForegroundColor Yellow
 $apkPath = "frontend\android\app\build\outputs\apk\debug\app-debug.apk"
 
 if (Test-Path $apkPath) {
     Copy-Item $apkPath -Destination ".\biasharaiq-debug.apk" -Force
-    Write-Host "`n✅ Build Successful! The APK is available at: $(Resolve-Path .\biasharaiq-debug.apk)" -ForegroundColor Green
+    Copy-Item $apkPath -Destination ".\frontend\public\biasharaiq.apk" -Force
+    Write-Host "`n✅ Build Successful! The APK is available at:" -ForegroundColor Green
+    Write-Host "   Root: $(Resolve-Path .\biasharaiq-debug.apk)" -ForegroundColor Green
+    Write-Host "   Public Web Download: $(Resolve-Path .\frontend\public\biasharaiq.apk)" -ForegroundColor Green
 } else {
     Write-Host "`n❌ Build Failed! Could not find the generated APK at $apkPath." -ForegroundColor Red
 }
