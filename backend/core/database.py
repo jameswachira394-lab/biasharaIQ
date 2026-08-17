@@ -24,7 +24,7 @@ def sanitize_db_url(url: str) -> str:
             try:
                 socket.gethostbyname(parsed.hostname)
             except socket.gaierror:
-                region = os.getenv("RENDER_REGION", "frankfurt")
+                region = os.getenv("RENDER_REGION", "oregon")
                 ext_hostname = f"{parsed.hostname}.{region}-postgres.render.com"
                 logger.warning(
                     f"Internal DB hostname '{parsed.hostname}' could not be resolved. "

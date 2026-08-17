@@ -2,7 +2,7 @@ services:
   - type: web
     name: biasharaiq-api
     env: python
-    region: frankfurt
+    region: oregon
     plan: free
     buildCommand: cd backend && pip install -r requirements.txt
     startCommand: cd backend && gunicorn main:app --workers=1 --worker-class=uvicorn.workers.UvicornWorker --bind=0.0.0.0:$PORT
@@ -12,11 +12,11 @@ services:
       - key: DATABASE_URL
         fromDatabase:
           name: biasharaiq-db
-          property: connectionString
+          property: externalConnectionString
       - key: SECRET_KEY
         generateValue: true
       - key: CORS_ORIGINS
-        value: https://biashara-iq.vercel.app,http://biashara-iq.vercel.app,http://biasharaiq-alb-208863488.us-east-1.elb.amazonaws.com,https://biasharaiq.onrender.com
+        value: https://biashara-iq.vercel.app,http://biashara-iq.vercel.app,https://biasharaiq.onrender.com
       - key: FRONTEND_URL
         value: https://biashara-iq.vercel.app
       - key: LOG_LEVEL
