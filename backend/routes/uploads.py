@@ -116,22 +116,25 @@ async def upload_document(
         db.add(doc_record)
         db.flush()
 
-        saved_transactions = []
-        for tx_data in transactions:
-            tx = Transaction(
+        tx_objects = [
+            Transaction(
                 user_id=current_user.id,
                 amount=tx_data["amount"],
                 type=TransactionType(tx_data["type"]),
                 category=tx_data.get("category", "Uncategorized"),
-                date=datetime.fromisoformat(tx_data["date"]),
+                date=datetime.fromisoformat(tx_data["date"]) if isinstance(tx_data["date"], str) else tx_data["date"],
                 description=tx_data["description"],
                 source=tx_data["source"],
                 import_batch_id=batch_id,
                 status="pending_review",
             )
-            db.add(tx)
-            db.flush()  # get the id assigned
-            saved_transactions.append({
+            for tx_data in transactions
+        ]
+        db.add_all(tx_objects)
+        db.flush()
+
+        saved_transactions = [
+            {
                 "id": tx.id,
                 "date": tx.date.isoformat(),
                 "description": tx.description,
@@ -139,7 +142,9 @@ async def upload_document(
                 "type": tx.type.value,
                 "category": tx.category,
                 "source": tx.source,
-            })
+            }
+            for tx in tx_objects
+        ]
 
         db.commit()
         logger.info("[UPLOAD] Batch %s saved with %d transactions for review", batch_id, len(saved_transactions))
@@ -236,9 +241,16 @@ async def confirm_batch(
 
     updates = request_body.updates
     if updates:
+        updates_by_id = {}
+        for k, v in updates.items():
+            try:
+                updates_by_id[int(k)] = v
+            except (ValueError, TypeError):
+                pass
+
         for tx in transactions:
-            if tx.id in updates:
-                update_data = updates[tx.id]
+            if tx.id in updates_by_id:
+                update_data = updates_by_id[tx.id]
                 if update_data.category:
                     tx.category = update_data.category
                 if update_data.description:
