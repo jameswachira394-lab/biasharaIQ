@@ -9,6 +9,9 @@ const jetbrains = JetBrains_Mono({ subsets: ['latin'], variable: '--font-jetbrai
 export const metadata = {
   title: 'BiasharaIQ – Smart Business Finance',
   description: 'Financial intelligence for Kenyan SMEs',
+  verification: {
+    google: 'CflFsi1EUZEMR8MgRjj1i4FKmSb2PSaKTSMmjeOyhys'
+  },
   icons: {
     icon: '/biasharaiq.png',
     apple: '/biasharaiq.png',
