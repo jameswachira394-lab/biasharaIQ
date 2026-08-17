@@ -98,17 +98,39 @@ class FinancialEngine:
     def get_weekly_trend(self, weeks: int = 8) -> List[dict]:
         """Week-by-week income vs expense trend."""
         end_date = datetime.utcnow()
+        start_date = end_date - timedelta(weeks=weeks)
+
+        txns = (
+            self.db.query(Transaction.type, Transaction.amount, Transaction.date)
+            .filter(
+                Transaction.user_id == self.user_id,
+                Transaction.date >= start_date,
+                Transaction.date <= end_date,
+            )
+            .all()
+        )
+
         result = []
         for i in range(weeks - 1, -1, -1):
-            week_end = end_date - timedelta(weeks=i)
-            week_start = week_end - timedelta(weeks=1)
-            income = self.get_total_income(week_start, week_end)
-            expenses = self.get_total_expenses(week_start, week_end)
+            w_end = end_date - timedelta(weeks=i)
+            w_start = w_end - timedelta(weeks=1)
+
+            income = sum(
+                t.amount for t in txns
+                if t.type == TransactionType.income and w_start <= t.date <= w_end
+            )
+            expenses = sum(
+                t.amount for t in txns
+                if t.type == TransactionType.expense and w_start <= t.date <= w_end
+            )
+
+            inc_val = round(float(income or 0.0), 2)
+            exp_val = round(float(expenses or 0.0), 2)
             result.append({
-                "week": week_start.strftime("%b %d"),
-                "income": income,
-                "expenses": expenses,
-                "profit": round(income - expenses, 2)
+                "week": w_start.strftime("%b %d"),
+                "income": inc_val,
+                "expenses": exp_val,
+                "profit": round(inc_val - exp_val, 2)
             })
         return result
 

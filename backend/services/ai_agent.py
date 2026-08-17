@@ -46,6 +46,8 @@ redis_client = redis.Redis(
     port=int(os.getenv("REDIS_PORT", 6379)),
     db=int(os.getenv("REDIS_DB", 0)),
     decode_responses=False,  # We use pickle, so raw bytes
+    socket_timeout=1.0,
+    socket_connect_timeout=1.0,
 )
 
 SESSION_TTL_SECONDS = int(os.getenv("CHAT_SESSION_TTL", 60 * 60 * 2))  # Default: 2 hours

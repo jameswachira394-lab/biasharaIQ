@@ -140,7 +140,7 @@ export default function TransactionsPage() {
       setCategories(catRes.data || [])
     } catch { }
     finally { setLoading(false) }
-  }, [page, filters])
+  }, [page, filters.type, filters.category])
 
   useEffect(() => { load() }, [load])
 
