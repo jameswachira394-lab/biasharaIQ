@@ -72,18 +72,30 @@ if not settings.DEBUG:
     )
 
 
-cors_origins = settings.cors_origins_list
-logger.info(f"CORS Origins: {cors_origins}")
-
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=cors_origins,
-    allow_credentials=True,
-    allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"],
-    allow_headers=["*"],
-    expose_headers=["*"],
-    max_age=3600,
-)
+# Logging middleware
+@app.middleware("http")
+async def log_requests(request: Request, call_next):
+    start_time = time.time()
+    request_id = f"{datetime.now().timestamp()}"
+    
+    # Log request
+    logger.info(f"[{request_id}] {request.method} {request.url.path}")
+    
+    try:
+        response = await call_next(request)
+        process_time = time.time() - start_time
+        
+        # Log response
+        logger.info(
+            f"[{request_id}] {request.method} {request.url.path} - "
+            f"Status: {response.status_code} - Duration: {process_time:.3f}"
+        )
+        
+        return response
+    except Exception as e:
+        process_time = time.time() - start_time
+        logger.error(f"[{request_id}] Error: {str(e)} - Duration: {process_time:.3f}s")
+        raise
 
 
 @app.middleware("http")
@@ -104,30 +116,23 @@ async def add_security_headers(request: Request, call_next):
     
     return response
 
-# Logging middleware
-@app.middleware("http")
-async def log_requests(request: Request, call_next):
-    start_time = time.time()
-    request_id = f"{datetime.now().timestamp()}"
-    
-    # Log request
-    logger.info(f"[{request_id}] {request.method} {request.url.path}")
-    
-    try:
-        response = await call_next(request)
-        process_time = time.time() - start_time
-        
-        # Log response
-        logger.info(
-            f"[{request_id}] {request.method} {request.url.path} - "
-            f"Status: {response.status_code} - Duration: {process_time:.3f}s"
-        )
-        
-        return response
-    except Exception as e:
-        process_time = time.time() - start_time
-        logger.error(f"[{request_id}] Error: {str(e)} - Duration: {process_time:.3f}s")
-        raise
+
+# CORSMiddleware MUST be added LAST so that it is outermost in the execution stack.
+# This guarantees CORS headers are attached to ALL responses, including preflights,
+# custom middleware errors, and 500 exception handler responses.
+cors_origins = settings.cors_origins_list
+logger.info(f"CORS Origins: {cors_origins}")
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=cors_origins,
+    allow_origin_regex=r"https://.*\.vercel\.app",
+    allow_credentials=True,
+    allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"],
+    allow_headers=["*"],
+    expose_headers=["*"],
+    max_age=3600,
+)
 
 # Register routers
 app.include_router(auth_router, tags=["Authentication"])

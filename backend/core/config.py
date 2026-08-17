@@ -39,7 +39,7 @@ class Settings(BaseSettings):
     # Frontend Configuration
     FRONTEND_URL: str = "http://localhost:3000"
     
-    CORS_ORIGINS: str = "http://localhost:3000,http://127.0.0.1:3000,https://biashara-iq.vercel.app"
+    CORS_ORIGINS: str = "http://localhost:3000,http://127.0.0.1:3000,http://localhost:5173,https://biashara-iq.vercel.app,http://biashara-iq.vercel.app"
     
     # Logging
     LOG_LEVEL: str = "INFO"
@@ -55,7 +55,7 @@ class Settings(BaseSettings):
 
     @property
     def cors_origins_list(self) -> List[str]:
-        origins = [o.strip() for o in self.CORS_ORIGINS.split(",")]
+        origins = [o.strip() for o in self.CORS_ORIGINS.split(",") if o.strip()]
         # Prevent wildcard in production
         if not self.DEBUG and "*" in origins:
             raise ValueError("Wildcard CORS not allowed in production")
