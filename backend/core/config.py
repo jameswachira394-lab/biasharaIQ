@@ -80,6 +80,9 @@ class Settings(BaseSettings):
                     'DATABASE_URL', 
                     f"postgresql://{db_user}:{db_pass}@{db_host}:{db_port}/{db_name}"
                 )
+        
+        if self.DATABASE_URL.startswith("postgres://"):
+            object.__setattr__(self, 'DATABASE_URL', self.DATABASE_URL.replace("postgres://", "postgresql://", 1))
 
     class Config:
         env_file = backend_dir / ".env"

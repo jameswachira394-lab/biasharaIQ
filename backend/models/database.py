@@ -5,9 +5,46 @@ from dotenv import load_dotenv
 import os
 import logging
 
+import socket
+from urllib.parse import urlparse, urlunparse
+
 load_dotenv()
 
 logger = logging.getLogger(__name__)
+
+
+def sanitize_db_url(url: str) -> str:
+    """Ensure DATABASE_URL uses postgresql:// scheme and resolves Render internal hostnames cleanly."""
+    if not url:
+        return url
+    if url.startswith("postgres://"):
+        url = url.replace("postgres://", "postgresql://", 1)
+    
+    try:
+        parsed = urlparse(url)
+        if parsed.hostname and parsed.hostname.startswith("dpg-") and "." not in parsed.hostname:
+            try:
+                socket.gethostbyname(parsed.hostname)
+            except socket.gaierror:
+                region = os.getenv("RENDER_REGION", "frankfurt")
+                ext_hostname = f"{parsed.hostname}.{region}-postgres.render.com"
+                logger.warning(
+                    f"Internal DB hostname '{parsed.hostname}' could not be resolved. "
+                    f"Falling back to external hostname '{ext_hostname}'."
+                )
+                port_str = f":{parsed.port}" if parsed.port else ""
+                user_pass = ""
+                if parsed.username:
+                    user_pass = parsed.username
+                    if parsed.password:
+                        user_pass += f":{parsed.password}"
+                    user_pass += "@"
+                new_netloc = f"{user_pass}{ext_hostname}{port_str}"
+                url = urlunparse((parsed.scheme, new_netloc, parsed.path, parsed.params, parsed.query, parsed.fragment))
+    except Exception as e:
+        logger.warning(f"Failed to parse or resolve DB hostname: {e}")
+    return url
+
 
 DATABASE_URL = os.getenv("DATABASE_URL")
 if not DATABASE_URL:
@@ -21,6 +58,8 @@ if not DATABASE_URL:
     else:
         # Fallback to local
         DATABASE_URL = "postgresql://localhost/biasharaiq"
+
+DATABASE_URL = sanitize_db_url(DATABASE_URL)
 DB_POOL_SIZE = int(os.getenv("DB_POOL_SIZE", 20))
 DB_MAX_OVERFLOW = int(os.getenv("DB_MAX_OVERFLOW", 10))
 ENVIRONMENT = os.getenv("ENVIRONMENT", "development")

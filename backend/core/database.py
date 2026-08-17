@@ -4,11 +4,49 @@ from sqlalchemy.orm import sessionmaker
 from core.config import settings
 import logging
 
+import socket
+import os
+from urllib.parse import urlparse, urlunparse
+
 logger = logging.getLogger(__name__)
+
+
+def sanitize_db_url(url: str) -> str:
+    """Ensure DATABASE_URL uses postgresql:// scheme and resolves Render internal hostnames cleanly."""
+    if not url:
+        return url
+    if url.startswith("postgres://"):
+        url = url.replace("postgres://", "postgresql://", 1)
+    
+    try:
+        parsed = urlparse(url)
+        if parsed.hostname and parsed.hostname.startswith("dpg-") and "." not in parsed.hostname:
+            try:
+                socket.gethostbyname(parsed.hostname)
+            except socket.gaierror:
+                region = os.getenv("RENDER_REGION", "frankfurt")
+                ext_hostname = f"{parsed.hostname}.{region}-postgres.render.com"
+                logger.warning(
+                    f"Internal DB hostname '{parsed.hostname}' could not be resolved. "
+                    f"Falling back to external hostname '{ext_hostname}'."
+                )
+                port_str = f":{parsed.port}" if parsed.port else ""
+                user_pass = ""
+                if parsed.username:
+                    user_pass = parsed.username
+                    if parsed.password:
+                        user_pass += f":{parsed.password}"
+                    user_pass += "@"
+                new_netloc = f"{user_pass}{ext_hostname}{port_str}"
+                url = urlunparse((parsed.scheme, new_netloc, parsed.path, parsed.params, parsed.query, parsed.fragment))
+    except Exception as e:
+        logger.warning(f"Failed to parse or resolve DB hostname: {e}")
+    return url
+
 
 # Build connect_args — force SSL for Render/cloud Postgres
 _connect_args = {}
-db_url = settings.DATABASE_URL
+db_url = sanitize_db_url(settings.DATABASE_URL)
 
 # Render and most cloud Postgres providers require SSL
 if "localhost" not in db_url and "127.0.0.1" not in db_url:
