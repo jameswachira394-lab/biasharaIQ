@@ -52,6 +52,15 @@ class Settings(BaseSettings):
     MPESA_CALLBACK_URL: str = ""
     MPESA_ENVIRONMENT: str = "sandbox"
 
+    # Email / Brevo Configuration
+    SMTP_SERVER: str = "smtp-relay.brevo.com"
+    SMTP_PORT: int = 587
+    SMTP_USERNAME: str = "acd261001@smtp-brevo.com"
+    SMTP_PASSWORD: str = ""
+    BREVO_API_KEY: str = ""
+    SENDER_EMAIL: str = "jameswachira394@gmail.com"
+    SENDER_NAME: str = "Biashara IQ"
+
 
     @property
     def cors_origins_list(self) -> List[str]:

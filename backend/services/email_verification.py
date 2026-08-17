@@ -14,16 +14,11 @@ backend_dir = Path(__file__).parent.parent
 env_path = backend_dir / ".env"
 load_dotenv(dotenv_path=env_path)
 
+from core.config import settings
+
 logger = logging.getLogger(__name__)
 
-# Email Configuration - load AFTER load_dotenv()
-GMAIL_ADDRESS = os.getenv("GMAIL_ADDRESS", "biasharaiq@gmail.com")
-GMAIL_APP_PASSWORD = os.getenv("GMAIL_APP_PASSWORD", "")
-SMTP_SERVER = "smtp.gmail.com"
-SMTP_PORT = 587
-
-# Environment - load AFTER load_dotenv()
-ENVIRONMENT = os.getenv("ENVIRONMENT", "development")
+ENVIRONMENT = os.getenv("ENVIRONMENT", settings.ENVIRONMENT)
 IS_PRODUCTION = ENVIRONMENT == "production"
 
 
@@ -32,61 +27,90 @@ def generate_verification_code(length: int = 6) -> str:
     return "".join(secrets.choice(string.digits) for _ in range(length))
 
 
+def _send_via_brevo_api(recipient: str, subject: str, text_body: str) -> bool:
+    """Send transactional email via Brevo HTTP REST API."""
+    brevo_key = os.getenv("BREVO_API_KEY") or settings.BREVO_API_KEY
+    if not brevo_key:
+        return False
+
+    sender_email = os.getenv("SENDER_EMAIL") or settings.SENDER_EMAIL or "jameswachira394@gmail.com"
+    sender_name = os.getenv("SENDER_NAME") or settings.SENDER_NAME or "Biashara IQ"
+
+    url = "https://api.brevo.com/v3/smtp/email"
+    headers = {
+        "accept": "application/json",
+        "api-key": brevo_key,
+        "content-type": "application/json",
+    }
+    payload = {
+        "sender": {"name": sender_name, "email": sender_email},
+        "to": [{"email": recipient}],
+        "subject": subject,
+        "textContent": text_body,
+    }
+
+    try:
+        import httpx
+        logger.info("[EMAIL] Attempting email delivery to %s via Brevo HTTP API", recipient)
+        with httpx.Client(timeout=10.0) as client:
+            resp = client.post(url, headers=headers, json=payload)
+            if resp.status_code in (200, 201, 202):
+                logger.info("[EMAIL] ✓ Verification email delivered to %s via Brevo REST API", recipient)
+                return True
+            else:
+                logger.error("[EMAIL] Brevo API error (Status %s): %s", resp.status_code, resp.text)
+    except Exception as e:
+        logger.error("[EMAIL] Exception during Brevo API send: %s", str(e))
+
+    return False
+
+
 def _send_via_smtp(msg: MIMEMultipart, recipient: str) -> bool:
-    """Attempt SMTP delivery. Returns True on success, False on any failure."""
-    if not GMAIL_APP_PASSWORD:
-        logger.error(
-            "[EMAIL] PRODUCTION ERROR: GMAIL_APP_PASSWORD not set — "
-            "cannot send to %s", recipient
-        )
+    """Attempt SMTP delivery via Brevo SMTP relay or configured SMTP server."""
+    smtp_server = os.getenv("SMTP_SERVER") or settings.SMTP_SERVER or "smtp-relay.brevo.com"
+    smtp_port = int(os.getenv("SMTP_PORT") or settings.SMTP_PORT or 587)
+    smtp_user = os.getenv("SMTP_USERNAME") or settings.SMTP_USERNAME or "acd261001@smtp-brevo.com"
+    smtp_pass = os.getenv("SMTP_PASSWORD") or settings.SMTP_PASSWORD
+
+    # Fallback to legacy Gmail if SMTP_PASSWORD not set but GMAIL_APP_PASSWORD is
+    if not smtp_pass:
+        smtp_pass = os.getenv("GMAIL_APP_PASSWORD")
+        if smtp_pass:
+            smtp_user = os.getenv("GMAIL_ADDRESS", "jameswachira394@gmail.com")
+            smtp_server = "smtp.gmail.com"
+
+    if not smtp_pass:
+        logger.error("[EMAIL] PRODUCTION ERROR: No SMTP_PASSWORD or BREVO_API_KEY provided.")
         return False
 
     try:
-        logger.info("[EMAIL] Sending verification email to %s via SMTP", recipient)
-        logger.info("[EMAIL] Using Gmail address: %s", GMAIL_ADDRESS)
+        logger.info("[EMAIL] Sending verification email to %s via SMTP (%s:%s)", recipient, smtp_server, smtp_port)
         context = ssl.create_default_context()
+        clean_password = smtp_pass.replace(" ", "")
 
-        with smtplib.SMTP(SMTP_SERVER, SMTP_PORT, timeout=10) as server:
-            logger.info("[EMAIL] Connected to SMTP server: %s:%s", SMTP_SERVER, SMTP_PORT)
+        with smtplib.SMTP(smtp_server, smtp_port, timeout=10) as server:
             server.starttls(context=context)
-            logger.info("[EMAIL] TLS connection established")
-            # Remove spaces from app password
-            clean_password = GMAIL_APP_PASSWORD.replace(" ", "")
-            server.login(GMAIL_ADDRESS, clean_password)
-            logger.info("[EMAIL] Successfully authenticated")
+            server.login(smtp_user, clean_password)
             server.send_message(msg)
 
-        logger.info("[EMAIL] ✓ Verification email delivered to %s", recipient)
+        logger.info("[EMAIL] ✓ Verification email delivered to %s via SMTP", recipient)
         return True
 
     except smtplib.SMTPAuthenticationError as e:
-        logger.error("[EMAIL] ✗ SMTP Authentication failed: %s — ensure Gmail 2FA is enabled and app password is correct", e)
-    except smtplib.SMTPException as e:
-        logger.error("[EMAIL] ✗ SMTP error sending to %s: %s", recipient, e)
+        logger.error("[EMAIL] ✗ SMTP Authentication failed for %s: %s", smtp_user, e)
     except Exception as e:
-        logger.error("[EMAIL] ✗ Unexpected error sending to %s: %s: %s", recipient, type(e).__name__, e)
+        logger.error("[EMAIL] ✗ SMTP error sending to %s: %s", recipient, e)
 
     return False
 
 
 def send_email(email: str, code: str) -> bool:
-    """Send a verification code email.
+    """Send a verification code email using Brevo REST API first, then Brevo SMTP as fallback."""
+    subject = "Verify Your Biashara IQ Account"
+    sender_email = os.getenv("SENDER_EMAIL") or settings.SENDER_EMAIL or "jameswachira394@gmail.com"
+    sender_name = os.getenv("SENDER_NAME") or settings.SENDER_NAME or "Biashara IQ"
 
-    Production: requires GMAIL_APP_PASSWORD in environment.
-    Development: logs the code to console and returns True.
-    """
-    logger.info("[EMAIL] ======== EMAIL SENDING FLOW ========")
-    logger.info("[EMAIL] IS_PRODUCTION=%s", IS_PRODUCTION)
-    logger.info("[EMAIL] ENVIRONMENT=%s", ENVIRONMENT)
-    logger.info("[EMAIL] GMAIL_ADDRESS=%s", GMAIL_ADDRESS)
-    logger.info("[EMAIL] GMAIL_APP_PASSWORD set: %s", bool(GMAIL_APP_PASSWORD))
-    
-    msg = MIMEMultipart()
-    msg["From"] = f"Biashara IQ <{GMAIL_ADDRESS}>"
-    msg["To"] = email
-    msg["Subject"] = "Verify Your Biashara IQ Account"
-
-    body = (
+    text_body = (
         "Welcome to Biashara IQ!\n\n"
         f"Your verification code is: {code}\n\n"
         "This code will expire in 10 minutes.\n\n"
@@ -94,15 +118,25 @@ def send_email(email: str, code: str) -> bool:
         "---\n"
         "Biashara IQ - Financial Intelligence for Kenyan SMEs\n"
     )
-    msg.attach(MIMEText(body, "plain"))
 
-    if IS_PRODUCTION:
-        logger.info("[EMAIL] → PRODUCTION MODE: Attempting SMTP delivery to %s", email)
-        return _send_via_smtp(msg, email)
+    # 1. Try Brevo API first (most reliable on cloud platforms like Render)
+    if _send_via_brevo_api(email, subject, text_body):
+        return True
 
-    # Development fallback — never log the code in production
+    # 2. Try SMTP fallback
+    msg = MIMEMultipart()
+    msg["From"] = f"{sender_name} <{sender_email}>"
+    msg["To"] = email
+    msg["Subject"] = subject
+    msg.attach(MIMEText(text_body, "plain"))
+
+    if IS_PRODUCTION or os.getenv("SMTP_PASSWORD") or settings.BREVO_API_KEY:
+        if _send_via_smtp(msg, email):
+            return True
+
+    # Development fallback
     logger.warning(
-        "[EMAIL] → DEVELOPMENT MODE: SMTP skipped.\n"
+        "[EMAIL] → DEVELOPMENT MODE: Email logged locally.\n"
         "  Recipient : %s\n"
         "  Code      : %s\n"
         "  Expires   : 10 minutes",
