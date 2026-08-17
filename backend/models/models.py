@@ -7,8 +7,8 @@ Base = declarative_base()
 
 
 class UserPlan(str, enum.Enum):
-    free = "FREE"
-    pro = "PRO"
+    free = "free"
+    pro = "pro"
 
 
 class SubscriptionStatus(str, enum.Enum):
