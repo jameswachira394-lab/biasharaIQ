@@ -36,7 +36,7 @@ BiasharaIQ is built with a decoupled frontend and backend:
 
 ---
 
-## 📁 Project Structures
+## 📁 Project Structure
 
 ```text
 biasharaIQ/
