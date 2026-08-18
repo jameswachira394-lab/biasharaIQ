@@ -43,7 +43,6 @@ export default function Home() {
             </p>
             <div className="btn-group">
               <Link href="/login" className="btn btn-primary-landing">Get Started Free →</Link>
-              <a href="#how-it-works" className="btn btn-secondary-landing">See How It Works</a>
             </div>
             <p style={{ marginTop: '1rem', fontSize: '0.8rem', color: 'var(--text-secondary)' }}>No credit card required • Free plan available</p>
           </div>

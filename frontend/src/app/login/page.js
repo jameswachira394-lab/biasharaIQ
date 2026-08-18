@@ -40,6 +40,16 @@ function LoginForm() {
   return (
     <div className="min-h-screen flex items-center justify-center px-4 bg-cream-300">
       <div className="w-full max-w-md animate-fade-in">
+        {/* Back to Home */}
+        <div className="mb-4">
+          <Link
+            href="/"
+            className="inline-flex items-center gap-1.5 text-sm text-semantic-textSecondary hover:text-[#8B5E3C] transition-colors"
+          >
+            ← Back to Home
+          </Link>
+        </div>
+
         {/* Logo */}
         <div className="text-center mb-8">
           <div className="inline-flex items-center gap-2 mb-4">
