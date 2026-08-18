@@ -4,7 +4,7 @@ BiasharaIQ is a financial intelligence system built for Kenyan micro, small, and
 
 ---
 
-## ✅ What This Project Do
+## ✅ What This Project Does
 
 - Tracks business transactions, income, and expenses
 - Automates categorization using Google GenAI / Gemini
