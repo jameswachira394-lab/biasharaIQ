@@ -1,5 +1,5 @@
 'use client'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { useAuth } from '@/context/AuthContext'
 import Sidebar from '@/components/ui/Sidebar'
@@ -7,6 +7,7 @@ import Sidebar from '@/components/ui/Sidebar'
 export default function AppLayout({ children }) {
   const { user, loading } = useAuth()
   const router = useRouter()
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
 
   useEffect(() => {
     if (!loading && !user) router.push('/login')
@@ -25,8 +26,15 @@ export default function AppLayout({ children }) {
 
   return (
     <div className="flex min-h-screen">
-      <Sidebar />
-      <main className="flex-1 md:ml-56 pt-14 md:pt-0 min-h-screen">
+      <Sidebar
+        collapsed={sidebarCollapsed}
+        onToggleCollapse={() => setSidebarCollapsed(prev => !prev)}
+      />
+      <main
+        className={`flex-1 pt-14 md:pt-0 min-h-screen transition-all duration-300 ${
+          sidebarCollapsed ? 'md:ml-16' : 'md:ml-56'
+        }`}
+      >
         <div className="max-w-6xl mx-auto px-4 md:px-8 py-6 md:py-8">
           {children}
         </div>
