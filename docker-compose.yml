@@ -1,6 +1,6 @@
 services:
   db:
-    image: postgres:16-alpine3
+    image: postgres:16-alpine
     container_name: biasharaiq_db
     environment:
       POSTGRES_DB: ${POSTGRES_DB:-biasharaiq}
