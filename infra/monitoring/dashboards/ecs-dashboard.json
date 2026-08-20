@@ -1,0 +1,31 @@
+{
+  "title": "biasharaiq Dashboard",
+  "panels": [
+
+
+    {
+      "title": "backend CPU Usage",
+      "type": "graph",
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 0 }
+    },
+    {
+      "title": "backend Memory Usage",
+      "type": "graph",
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 0 }
+    },
+
+    {
+      "title": "frontend CPU Usage",
+      "type": "graph",
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 8 }
+    },
+    {
+      "title": "frontend Memory Usage",
+      "type": "graph",
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 8 }
+    }
+
+
+  ]
+}
+
