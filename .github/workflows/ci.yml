@@ -2,22 +2,37 @@ name: BiasharaIQ Full CI/CD
 
 on:
   push:
-    branches: [ main, develop ]
+    branches:
+      - main
+      - develop
+
   pull_request:
-    branches: [ main, develop ]
+    branches:
+      - main
+      - develop
+
   workflow_dispatch:
 
+permissions:
+  contents: read
+
 env:
-  PYTHON_VERSION: '3.11'
-  NODE_VERSION: '20'
+  PYTHON_VERSION: "3.11"
+  NODE_VERSION: "22"
 
 jobs:
+
+ 
+  # BACKEND
+  
   backend-checks:
-    name: Backend — Install, lint, unit tests, security
+    name: Backend — Lint, Tests & Security
     runs-on: ubuntu-latest
+
     defaults:
       run:
         working-directory: backend
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -26,6 +41,8 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: ${{ env.PYTHON_VERSION }}
+          cache: pip
+          cache-dependency-path: backend/requirements.txt
 
       - name: Install dependencies
         run: |
@@ -33,23 +50,34 @@ jobs:
           pip install -r requirements.txt
           pip install flake8 pytest pytest-cov bandit
 
-      - name: Lint (flake8)
-        run: flake8 . --max-line-length=120
-
-      - name: Run unit tests (pytest)
+      - name: Lint
         run: |
-          if [ -d tests ]; then pytest -q --maxfail=1 --disable-warnings; else echo "No backend tests found"; fi
+          flake8 . --max-line-length=120
 
-      - name: Security scan (bandit)
+      - name: Unit tests
         run: |
-          bandit -r . -q -lll || true
+          if [ -d tests ]; then
+            pytest -q --maxfail=1 --disable-warnings
+          else
+            echo "No backend tests found"
+          fi
 
+      - name: Security scan
+        run: |
+          bandit -r . -q -lll
+
+
+  
+  # FRONTEND
+ 
   frontend-checks:
-    name: Frontend — Install, lint, build
+    name: Frontend — Install, Lint, Type Check & Build
     runs-on: ubuntu-latest
+
     defaults:
       run:
         working-directory: frontend
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -58,67 +86,127 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: 'npm'
+          cache: npm
           cache-dependency-path: frontend/package-lock.json
+
+      - name: Verify Node and npm
+        run: |
+          node --version
+          npm --version
 
       - name: Install dependencies
         run: npm ci
 
-      - name: Lint (next lint)
-        run: npx next lint --max-warnings 0 || true
-
-      - name: Type-check (if TypeScript)
+      # Next.js 16 no longer provides `next lint`.
+      # Run the project's lint script if one exists.
+      - name: Lint
         run: |
-          if [ -f tsconfig.json ]; then npx tsc --noEmit; fi
+          if npm run | grep -q " lint"; then
+            npm run lint
+          else
+            echo "No lint script found; skipping."
+          fi
 
-      - name: Build Next.js (validate)
+      - name: Type check
+        run: |
+          if [ -f tsconfig.json ]; then
+            npx tsc --noEmit
+          else
+            echo "No tsconfig.json found; skipping TypeScript check."
+          fi
+
+      - name: Build Next.js
+        env:
+          NEXT_PUBLIC_API_URL: ${{ secrets.NEXT_PUBLIC_API_URL }}
         run: npm run build
 
-      - name: Persist frontend build
-        uses: actions/upload-artifact@v4
-        with:
-          name: frontend-build
-          path: frontend/.next/
 
+  
+  # DOCKER
+ 
   docker-build-push:
-    name: Docker — Build & Push images
+    name: Docker — Build & Push Images
     runs-on: ubuntu-latest
-    needs: [backend-checks, frontend-checks]
+
+    needs:
+      - backend-checks
+      - frontend-checks
+
     if: github.ref == 'refs/heads/main'
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Log in to registry
-        uses: docker/login-action@v2
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to Docker registry
+        uses: docker/login-action@v3
         with:
           registry: ${{ secrets.DOCKER_REGISTRY }}
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
-      - name: Build and push backend image
-        uses: docker/build-push-action@v4
+      
+      # Backend
+      
+      - name: Build and push backend
+        uses: docker/build-push-action@v6
         with:
           context: ./backend
           file: ./backend/Dockerfile
           push: true
-          tags: ${{ secrets.DOCKER_REGISTRY }}/biasharaiq-backend:latest
 
-      - name: Build and push frontend image
-        uses: docker/build-push-action@v4
+          tags: |
+            ${{ secrets.DOCKER_REGISTRY }}/biasharaiq-backend:${{ github.sha }}
+            ${{ secrets.DOCKER_REGISTRY }}/biasharaiq-backend:latest
+
+          cache-from: type=gha,scope=backend
+          cache-to: type=gha,mode=max,scope=backend
+
+     
+      # Frontend
+      
+      - name: Build and push frontend
+        uses: docker/build-push-action@v6
         with:
           context: ./frontend
           file: ./frontend/Dockerfile
           push: true
-          tags: ${{ secrets.DOCKER_REGISTRY }}/biasharaiq-frontend:latest
 
+          build-args: |
+            NEXT_PUBLIC_API_URL=${{ secrets.NEXT_PUBLIC_API_URL }}
+
+          tags: |
+            ${{ secrets.DOCKER_REGISTRY }}/biasharaiq-frontend:${{ github.sha }}
+            ${{ secrets.DOCKER_REGISTRY }}/biasharaiq-frontend:latest
+
+          cache-from: type=gha,scope=frontend
+          cache-to: type=gha,mode=max,scope=frontend
+
+
+ 
+  # ANDROID
+ 
   android-build:
-    name: Android APK Build
+    name: Android — Release APK
     runs-on: ubuntu-latest
-    needs: frontend-checks
-    if: github.ref == 'refs/heads/main' || github.event_name == 'workflow_dispatch'
+
+    needs:
+      - frontend-checks
+
+    if: |
+      github.ref == 'refs/heads/main' ||
+      github.event_name == 'workflow_dispatch'
+
+    defaults:
+      run:
+        working-directory: frontend
+
     env:
       NEXT_PUBLIC_API_URL: ${{ secrets.NEXT_PUBLIC_API_URL }}
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -127,58 +215,69 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
 
-      - name: Install frontend deps
-        working-directory: frontend
+      - name: Install frontend dependencies
         run: npm ci
 
-      - name: Build frontend for export
-        working-directory: frontend
-        run: |
-          npm run build
-          npm run export
+      - name: Build frontend
+        run: npm run build
 
-      - name: Install Capacitor CLI
-        run: npm install -g @capacitor/cli
+      # Use the Capacitor CLI version from package.json.
+      - name: Verify Capacitor
+        run: npx cap --version
 
-      - name: Sync Capacitor Android
-        working-directory: frontend
+      - name: Sync Capacitor
         run: npx cap sync android
 
       - name: Set up Java
         uses: actions/setup-java@v4
         with:
-          distribution: 'temurin'
-          java-version: '11'
+          distribution: temurin
+          java-version: "21"
+          cache: gradle
 
-      - name: Install Android SDK & Build Tools
-        uses: reactivecircus/android-emulator-runner@v2
-        with:
-          api-level: 31
-          target: default
-          arch: x86_64
-          components: build-tools;31.0.0,platforms;android-31
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v3
 
-      - name: Build Android release (Gradle)
+      - name: Accept Android licenses
+        run: yes | sdkmanager --licenses || true
+
+      - name: Build Android release
         working-directory: frontend/android
-        run: ./gradlew assembleRelease --no-daemon
+        run: |
+          chmod +x gradlew
+          ./gradlew assembleRelease --no-daemon
 
       - name: Upload Android APK
         uses: actions/upload-artifact@v4
         with:
-          name: android-apk
-          path: frontend/android/app/build/outputs/apk/release/
+          name: biasharaiq-android-${{ github.sha }}
+          path: frontend/android/app/build/outputs/apk/release/*.apk
+          if-no-files-found: error
 
+
+
+  # DEPLOY
+  
   deploy:
-    name: Optional Deploy
+    name: Deploy
     runs-on: ubuntu-latest
-    needs: [docker-build-push]
-    if: github.ref == 'refs/heads/main' && secrets.DEPLOY_PROVIDER != ''
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
 
-      - name: Deploy placeholder
+    needs:
+      - docker-build-push
+
+    if: github.ref == 'refs/heads/main'
+
+    steps:
+      - name: Deployment information
         run: |
-          echo "DEPLOY: configure deploy steps for your provider (Render, ECS, etc.)"
-          echo "Set DEPLOY_PROVIDER secret and add provider-specific steps."
+          echo "BiasharaIQ Docker images built successfully."
+          echo "Commit: $GITHUB_SHA"
+          echo "Backend image:"
+          echo "${{ secrets.DOCKER_REGISTRY }}/biasharaiq-backend:${{ github.sha }}"
+          echo "Frontend image:"
+          echo "${{ secrets.DOCKER_REGISTRY }}/biasharaiq-frontend:${{ github.sha }}"
+          echo ""
+          echo "Configure your deployment provider here."
