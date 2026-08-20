@@ -1,6 +1,9 @@
 services:
   db:
-    image: postgres:16-alpine3
+    image: postgres:16-alpine
+    dns:
+      - 8.8.8.8
+      - 8.8.4.4
     container_name: biasharaiq_db
     environment:
       POSTGRES_DB: ${POSTGRES_DB:-biasharaiq}
@@ -20,6 +23,9 @@ services:
   redis:
     image: redis:7-alpine
     container_name: biasharaiq_redis
+    dns:
+      - 8.8.8.8
+      - 8.8.4.4
     ports:
       - "${REDIS_PORT:-6379}:6379"
     volumes:
@@ -35,6 +41,10 @@ services:
     build:
       context: ./backend
       dockerfile: Dockerfile
+      network: host
+    dns:
+      - 8.8.8.8
+      - 8.8.4.4
     container_name: biasharaiq_api
     env_file:
       - .env
@@ -60,8 +70,12 @@ services:
     build:
       context: ./frontend
       dockerfile: Dockerfile
+      network: host
       args:
         NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-http://localhost:8000}
+    dns:
+      - 8.8.8.8
+      - 8.8.4.4
     container_name: biasharaiq_web
     environment:
       NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-http://localhost:8000}
