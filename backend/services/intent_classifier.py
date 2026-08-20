@@ -6,7 +6,6 @@ Routes questions to appropriate financial engines based on user intent.
 
 import re
 from enum import Enum
-from typing import Optional
 
 
 class Intent(Enum):

@@ -31,7 +31,7 @@ cur = conn.cursor()
 # Check if users table exists, if not apply schema.sql first
 cur.execute("""
     SELECT EXISTS (
-        SELECT FROM information_schema.tables 
+        SELECT FROM information_schema.tables
         WHERE table_schema = 'public'
         AND table_name = 'users'
     );
@@ -49,20 +49,20 @@ if not users_exists:
 print("[TABLE] Adding missing columns to users table...")
 
 columns_to_add = [
-    ("plan",                     "VARCHAR DEFAULT 'FREE'"),
-    ("subscription_status",      "VARCHAR DEFAULT 'active'"),
-    ("subscription_start",       "TIMESTAMP NULL"),
-    ("subscription_end",         "TIMESTAMP NULL"),
-    ("monthly_transaction_count","INTEGER DEFAULT 0"),
-    ("ai_queries_count",         "INTEGER DEFAULT 0"),
-    ("ai_queries_reset_date",    "TIMESTAMP NULL"),
-    ("currency",                 "VARCHAR DEFAULT 'KES'"),
-    ("is_active",                "BOOLEAN DEFAULT TRUE"),
-    ("is_verified",              "BOOLEAN DEFAULT FALSE"),
-    ("verification_code",        "VARCHAR(10) NULL"),
-    ("verification_expires_at",  "TIMESTAMP NULL"),
-    ("reset_token_hash",         "VARCHAR(128) NULL"),
-    ("reset_token_expires_at",   "TIMESTAMP NULL"),
+    ("plan", "VARCHAR DEFAULT 'FREE'"),
+    ("subscription_status", "VARCHAR DEFAULT 'active'"),
+    ("subscription_start", "TIMESTAMP NULL"),
+    ("subscription_end", "TIMESTAMP NULL"),
+    ("monthly_transaction_count", "INTEGER DEFAULT 0"),
+    ("ai_queries_count", "INTEGER DEFAULT 0"),
+    ("ai_queries_reset_date", "TIMESTAMP NULL"),
+    ("currency", "VARCHAR DEFAULT 'KES'"),
+    ("is_active", "BOOLEAN DEFAULT TRUE"),
+    ("is_verified", "BOOLEAN DEFAULT FALSE"),
+    ("verification_code", "VARCHAR(10) NULL"),
+    ("verification_expires_at", "TIMESTAMP NULL"),
+    ("reset_token_hash", "VARCHAR(128) NULL"),
+    ("reset_token_expires_at", "TIMESTAMP NULL"),
 ]
 
 for col_name, col_def in columns_to_add:
@@ -71,7 +71,8 @@ for col_name, col_def in columns_to_add:
         WHERE table_name = 'users' AND column_name = %s
     """, (col_name,))
     if cur.fetchone() is None:
-        cur.execute(f'ALTER TABLE users ADD COLUMN IF NOT EXISTS "{col_name}" {col_def}')
+        cur.execute(
+            f'ALTER TABLE users ADD COLUMN IF NOT EXISTS "{col_name}" {col_def}')
         print(f"  [OK] Added column: {col_name}")
     else:
         print(f"  [SKIP] Column already exists: {col_name}")
@@ -80,9 +81,9 @@ for col_name, col_def in columns_to_add:
 print("[TABLE] Adding missing columns to transactions table...")
 
 tx_columns_to_add = [
-    ("source",                   "VARCHAR DEFAULT 'manual'"),
-    ("import_batch_id",          "VARCHAR NULL"),
-    ("status",                   "VARCHAR DEFAULT 'confirmed'"),
+    ("source", "VARCHAR DEFAULT 'manual'"),
+    ("import_batch_id", "VARCHAR NULL"),
+    ("status", "VARCHAR DEFAULT 'confirmed'"),
 ]
 
 for col_name, col_def in tx_columns_to_add:
@@ -91,7 +92,8 @@ for col_name, col_def in tx_columns_to_add:
         WHERE table_name = 'transactions' AND column_name = %s
     """, (col_name,))
     if cur.fetchone() is None:
-        cur.execute(f'ALTER TABLE transactions ADD COLUMN IF NOT EXISTS "{col_name}" {col_def}')
+        cur.execute(
+            f'ALTER TABLE transactions ADD COLUMN IF NOT EXISTS "{col_name}" {col_def}')
         print(f"  [OK] Added column: {col_name}")
     else:
         print(f"  [SKIP] Column already exists: {col_name}")

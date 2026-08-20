@@ -17,7 +17,6 @@ import os
 import sys
 import argparse
 import psycopg2
-from psycopg2 import sql
 
 
 def get_conn(db_url):
@@ -38,7 +37,8 @@ def enum_values(conn):
 
 def column_is_enum(conn):
     with conn.cursor() as cur:
-        cur.execute("SELECT data_type, udt_name FROM information_schema.columns WHERE table_name='users' AND column_name='plan';")
+        cur.execute(
+            "SELECT data_type, udt_name FROM information_schema.columns WHERE table_name='users' AND column_name='plan';")
         row = cur.fetchone()
         if not row:
             raise RuntimeError('users.plan column not found')
@@ -76,7 +76,9 @@ def migrate_enum_to_lower(conn):
     try:
         run_sql(conn, "ALTER TABLE users ALTER COLUMN plan TYPE text;")
         run_sql(conn, "UPDATE users SET plan = LOWER(plan) WHERE plan IS NOT NULL;")
-        run_sql(conn, "ALTER TABLE users ALTER COLUMN plan TYPE userplan_new USING plan::userplan_new;")
+        run_sql(
+            conn,
+            "ALTER TABLE users ALTER COLUMN plan TYPE userplan_new USING plan::userplan_new;")
         # swap types
         run_sql(conn, "DROP TYPE IF EXISTS userplan;")
         run_sql(conn, "ALTER TYPE userplan_new RENAME TO userplan;")
@@ -93,7 +95,8 @@ def main():
     parser.add_argument('db', nargs='?', help='Database URL (optional)')
     args = parser.parse_args()
 
-    db_url = args.db or os.getenv('DATABASE_URL') or os.getenv('NEXT_PUBLIC_API_URL')
+    db_url = args.db or os.getenv(
+        'DATABASE_URL') or os.getenv('NEXT_PUBLIC_API_URL')
     if not db_url:
         print('Provide DATABASE_URL as env or argument')
         sys.exit(1)
@@ -116,6 +119,7 @@ def main():
                 normalize_text_column(conn)
     finally:
         conn.close()
+
 
 if __name__ == '__main__':
     main()

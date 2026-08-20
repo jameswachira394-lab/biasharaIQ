@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 from models.database import get_db
 from models.models import User, UserPlan
@@ -8,6 +8,7 @@ from datetime import datetime
 
 router = APIRouter(prefix="/subscription", tags=["Subscription"])
 
+
 @router.get("/status")
 async def get_subscription_status(
     db: Session = Depends(get_db),
@@ -16,7 +17,7 @@ async def get_subscription_status(
     """Get current user subscription status and usage."""
     # Check if expired and update status
     user = SubscriptionService.check_and_update_status(db, current_user.id)
-    
+
     return {
         "plan": user.plan,
         "status": user.subscription_status,
@@ -25,10 +26,14 @@ async def get_subscription_status(
         "usage": {
             "current": user.monthly_transaction_count,
             "limit": 200 if user.plan == UserPlan.free else None,
-            "percentage": (user.monthly_transaction_count / 200 * 100) if user.plan == UserPlan.free else 0
-        },
-        "days_remaining": (user.subscription_end - datetime.utcnow()).days if user.subscription_end else None
-    }
+            "percentage": (
+                user.monthly_transaction_count /
+                200 *
+                100) if user.plan == UserPlan.free else 0},
+        "days_remaining": (
+            user.subscription_end -
+            datetime.utcnow()).days if user.subscription_end else None}
+
 
 @router.get("/plans")
 async def get_plans():

@@ -1,7 +1,6 @@
-from fastapi import APIRouter, Depends, HTTPException, Request, BackgroundTasks
+from fastapi import APIRouter, Depends, HTTPException, Request
 from sqlalchemy.orm import Session
 from pydantic import BaseModel
-from typing import Optional
 from models.database import get_db
 from models.models import User, Payment, UserPlan
 from services.mpesa import MpesaService
@@ -12,6 +11,7 @@ import logging
 logger = logging.getLogger(__name__)
 router = APIRouter(tags=["Payments"])
 mpesa_service = MpesaService()
+
 
 class PaymentInitiateRequest(BaseModel):
     phone: str
@@ -26,14 +26,14 @@ async def initiate_payment(
 ):
     """Initiate M-Pesa STK Push for PRO upgrade."""
     logger.info(f"Initiating payment for user {current_user.id} - {req.phone}")
-    
+
     # Initiate STK Push
     response = mpesa_service.initiate_stk_push(
         phone=req.phone,
         amount=req.amount,
         account_ref=f"User-{current_user.id}"
     )
-    
+
     # Check for errors in response
     if response.get("error"):
         error_msg = response.get("error")
@@ -42,11 +42,12 @@ async def initiate_payment(
             status_code=response.get("status", 500),
             detail=error_msg
         )
-    
+
     # Check if we got a CheckoutRequestID (indicates success)
     checkout_id = response.get("CheckoutRequestID")
     if not checkout_id:
-        error_msg = response.get("errorMessage") or response.get("message") or "Failed to get CheckoutRequestID from M-Pesa"
+        error_msg = response.get("errorMessage") or response.get(
+            "message") or "Failed to get CheckoutRequestID from M-Pesa"
         logger.error(f"No CheckoutRequestID in response: {response}")
         raise HTTPException(
             status_code=500,
@@ -54,7 +55,7 @@ async def initiate_payment(
         )
 
     merchant_id = response.get("MerchantRequestID")
-    
+
     try:
         # Save payment record
         payment = Payment(
@@ -73,13 +74,13 @@ async def initiate_payment(
         logger.error(f"Failed to save payment record: {str(e)}")
         raise HTTPException(
             status_code=500,
-            detail="Payment initiated but failed to save record. Please contact support."
-        )
-    
+            detail="Payment initiated but failed to save record. Please contact support.")
+
     return {
         "checkout_id": checkout_id,
         "message": response.get("CustomerMessage", "STK Push initiated")
     }
+
 
 @router.post("/payments/callback")
 @router.post("/api/payments/callback")
@@ -88,19 +89,21 @@ async def mpesa_callback(request: Request, db: Session = Depends(get_db)):
     """Callback endpoint for M-Pesa to report transaction results."""
     data = await request.json()
     logger.info(f"Received M-Pesa callback: {data}")
-    
+
     result = mpesa_service.verify_callback(data)
     checkout_id = result.get("checkout_id")
-    
-    payment = db.query(Payment).filter(Payment.checkout_request_id == checkout_id).first()
+
+    payment = db.query(Payment).filter(
+        Payment.checkout_request_id == checkout_id).first()
     if not payment:
-        logger.error(f"Payment record not found for checkout_id: {checkout_id}")
+        logger.error(
+            f"Payment record not found for checkout_id: {checkout_id}")
         return {"status": "ok"}
 
     if result.get("success"):
         payment.status = "completed"
         payment.mpesa_receipt = result.get("receipt")
-        
+
         # Upgrade the user
         SubscriptionService.upgrade_user(
             db=db,
@@ -108,7 +111,9 @@ async def mpesa_callback(request: Request, db: Session = Depends(get_db)):
             plan=UserPlan.pro,
             amount=payment.amount
         )
-        logger.info(f"Payment {checkout_id} successful. User {payment.user_id} upgraded.")
+        logger.info(
+            f"Payment {checkout_id} successful. User {
+                payment.user_id} upgraded.")
     else:
         result_code = result.get("result_code")
         # 1032 is the result code for user cancellation
@@ -117,14 +122,18 @@ async def mpesa_callback(request: Request, db: Session = Depends(get_db)):
             logger.info(f"Payment {checkout_id} was cancelled by user.")
         else:
             payment.status = "failed"
-            logger.warning(f"Payment {checkout_id} failed with code {result_code}: {result.get('message')}")
-        
+            logger.warning(
+                f"Payment {checkout_id} failed with code {result_code}: {
+                    result.get('message')}")
+
         # Store callback's result description in mpesa_receipt for failure/cancellation cases
-        # so frontend status API can retrieve and display the exact reason (e.g. insufficient funds)
+        # so frontend status API can retrieve and display the exact reason
+        # (e.g. insufficient funds)
         payment.mpesa_receipt = result.get("message") or "Transaction failed"
-        
+
     db.commit()
     return {"status": "ok"}
+
 
 @router.get("/payments/status/{checkout_id}")
 async def get_payment_status(
@@ -137,14 +146,13 @@ async def get_payment_status(
         Payment.checkout_request_id == checkout_id,
         Payment.user_id == current_user.id
     ).first()
-    
+
     if not payment:
         raise HTTPException(status_code=404, detail="Payment not found")
-        
+
     return {
         "status": payment.status,
         "amount": payment.amount,
         "receipt": payment.mpesa_receipt,
         "created_at": payment.created_at
     }
-

@@ -31,7 +31,7 @@ logging.basicConfig(
 )
 log = logging.getLogger(__name__)
 
-# ─── Config ────────────────────────────────────────────────────────────────────
+# ─── Config ─────────────────────────────────────────────────────────────
 # SOURCE  = old Render Postgres
 # TARGET  = new AWS RDS Postgres  (already in your .env as DATABASE_URL)
 
@@ -59,7 +59,7 @@ TABLES = [
     "default_categories",
 ]
 
-# ─── Validation ────────────────────────────────────────────────────────────────
+# ─── Validation ─────────────────────────────────────────────────────────
 if not SOURCE_URL:
     log.error(
         "SOURCE_DATABASE_URL is not set.\n"
@@ -76,7 +76,7 @@ if SOURCE_URL == TARGET_URL:
     log.error("SOURCE and TARGET are the same database — aborting.")
     sys.exit(1)
 
-# ─── Imports ───────────────────────────────────────────────────────────────────
+# ─── Imports ────────────────────────────────────────────────────────────
 try:
     import psycopg2
     import psycopg2.extras
@@ -85,13 +85,13 @@ except ImportError:
     sys.exit(1)
 
 try:
-    from sqlalchemy import create_engine, text, inspect
+    from sqlalchemy import create_engine
 except ImportError:
     log.error("sqlalchemy not installed. Run: pip install sqlalchemy")
     sys.exit(1)
 
 
-# ─── Helpers ───────────────────────────────────────────────────────────────────
+# ─── Helpers ────────────────────────────────────────────────────────────
 def make_connect_args(url: str) -> dict:
     """Return sslmode=require for non-local DBs."""
     if "localhost" in url or "127.0.0.1" in url:
@@ -156,7 +156,7 @@ def sync_sequence(cur, table: str, pk_col: str = "id"):
     )
 
 
-# ─── Step 1: Create schema on AWS RDS ──────────────────────────────────────────
+# ─── Step 1: Create schema on AWS RDS ───────────────────────────────────
 def create_schema_on_target(target_url: str):
     log.info("📐  Creating schema on AWS RDS via SQLAlchemy models...")
 
@@ -195,7 +195,7 @@ def create_schema_on_target(target_url: str):
         engine.dispose()
 
 
-# ─── Step 2: Copy data table by table ─────────────────────────────────────────
+# ─── Step 2: Copy data table by table ───────────────────────────────────
 def migrate_table(src_cur, tgt_cur, table: str):
     if not table_exists(src_cur, table):
         log.warning(f"⚠️   Table '{table}' not found in source — skipping")
@@ -254,7 +254,7 @@ def migrate_table(src_cur, tgt_cur, table: str):
     return len(rows)
 
 
-# ─── Main ──────────────────────────────────────────────────────────────────────
+# ─── Main ───────────────────────────────────────────────────────────────
 def main():
     if DRY_RUN:
         log.info("🔍  DRY RUN mode — no data will be written to AWS RDS")
@@ -288,12 +288,17 @@ def main():
             log.info("")
             log.info("🔄  Syncing sequences...")
             for table in TABLES:
-                if table_exists(tgt_cur, table) and "id" in get_columns(tgt_cur, table):
+                if table_exists(
+                        tgt_cur,
+                        table) and "id" in get_columns(
+                        tgt_cur,
+                        table):
                     try:
                         sync_sequence(tgt_cur, table)
                         log.info(f"   ✅  Sequence synced for '{table}'")
                     except Exception as e:
-                        log.warning(f"   ⚠️  Could not sync sequence for '{table}': {e}")
+                        log.warning(
+                            f"   ⚠️  Could not sync sequence for '{table}': {e}")
 
             tgt_conn.commit()
             log.info("")

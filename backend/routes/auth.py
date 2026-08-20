@@ -4,7 +4,7 @@ import hmac
 import os
 import secrets
 
-from fastapi import APIRouter, Depends, HTTPException, Request
+from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel, EmailStr
 from sqlalchemy.orm import Session
 
@@ -69,9 +69,19 @@ def register(req: RegisterRequest, db: Session = Depends(get_db)):
 
     # Create default categories
     for name in DEFAULT_EXPENSE_CATEGORIES:
-        db.add(Category(user_id=user.id, name=name, type=TransactionType.expense, is_default=True))
+        db.add(
+            Category(
+                user_id=user.id,
+                name=name,
+                type=TransactionType.expense,
+                is_default=True))
     for name in DEFAULT_INCOME_CATEGORIES:
-        db.add(Category(user_id=user.id, name=name, type=TransactionType.income, is_default=True))
+        db.add(
+            Category(
+                user_id=user.id,
+                name=name,
+                type=TransactionType.income,
+                is_default=True))
 
     db.commit()
     db.refresh(user)
@@ -97,10 +107,12 @@ def register(req: RegisterRequest, db: Session = Depends(get_db)):
 def login(req: LoginRequest, db: Session = Depends(get_db)):
     """Login with email and password. Email must be verified first."""
     user = db.query(User).filter(User.email == req.email).first()
-    
+
     # Check credentials
     if not user or not verify_password(req.password, user.password_hash):
-        raise HTTPException(status_code=401, detail="Invalid email or password")
+        raise HTTPException(
+            status_code=401,
+            detail="Invalid email or password")
 
     # Check email verification
     if not user.is_verified:
@@ -124,7 +136,7 @@ def login(req: LoginRequest, db: Session = Depends(get_db)):
     }
 
 
-# ─── Simple in-memory rate limiting for forgot-password ───────────────────────
+# ─── Simple in-memory rate limiting for forgot-password ─────────────────
 # Maps email → list of request timestamps (UTC)
 _reset_attempts: dict[str, list[datetime]] = {}
 _RATE_LIMIT_MAX = 3          # max requests
@@ -192,17 +204,20 @@ def reset_password(req: ResetPasswordRequest, db: Session = Depends(get_db)):
     Validate reset token, hash and save new password, then invalidate token.
     """
     if len(req.new_password) < 8:
-        raise HTTPException(status_code=400, detail="Password must be at least 8 characters.")
+        raise HTTPException(status_code=400,
+                            detail="Password must be at least 8 characters.")
 
     email_lower = req.email.lower()
     user = db.query(User).filter(User.email == email_lower).first()
 
-    # Constant-time token validation — always compute hash even if no user found
+    # Constant-time token validation — always compute hash even if no user
+    # found
     incoming_hash = hashlib.sha256(req.token.encode()).hexdigest()
     dummy_hash = "0" * 64  # fallback for constant-time comparison when user not found
 
     stored_hash = user.reset_token_hash if user else dummy_hash
-    token_valid = hmac.compare_digest(incoming_hash, stored_hash if stored_hash else dummy_hash)
+    token_valid = hmac.compare_digest(
+        incoming_hash, stored_hash if stored_hash else dummy_hash)
 
     now = datetime.utcnow()
     expired = (
@@ -223,4 +238,4 @@ def reset_password(req: ResetPasswordRequest, db: Session = Depends(get_db)):
     user.reset_token_expires_at = None
     db.commit()
 
-    return {"message": "Your password has been reset successfully. You can now log in."}
+    return {"message": "Your password has been reset successfully. You can now log in."}

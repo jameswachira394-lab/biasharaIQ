@@ -1,3 +1,4 @@
+from core.config import settings
 import secrets
 import string
 import smtplib
@@ -14,7 +15,6 @@ backend_dir = Path(__file__).parent.parent
 env_path = backend_dir / ".env"
 load_dotenv(dotenv_path=env_path)
 
-from core.config import settings
 
 logger = logging.getLogger(__name__)
 
@@ -30,15 +30,19 @@ def generate_verification_code(length: int = 6) -> str:
 def _send_via_brevo_api(recipient: str, subject: str, text_body: str) -> bool:
     """Send transactional email via Brevo HTTP REST API."""
     brevo_key = (
-        os.getenv("BREVO_API_KEY") 
-        or getattr(settings, "BREVO_API_KEY", "") 
-        or ("xkeysib-" + "db93215413df2fed78ac39a119fd3b752c09b2311bb709a506dfce7a285a85a3-EzVSzTtQQhk6fWxj")
-    )
+        os.getenv("BREVO_API_KEY") or getattr(
+            settings,
+            "BREVO_API_KEY",
+            "") or (
+            "xkeysib-" +
+            "db93215413df2fed78ac39a119fd3b752c09b2311bb709a506dfce7a285a85a3-EzVSzTtQQhk6fWxj"))
     if not brevo_key:
         return False
 
-    sender_email = os.getenv("SENDER_EMAIL") or getattr(settings, "SENDER_EMAIL", "") or "biasharaiq@yahoo.com"
-    sender_name = os.getenv("SENDER_NAME") or getattr(settings, "SENDER_NAME", "") or "Biashara IQ"
+    sender_email = os.getenv("SENDER_EMAIL") or getattr(
+        settings, "SENDER_EMAIL", "") or "biasharaiq@yahoo.com"
+    sender_name = os.getenv("SENDER_NAME") or getattr(
+        settings, "SENDER_NAME", "") or "Biashara IQ"
 
     url = "https://api.brevo.com/v3/smtp/email"
     headers = {
@@ -55,14 +59,21 @@ def _send_via_brevo_api(recipient: str, subject: str, text_body: str) -> bool:
 
     try:
         import httpx
-        logger.info("[EMAIL] Attempting email delivery to %s via Brevo HTTP API", recipient)
+        logger.info(
+            "[EMAIL] Attempting email delivery to %s via Brevo HTTP API",
+            recipient)
         with httpx.Client(timeout=10.0) as client:
             resp = client.post(url, headers=headers, json=payload)
             if resp.status_code in (200, 201, 202):
-                logger.info("[EMAIL] ✓ Verification email delivered to %s via Brevo REST API", recipient)
+                logger.info(
+                    "[EMAIL] ✓ Verification email delivered to %s via Brevo REST API",
+                    recipient)
                 return True
             else:
-                logger.error("[EMAIL] Brevo API error (Status %s): %s", resp.status_code, resp.text)
+                logger.error(
+                    "[EMAIL] Brevo API error (Status %s): %s",
+                    resp.status_code,
+                    resp.text)
     except Exception as e:
         logger.error("[EMAIL] Exception during Brevo API send: %s", str(e))
 
@@ -71,12 +82,18 @@ def _send_via_brevo_api(recipient: str, subject: str, text_body: str) -> bool:
 
 def _send_via_smtp(msg: MIMEMultipart, recipient: str) -> bool:
     """Attempt SMTP delivery via Brevo SMTP relay or configured SMTP server."""
-    smtp_server = os.getenv("SMTP_SERVER") or getattr(settings, "SMTP_SERVER", "") or "smtp-relay.brevo.com"
-    smtp_port = int(os.getenv("SMTP_PORT") or getattr(settings, "SMTP_PORT", 587) or 587)
-    smtp_user = os.getenv("SMTP_USERNAME") or getattr(settings, "SMTP_USERNAME", "") or "b5c3d3001@smtp-brevo.com"
+    smtp_server = os.getenv("SMTP_SERVER") or getattr(
+        settings, "SMTP_SERVER", "") or "smtp-relay.brevo.com"
+    smtp_port = int(
+        os.getenv("SMTP_PORT") or getattr(
+            settings,
+            "SMTP_PORT",
+            587) or 587)
+    smtp_user = os.getenv("SMTP_USERNAME") or getattr(
+        settings, "SMTP_USERNAME", "") or "b5c3d3001@smtp-brevo.com"
     smtp_pass = (
-        os.getenv("SMTP_PASSWORD") 
-        or getattr(settings, "SMTP_PASSWORD", "") 
+        os.getenv("SMTP_PASSWORD")
+        or getattr(settings, "SMTP_PASSWORD", "")
         or ("bsk" + "uQd8AT8yFpkD")
     )
 
@@ -88,11 +105,16 @@ def _send_via_smtp(msg: MIMEMultipart, recipient: str) -> bool:
             smtp_server = "smtp.gmail.com"
 
     if not smtp_pass:
-        logger.error("[EMAIL] PRODUCTION ERROR: No SMTP_PASSWORD or BREVO_API_KEY provided.")
+        logger.error(
+            "[EMAIL] PRODUCTION ERROR: No SMTP_PASSWORD or BREVO_API_KEY provided.")
         return False
 
     try:
-        logger.info("[EMAIL] Sending verification email to %s via SMTP (%s:%s)", recipient, smtp_server, smtp_port)
+        logger.info(
+            "[EMAIL] Sending verification email to %s via SMTP (%s:%s)",
+            recipient,
+            smtp_server,
+            smtp_port)
         context = ssl.create_default_context()
         clean_password = smtp_pass.replace(" ", "")
 
@@ -101,11 +123,16 @@ def _send_via_smtp(msg: MIMEMultipart, recipient: str) -> bool:
             server.login(smtp_user, clean_password)
             server.send_message(msg)
 
-        logger.info("[EMAIL] ✓ Verification email delivered to %s via SMTP", recipient)
+        logger.info(
+            "[EMAIL] ✓ Verification email delivered to %s via SMTP",
+            recipient)
         return True
 
     except smtplib.SMTPAuthenticationError as e:
-        logger.error("[EMAIL] ✗ SMTP Authentication failed for %s: %s", smtp_user, e)
+        logger.error(
+            "[EMAIL] ✗ SMTP Authentication failed for %s: %s",
+            smtp_user,
+            e)
     except Exception as e:
         logger.error("[EMAIL] ✗ SMTP error sending to %s: %s", recipient, e)
 
@@ -115,8 +142,10 @@ def _send_via_smtp(msg: MIMEMultipart, recipient: str) -> bool:
 def send_email(email: str, code: str) -> bool:
     """Send a verification code email using Brevo REST API first, then Brevo SMTP as fallback."""
     subject = "Verify Your Biashara IQ Account"
-    sender_email = os.getenv("SENDER_EMAIL") or settings.SENDER_EMAIL or "biasharaiq@yahoo.com"
-    sender_name = os.getenv("SENDER_NAME") or settings.SENDER_NAME or "Biashara IQ"
+    sender_email = os.getenv(
+        "SENDER_EMAIL") or settings.SENDER_EMAIL or "biasharaiq@yahoo.com"
+    sender_name = os.getenv(
+        "SENDER_NAME") or settings.SENDER_NAME or "Biashara IQ"
 
     text_body = (
         "Welcome to Biashara IQ!\n\n"
@@ -156,8 +185,10 @@ def send_email(email: str, code: str) -> bool:
 def send_password_reset_email(email: str, reset_link: str) -> bool:
     """Send a password reset link email using Brevo REST API, then Brevo SMTP fallback."""
     subject = "Reset Your Biashara IQ Password"
-    sender_email = os.getenv("SENDER_EMAIL") or getattr(settings, "SENDER_EMAIL", "") or "biasharaiq@yahoo.com"
-    sender_name = os.getenv("SENDER_NAME") or getattr(settings, "SENDER_NAME", "") or "Biashara IQ"
+    sender_email = os.getenv("SENDER_EMAIL") or getattr(
+        settings, "SENDER_EMAIL", "") or "biasharaiq@yahoo.com"
+    sender_name = os.getenv("SENDER_NAME") or getattr(
+        settings, "SENDER_NAME", "") or "Biashara IQ"
 
     text_body = (
         "Hello,\n\n"

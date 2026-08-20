@@ -31,7 +31,8 @@ client = None
 if api_key:
     client = genai.Client(api_key=api_key)
 else:
-    logger.warning("GEMINI_API_KEY not set — AI features disabled at import time.")
+    logger.warning(
+        "GEMINI_API_KEY not set — AI features disabled at import time.")
 
 # =========================
 # REDIS CONFIGURATION
@@ -50,10 +51,16 @@ redis_client = redis.Redis(
     socket_connect_timeout=1.0,
 )
 
-SESSION_TTL_SECONDS = int(os.getenv("CHAT_SESSION_TTL", 60 * 60 * 2))  # Default: 2 hours
+SESSION_TTL_SECONDS = int(
+    os.getenv(
+        "CHAT_SESSION_TTL",
+        60 *
+        60 *
+        2))  # Default: 2 hours
 MAX_MESSAGE_LENGTH = int(os.getenv("MAX_MESSAGE_LENGTH", 2000))
 MAX_RESPONSE_LENGTH = int(os.getenv("MAX_RESPONSE_LENGTH", 5000))
-SESSION_RESET_AFTER_MESSAGES = int(os.getenv("SESSION_RESET_AFTER_MESSAGES", 30))
+SESSION_RESET_AFTER_MESSAGES = int(
+    os.getenv("SESSION_RESET_AFTER_MESSAGES", 30))
 
 
 # =========================
@@ -92,7 +99,8 @@ def save_session(user_id: int, session: dict) -> None:
             pickle.dumps(session),
         )
     except (pickle.PicklingError, redis.RedisError, Exception) as e:
-        # Non-fatal: log and continue. The session will just reset next request.
+        # Non-fatal: log and continue. The session will just reset next
+        # request.
         logger.error("Failed to save session for user %s: %s", user_id, e)
 
 
@@ -153,7 +161,7 @@ RULES:
 def create_chat_session() -> genai.chats.Chat:
     """
     Create a new chat session without pre-seeding data.
-    
+
     Financial context will be provided per-question based on intent,
     not upfront. This reduces token usage and improves accuracy.
     """
@@ -208,8 +216,7 @@ def chat_with_ai_agent(
 
     if len(user_message) > MAX_MESSAGE_LENGTH:
         raise ValueError(
-            f"Message too long. Please keep it under {MAX_MESSAGE_LENGTH} characters."
-        )
+            f"Message too long. Please keep it under {MAX_MESSAGE_LENGTH} characters.")
 
     # Ensure AI client is configured
     if client is None:
@@ -289,13 +296,13 @@ def chat_with_ai_agent(
             response_text = response_text[:MAX_RESPONSE_LENGTH] + "..."
 
         logger.info(
-            f"[AI] User {user_id} ({intent_name}): {len(response_text)} char response"
-        )
-        
+            f"[AI] User {user_id} ({intent_name}): {
+                len(response_text)} char response")
+
         # Increment usage count
         user.ai_queries_count += 1
         db.commit()
-        
+
         return response_text
 
     except Exception as e:
@@ -303,7 +310,8 @@ def chat_with_ai_agent(
         logger.exception(f"[AI] Gemini error for user {user_id}: {error_msg}")
 
         if "429" in error_msg or "quota" in error_msg.lower():
-            raise Exception("API quota exceeded. Please try again in a few moments.")
+            raise Exception(
+                "API quota exceeded. Please try again in a few moments.")
         elif "401" in error_msg or "403" in error_msg:
             raise Exception("AI service configuration error.")
         else:

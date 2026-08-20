@@ -44,8 +44,9 @@ class ConfirmBatchRequest(BaseModel):
 @router.post("/document")
 async def upload_document(
     file: UploadFile = File(...),
-    phone: Optional[str] = Form(None),   # M-Pesa phone number for password-protected PDFs
-    password: Optional[str] = Form(None), # explicit password for bank PDFs
+    # M-Pesa phone number for password-protected PDFs
+    phone: Optional[str] = Form(None),
+    password: Optional[str] = Form(None),  # explicit password for bank PDFs
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):
@@ -76,9 +77,13 @@ async def upload_document(
             raise HTTPException(status_code=422, detail=str(e))
 
         if not transactions:
-            raise HTTPException(status_code=400, detail="No transactions found in document")
+            raise HTTPException(status_code=400,
+                                detail="No transactions found in document")
 
-        logger.info("[UPLOAD] Parsed %d transactions from %s", len(transactions), doc_type)
+        logger.info(
+            "[UPLOAD] Parsed %d transactions from %s",
+            len(transactions),
+            doc_type)
 
         # Upload to Cloudinary (if configured)
         storage_url = ""
@@ -93,7 +98,8 @@ async def upload_document(
                 storage_url = upload_result["secure_url"]
                 logger.info("[UPLOAD] File stored at %s", storage_url)
             except Exception as e:
-                logger.warning("[UPLOAD] Cloudinary upload failed: %s. Continuing.", e)
+                logger.warning(
+                    "[UPLOAD] Cloudinary upload failed: %s. Continuing.", e)
                 storage_url = f"local://{filename}"
         else:
             storage_url = f"local://{filename}"
@@ -111,7 +117,8 @@ async def upload_document(
             status="pending_review",
             parsed_at=now,          # ← always set explicitly
             created_at=now,
-            summary=json.dumps({"doc_type": doc_type, "transaction_count": len(transactions)}),
+            summary=json.dumps({"doc_type": doc_type,
+                                "transaction_count": len(transactions)}),
         )
         db.add(doc_record)
         db.flush()
@@ -120,16 +127,20 @@ async def upload_document(
             Transaction(
                 user_id=current_user.id,
                 amount=tx_data["amount"],
-                type=TransactionType(tx_data["type"]),
-                category=tx_data.get("category", "Uncategorized"),
-                date=datetime.fromisoformat(tx_data["date"]) if isinstance(tx_data["date"], str) else tx_data["date"],
+                type=TransactionType(
+                    tx_data["type"]),
+                category=tx_data.get(
+                    "category",
+                    "Uncategorized"),
+                date=datetime.fromisoformat(
+                    tx_data["date"]) if isinstance(
+                    tx_data["date"],
+                    str) else tx_data["date"],
                 description=tx_data["description"],
                 source=tx_data["source"],
                 import_batch_id=batch_id,
                 status="pending_review",
-            )
-            for tx_data in transactions
-        ]
+            ) for tx_data in transactions]
         db.add_all(tx_objects)
         db.flush()
 
@@ -147,7 +158,10 @@ async def upload_document(
         ]
 
         db.commit()
-        logger.info("[UPLOAD] Batch %s saved with %d transactions for review", batch_id, len(saved_transactions))
+        logger.info(
+            "[UPLOAD] Batch %s saved with %d transactions for review",
+            batch_id,
+            len(saved_transactions))
 
         return {
             "batch_id": batch_id,
@@ -155,7 +169,8 @@ async def upload_document(
             "doc_type": doc_type,
             "transaction_count": len(saved_transactions),
             "status": "pending_review",
-            "message": f"Extracted {len(saved_transactions)} transactions — please review and confirm",
+            "message": f"Extracted {
+                len(saved_transactions)} transactions — please review and confirm",
             "transactions": saved_transactions,
         }
 
@@ -164,7 +179,10 @@ async def upload_document(
     except Exception as e:
         db.rollback()
         logger.error("[UPLOAD] Unexpected error: %s", e, exc_info=True)
-        raise HTTPException(status_code=500, detail=f"Failed to process document: {str(e)}")
+        raise HTTPException(
+            status_code=500,
+            detail=f"Failed to process document: {
+                str(e)}")
 
 
 # ─────────────────────────────────────────────
@@ -261,7 +279,10 @@ async def confirm_batch(
 
     doc.status = "confirmed"
     db.commit()
-    logger.info("[UPLOAD] Batch %s confirmed with %d transactions", batch_id, len(transactions))
+    logger.info(
+        "[UPLOAD] Batch %s confirmed with %d transactions",
+        batch_id,
+        len(transactions))
 
     return {
         "batch_id": batch_id,

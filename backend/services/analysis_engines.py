@@ -8,7 +8,6 @@ compact, structured insights that the AI can explain naturally.
 from datetime import datetime, timedelta
 from sqlalchemy.orm import Session
 from sqlalchemy import func
-from decimal import Decimal
 from models.models import Transaction, TransactionType
 from typing import Dict, List, Optional
 
@@ -27,7 +26,8 @@ class ProfitabilityEngine:
         Returns structured data suitable for AI explanation.
         """
         now = datetime.utcnow()
-        month_start = now.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
+        month_start = now.replace(
+            day=1, hour=0, minute=0, second=0, microsecond=0)
         last_month_start = (month_start - timedelta(days=1)).replace(day=1)
         last_month_end = month_start - timedelta(seconds=1)
 
@@ -35,13 +35,19 @@ class ProfitabilityEngine:
         current_revenue = self._get_revenue(month_start, now)
         current_expenses = self._get_expenses(month_start, now)
         current_profit = current_revenue - current_expenses
-        current_margin = (current_profit / current_revenue * 100) if current_revenue > 0 else 0
+        current_margin = (
+            current_profit /
+            current_revenue *
+            100) if current_revenue > 0 else 0
 
         # Last month metrics
         last_revenue = self._get_revenue(last_month_start, last_month_end)
         last_expenses = self._get_expenses(last_month_start, last_month_end)
         last_profit = last_revenue - last_expenses
-        last_margin = (last_profit / last_revenue * 100) if last_revenue > 0 else 0
+        last_margin = (
+            last_profit /
+            last_revenue *
+            100) if last_revenue > 0 else 0
 
         # Calculate trends
         revenue_trend = self._calculate_trend(last_revenue, current_revenue)
@@ -106,32 +112,30 @@ class ProfitabilityEngine:
         else:
             return f"down {abs(round(pct_change, 0))}%"
 
-    def _get_top_expenses(self, start: datetime, end: datetime, limit: int = 3) -> List[Dict]:
+    def _get_top_expenses(
+            self,
+            start: datetime,
+            end: datetime,
+            limit: int = 3) -> List[Dict]:
         """Get top expense categories."""
         rows = (
-            self.db.query(Transaction.category, func.sum(Transaction.amount).label("total"))
-            .filter(
+            self.db.query(
+                Transaction.category,
+                func.sum(
+                    Transaction.amount).label("total")) .filter(
                 Transaction.user_id == self.user_id,
                 Transaction.type == TransactionType.expense,
                 Transaction.date >= start,
                 Transaction.date <= end,
-            )
-            .group_by(Transaction.category)
-            .order_by(func.sum(Transaction.amount).desc())
-            .limit(limit)
-            .all()
-        )
+            ) .group_by(
+                Transaction.category) .order_by(
+                func.sum(
+                    Transaction.amount).desc()) .limit(limit) .all())
 
         total_expenses = self._get_expenses(start, end)
 
-        return [
-            {
-                "category": row.category,
-                "amount": round(row.total, 2),
-                "percentage": round((row.total / total_expenses * 100), 1) if total_expenses > 0 else 0,
-            }
-            for row in rows
-        ]
+        return [{"category": row.category, "amount": round(row.total, 2), "percentage": round(
+            (row.total / total_expenses * 100), 1) if total_expenses > 0 else 0, } for row in rows]
 
 
 class CashflowEngine:
@@ -152,7 +156,9 @@ class CashflowEngine:
 
         if daily_burn <= 0:
             return {
-                "balance": round(balance, 2),
+                "balance": round(
+                    balance,
+                    2),
                 "daily_burn": 0,
                 "survival_days": None,
                 "risk_level": "safe",
@@ -161,8 +167,12 @@ class CashflowEngine:
 
         if balance <= 0:
             return {
-                "balance": round(balance, 2),
-                "daily_burn": round(daily_burn, 2),
+                "balance": round(
+                    balance,
+                    2),
+                "daily_burn": round(
+                    daily_burn,
+                    2),
                 "survival_days": 0,
                 "risk_level": "critical",
                 "message": "Business has zero or negative balance. Critical situation.",
@@ -236,13 +246,15 @@ class ExpenseOptimizerEngine:
         Returns: recommendations ranked by impact.
         """
         now = datetime.utcnow()
-        month_start = now.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
+        month_start = now.replace(
+            day=1, hour=0, minute=0, second=0, microsecond=0)
         last_month_start = (month_start - timedelta(days=1)).replace(day=1)
         last_month_end = month_start - timedelta(seconds=1)
 
         # Get categories with growth rates
         categories = self._get_expense_categories(month_start, now)
-        growth_rates = self._calculate_growth_rates(categories, last_month_start, last_month_end)
+        growth_rates = self._calculate_growth_rates(
+            categories, last_month_start, last_month_end)
 
         # Score categories by size and growth
         scored = [
@@ -266,20 +278,24 @@ class ExpenseOptimizerEngine:
             "highest_amount": scored[0]["category"] if scored else None,
         }
 
-    def _get_expense_categories(self, start: datetime, end: datetime) -> List[Dict]:
+    def _get_expense_categories(
+            self,
+            start: datetime,
+            end: datetime) -> List[Dict]:
         """Get expenses by category."""
         rows = (
-            self.db.query(Transaction.category, func.sum(Transaction.amount).label("total"))
-            .filter(
+            self.db.query(
+                Transaction.category,
+                func.sum(
+                    Transaction.amount).label("total")) .filter(
                 Transaction.user_id == self.user_id,
                 Transaction.type == TransactionType.expense,
                 Transaction.date >= start,
                 Transaction.date <= end,
-            )
-            .group_by(Transaction.category)
-            .order_by(func.sum(Transaction.amount).desc())
-            .all()
-        )
+            ) .group_by(
+                Transaction.category) .order_by(
+                func.sum(
+                    Transaction.amount).desc()) .all())
 
         return [
             {"category": row.category, "amount": float(row.total)}
@@ -339,17 +355,23 @@ class RiskDetectorEngine:
         # Check cashflow
         cashflow_risk = self._check_cashflow_risk()
         if cashflow_risk:
-            risks.append({"type": "cashflow", "severity": cashflow_risk["severity"], "message": cashflow_risk["message"]})
+            risks.append({"type": "cashflow",
+                          "severity": cashflow_risk["severity"],
+                          "message": cashflow_risk["message"]})
 
         # Check profitability
         profitability_risk = self._check_profitability_risk()
         if profitability_risk:
-            risks.append({"type": "profitability", "severity": profitability_risk["severity"], "message": profitability_risk["message"]})
+            risks.append({"type": "profitability",
+                          "severity": profitability_risk["severity"],
+                          "message": profitability_risk["message"]})
 
         # Check expense concentration
         concentration_risk = self._check_concentration_risk()
         if concentration_risk:
-            risks.append({"type": "concentration", "severity": concentration_risk["severity"], "message": concentration_risk["message"]})
+            risks.append({"type": "concentration",
+                          "severity": concentration_risk["severity"],
+                          "message": concentration_risk["message"]})
 
         # Sort by severity
         severity_order = {"critical": 0, "warning": 1, "info": 2}
@@ -369,20 +391,29 @@ class RiskDetectorEngine:
             return None
 
         if balance <= 0:
-            return {"severity": "critical", "message": "Zero or negative cash balance"}
+            return {
+                "severity": "critical",
+                "message": "Zero or negative cash balance"}
 
         days = balance / daily_burn
         if days < 30:
-            return {"severity": "critical", "message": f"Only {int(days)} days of cash runway"}
+            return {
+                "severity": "critical",
+                "message": f"Only {
+                    int(days)} days of cash runway"}
         elif days < 90:
-            return {"severity": "warning", "message": f"Cash runway declining ({int(days)} days left)"}
+            return {
+                "severity": "warning",
+                "message": f"Cash runway declining ({
+                    int(days)} days left)"}
 
         return None
 
     def _check_profitability_risk(self) -> Optional[Dict]:
         """Check if business has profitability risk."""
         now = datetime.utcnow()
-        month_start = now.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
+        month_start = now.replace(
+            day=1, hour=0, minute=0, second=0, microsecond=0)
 
         income = (
             self.db.query(func.sum(Transaction.amount))
@@ -416,29 +447,33 @@ class RiskDetectorEngine:
         margin = (profit / income) * 100
 
         if profit < 0:
-            return {"severity": "critical", "message": f"Operating at a loss (margin: {margin:.1f}%)"}
+            return {"severity": "critical",
+                    "message": f"Operating at a loss (margin: {margin:.1f}%)"}
         elif margin < 10:
-            return {"severity": "warning", "message": f"Thin profit margin ({margin:.1f}%)"}
+            return {"severity": "warning",
+                    "message": f"Thin profit margin ({margin:.1f}%)"}
 
         return None
 
     def _check_concentration_risk(self) -> Optional[Dict]:
         """Check if expenses are concentrated in one category."""
         now = datetime.utcnow()
-        month_start = now.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
+        month_start = now.replace(
+            day=1, hour=0, minute=0, second=0, microsecond=0)
 
         rows = (
-            self.db.query(Transaction.category, func.sum(Transaction.amount).label("total"))
-            .filter(
+            self.db.query(
+                Transaction.category,
+                func.sum(
+                    Transaction.amount).label("total")) .filter(
                 Transaction.user_id == self.user_id,
                 Transaction.type == TransactionType.expense,
                 Transaction.date >= month_start,
                 Transaction.date <= now,
-            )
-            .group_by(Transaction.category)
-            .order_by(func.sum(Transaction.amount).desc())
-            .all()
-        )
+            ) .group_by(
+                Transaction.category) .order_by(
+                func.sum(
+                    Transaction.amount).desc()) .all())
 
         if not rows:
             return None
@@ -448,9 +483,9 @@ class RiskDetectorEngine:
 
         if top_category_pct > 50:
             return {
-                "severity": "warning",
-                "message": f"{rows[0].category} accounts for {top_category_pct:.0f}% of expenses",
-            }
+                "severity": "warning", "message": f"{
+                    rows[0].category} accounts for {
+                    top_category_pct:.0f}% of expenses", }
 
         return None
 

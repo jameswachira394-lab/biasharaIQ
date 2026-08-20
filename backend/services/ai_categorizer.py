@@ -7,7 +7,6 @@ Falls back to rule-based categorization when no API key is available.
 import os
 import json
 import logging
-from typing import Optional
 
 logger = logging.getLogger(__name__)
 
@@ -25,7 +24,8 @@ if _gemini_key:
         logger.warning(f"[AI] Failed to initialize Gemini client: {e}")
 
 if not client:
-    logger.warning("[AI] No GEMINI_API_KEY set — using rule-based categorization fallback")
+    logger.warning(
+        "[AI] No GEMINI_API_KEY set — using rule-based categorization fallback")
 
 
 # ─────────────────────────────────────────────
@@ -55,7 +55,9 @@ Return ONLY a JSON array, no markdown, no explanation:
 [{"index": 0, "category": "category name", "confidence": 0.95}, ...]"""
 
 
-def categorize_transactions(transactions: list[dict], user_categories: list[str] = None) -> list[dict]:
+def categorize_transactions(
+        transactions: list[dict],
+        user_categories: list[str] = None) -> list[dict]:
     """
     Use Claude to assign a category to each transaction.
     Returns transactions with 'suggested_category' field added.
@@ -64,17 +66,18 @@ def categorize_transactions(transactions: list[dict], user_categories: list[str]
         return transactions
 
     # Build a compact representation for the prompt
-    items = [
-        {"index": i, "description": tx["description"], "amount": tx["amount"], "type": tx["type"]}
-        for i, tx in enumerate(transactions)
-    ]
+    items = [{"index": i,
+              "description": tx["description"],
+              "amount": tx["amount"],
+              "type": tx["type"]} for i,
+             tx in enumerate(transactions)]
 
     # Process in batches of 50 to stay within token limits
     batch_size = 50
     all_results = {}
 
     for start in range(0, len(items), batch_size):
-        batch = items[start : start + batch_size]
+        batch = items[start: start + batch_size]
         batch_results = _categorize_batch(batch, user_categories)
         all_results.update(batch_results)
 
@@ -82,11 +85,16 @@ def categorize_transactions(transactions: list[dict], user_categories: list[str]
     enriched = []
     for i, tx in enumerate(transactions):
         result = all_results.get(i, {})
-        enriched.append({
-            **tx,
-            "suggested_category": result.get("category", "Other Expense" if tx["type"] == "expense" else "Other Income"),
-            "category_confidence": result.get("confidence", 0.5),
-        })
+        enriched.append(
+            {
+                **tx,
+                "suggested_category": result.get(
+                    "category",
+                    "Other Expense" if tx["type"] == "expense" else "Other Income"),
+                "category_confidence": result.get(
+                    "confidence",
+                    0.5),
+            })
 
     return enriched
 
@@ -116,6 +124,7 @@ RULE_KEYWORDS = {
     },
 }
 
+
 def _rule_based_category(description: str, tx_type: str) -> str:
     """Simple keyword-based fallback categorization."""
     desc_lower = description.lower()
@@ -126,7 +135,9 @@ def _rule_based_category(description: str, tx_type: str) -> str:
     return "Other Expense" if tx_type == "expense" else "Other Income"
 
 
-def _categorize_batch(items: list[dict], user_categories: list[str] = None) -> dict:
+def _categorize_batch(
+        items: list[dict],
+        user_categories: list[str] = None) -> dict:
     """Categorize a batch of transactions. Returns {index: {category, confidence}}.
     Uses Gemini or Claude when available, falls back to rule-based when no API key.
     """
@@ -143,7 +154,8 @@ def _categorize_batch(items: list[dict], user_categories: list[str] = None) -> d
 
     system = CATEGORIZE_SYSTEM
     if user_categories:
-        system += f"\n\nThis user's custom categories: {', '.join(user_categories)}"
+        system += f"\n\nThis user's custom categories: {
+            ', '.join(user_categories)}"
 
     prompt = f"Categorize these transactions:\n{json.dumps(items, indent=2)}"
 
@@ -164,11 +176,16 @@ def _categorize_batch(items: list[dict], user_categories: list[str] = None) -> d
         raw = raw.replace("```json", "").replace("```", "").strip()
         results = json.loads(raw)
 
-        return {r["index"]: {"category": r["category"], "confidence": r.get("confidence", 0.8)}
-                for r in results}
+        return {
+            r["index"]: {
+                "category": r["category"],
+                "confidence": r.get(
+                    "confidence",
+                    0.8)} for r in results}
 
     except Exception as e:
-        logger.error("[AI] Categorization batch failed: %s — falling back to rules", e)
+        logger.error(
+            "[AI] Categorization batch failed: %s — falling back to rules", e)
         return {
             item["index"]: {
                 "category": _rule_based_category(item["description"], item["type"]),
@@ -176,7 +193,6 @@ def _categorize_batch(items: list[dict], user_categories: list[str] = None) -> d
             }
             for item in items
         }
-
 
 
 # ─────────────────────────────────────────────
@@ -211,7 +227,11 @@ def generate_upload_summary(transactions: list[dict], doc_type: str) -> dict:
         cat = tx.get("suggested_category", "Uncategorized")
         category_totals[cat] = category_totals.get(cat, 0) + tx["amount"]
 
-    top_categories = sorted(category_totals.items(), key=lambda x: x[1], reverse=True)[:5]
+    top_categories = sorted(
+        category_totals.items(),
+        key=lambda x: x[1],
+        reverse=True)[
+        :5]
 
     # Generate narrative
     narrative = _generate_narrative(
@@ -246,16 +266,17 @@ def _generate_narrative(
     """
     direction = "surplus" if net >= 0 else "deficit"
     fallback = (
-        f"Imported {count} transactions from your {doc_type} statement. "
-        f"Total income: KES {total_income:,.2f}, total expenses: KES {total_expenses:,.2f}. "
-        f"Net {direction}: KES {abs(net):,.2f}."
-    )
+        f"Imported {count} transactions from your {doc_type} statement. " f"Total income: KES {
+            total_income:,.2f}, total expenses: KES {
+            total_expenses:,.2f}. " f"Net {direction}: KES {
+                abs(net):,.2f}.")
 
     if client is None:
         return fallback
 
     try:
-        cat_str = ", ".join(f"{c} (KES {a:,.0f})" for c, a in top_categories[:3])
+        cat_str = ", ".join(f"{c} (KES {a:,.0f})" for c,
+                            a in top_categories[:3])
         prompt = (
             f"Summarize this {doc_type} upload for a Kenyan SME owner in 2-3 sentences. "
             f"Be specific with numbers. Use KES for currency.\n\n"
@@ -275,4 +296,3 @@ def _generate_narrative(
     except Exception as e:
         logger.error("[AI] Narrative generation failed: %s", e)
         return fallback
-
