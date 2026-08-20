@@ -22,6 +22,11 @@
   --bg-card: rgba(253, 246, 236, 0.9);
   --bg-input: #FFFDF8;
   --border: rgba(139, 94, 60, 0.18);
+
+  /* ── Fonts (self-hosted via Fontsource, replaces next/font/google) ── */
+  --font-inter: 'Inter Variable', system-ui, sans-serif;
+  --font-syne: 'Syne Variable', system-ui, sans-serif;
+  --font-jetbrains: 'JetBrains Mono Variable', 'Courier New', monospace;
 }
 
 * {

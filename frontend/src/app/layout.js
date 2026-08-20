@@ -1,11 +1,9 @@
-import { Inter, Syne, JetBrains_Mono } from 'next/font/google'
+import '@fontsource-variable/inter'
+import '@fontsource-variable/syne'
+import '@fontsource-variable/jetbrains-mono'
 import './globals.css'
 import { AuthProvider } from '@/context/AuthContext'
 import CapacitorAppInit from '@/components/CapacitorAppInit'
-
-const inter = Inter({ subsets: ['latin'], variable: '--font-inter' })
-const syne = Syne({ subsets: ['latin'], variable: '--font-syne', weight: ['400', '500', '600', '700', '800'] })
-const jetbrains = JetBrains_Mono({ subsets: ['latin'], variable: '--font-jetbrains' })
 
 export const metadata = {
   title: 'BiasharaIQ – Smart Business Finance',
@@ -26,7 +24,7 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en" className={`${inter.variable} ${syne.variable} ${jetbrains.variable} bg-semantic-bgMain`}>
+    <html lang="en" className="bg-semantic-bgMain">
       <body className="bg-semantic-bgMain text-semantic-white antialiased">
         <AuthProvider>
           <CapacitorAppInit />
