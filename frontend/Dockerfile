@@ -1,31 +1,20 @@
 FROM node:23-alpine AS deps
 WORKDIR /app
-<<<<<<< HEAD
 RUN npm config set registry https://registry.npmjs.org/ && \
     npm config set fetch-timeout 120000 && \
     npm config set fetch-retry-mintimeout 20000 && \
     npm config set fetch-retry-maxtimeout 120000
 COPY package.json package-lock.json* ./
 RUN npm ci --only=production --prefer-offline --no-audit
-=======
-
-COPY package.json package-lock.json* ./
-RUN npm ci
->>>>>>> refs/remotes/origin/main
 
 FROM node:23-alpine AS builder
 WORKDIR /app
-<<<<<<< HEAD
 RUN npm config set registry https://registry.npmjs.org/ && \
     npm config set fetch-timeout 120000 && \
     npm config set fetch-retry-mintimeout 20000 && \
     npm config set fetch-retry-maxtimeout 120000
 COPY package.json package-lock.json* ./
 RUN npm ci --prefer-offline --no-audit
-=======
-
-COPY --from=deps /app/node_modules ./node_modules
->>>>>>> refs/remotes/origin/main
 COPY . .
 
 ARG NEXT_PUBLIC_API_URL=https://biasharaiq.onrender.com
@@ -46,7 +35,7 @@ RUN addgroup -g 1001 -S nodejs \
 COPY --from=builder /app/.next ./.next
 COPY --from=builder /app/public ./public
 COPY --from=builder /app/package.json ./package.json
-COPY --from=builder /app/node_modules ./node_modules
+COPY --from=deps /app/node_modules ./node_modules
 
 RUN chown -R nextjs:nodejs /app
 
@@ -54,8 +43,4 @@ USER nextjs
 
 EXPOSE 3000
 
-<<<<<<< HEAD
 CMD ["npm", "run", "start", "--", "-H", "0.0.0.0"]
-=======
-CMD ["npm", "run", "start", "--", "-H", "0.0.0.0"]
->>>>>>> refs/remotes/origin/main
