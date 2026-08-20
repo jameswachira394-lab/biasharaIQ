@@ -1,4 +1,4 @@
-FROM node:20-alpine AS deps
+FROM node:23-alpine AS deps
 WORKDIR /app
 RUN npm config set registry https://registry.npmjs.org/ && \
     npm config set fetch-timeout 120000 && \
@@ -7,7 +7,7 @@ RUN npm config set registry https://registry.npmjs.org/ && \
 COPY package.json package-lock.json* ./
 RUN npm ci --only=production --prefer-offline --no-audit
 
-FROM node:20-alpine AS builder
+FROM node:23-alpine AS builder
 WORKDIR /app
 RUN npm config set registry https://registry.npmjs.org/ && \
     npm config set fetch-timeout 120000 && \
@@ -21,7 +21,7 @@ ENV NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL
 ENV NEXT_TELEMETRY_DISABLED=1
 RUN npm run build
 
-FROM node:20-alpine AS runner
+FROM node:23-alpine AS runner
 WORKDIR /app
 ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1

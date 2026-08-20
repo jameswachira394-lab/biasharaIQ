@@ -1,10 +1,10 @@
 services:
   db:
     image: postgres:16-alpine
+    container_name: biasharaiq_db
     dns:
       - 8.8.8.8
-      - 8.8.4.4
-    container_name: biasharaiq_db
+      - 1.1.1.1
     environment:
       POSTGRES_DB: ${POSTGRES_DB:-biasharaiq}
       POSTGRES_USER: ${POSTGRES_USER:-biasharaiq}
@@ -25,7 +25,7 @@ services:
     container_name: biasharaiq_redis
     dns:
       - 8.8.8.8
-      - 8.8.4.4
+      - 1.1.1.1
     ports:
       - "${REDIS_PORT:-6379}:6379"
     volumes:
@@ -42,14 +42,14 @@ services:
       context: ./backend
       dockerfile: Dockerfile
       network: host
+    container_name: biasharaiq_api
     dns:
       - 8.8.8.8
-      - 8.8.4.4
-    container_name: biasharaiq_api
+      - 1.1.1.1
     env_file:
       - .env
     environment:
-      DATABASE_URL: ${DATABASE_URL:-postgresql://biasharaiq:biasharaiq_pass@db:5432/biasharaiq}
+      DATABASE_URL: ${DATABASE_URL:-postgresql://biasharaiq:[REDACTED]@db:5432/biasharaiq}
       REDIS_HOST: redis
       REDIS_PORT: ${REDIS_PORT:-6379}
       REDIS_DB: 0
@@ -73,10 +73,10 @@ services:
       network: host
       args:
         NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-http://localhost:8000}
+    container_name: biasharaiq_web
     dns:
       - 8.8.8.8
-      - 8.8.4.4
-    container_name: biasharaiq_web
+      - 1.1.1.1
     environment:
       NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-http://localhost:8000}
       NODE_ENV: production
