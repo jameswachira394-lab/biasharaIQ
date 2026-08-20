@@ -1,3 +1,15 @@
+from core.config import settings
+from routes.uploads import router as uploads_router
+from routes.subscriptions import router as subscriptions_router
+from routes.routes import (
+    dashboard_router, insights_router, ai_router,
+    reports_router, categories_router, profile_router
+)
+from routes.transactions import router as transactions_router
+from routes.email_verification import router as email_verification_router
+from routes.auth import router as auth_router
+from models.models import Base
+from models.database import engine, SessionLocal
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.trustedhost import TrustedHostMiddleware
@@ -10,19 +22,6 @@ import time
 from datetime import datetime
 
 load_dotenv()
-
-from models.database import engine, get_db, SessionLocal
-from models.models import Base
-from routes.auth import router as auth_router
-from routes.email_verification import router as email_verification_router
-from routes.transactions import router as transactions_router
-from routes.routes import (
-    dashboard_router, insights_router, ai_router,
-    reports_router, categories_router, profile_router
-)
-from routes.subscriptions import router as subscriptions_router
-from routes.uploads import router as uploads_router
-from core.config import settings
 
 
 logging.basicConfig(
@@ -40,7 +39,7 @@ except Exception as e:
 
 # ── Inline migration: safely add columns that may not exist yet ────────────
 _COLUMN_MIGRATIONS = [
-    ("users", "reset_token_hash",       "VARCHAR(128)"),
+    ("users", "reset_token_hash", "VARCHAR(128)"),
     ("users", "reset_token_expires_at", "TIMESTAMP"),
 ]
 try:
@@ -54,11 +53,14 @@ try:
                 {"t": _table, "c": _col},
             ).fetchone()
             if not _exists:
-                _conn.execute(text(f'ALTER TABLE {_table} ADD COLUMN IF NOT EXISTS "{_col}" {_col_type}'))
+                _conn.execute(
+                    text(
+                        f'ALTER TABLE {_table} ADD COLUMN IF NOT EXISTS "{_col}" {_col_type}'))
                 _conn.commit()
                 logger.info(f"[MIGRATION] Added column {_table}.{_col}")
             else:
-                logger.debug(f"[MIGRATION] Column {_table}.{_col} already exists — skipped")
+                logger.debug(
+                    f"[MIGRATION] Column {_table}.{_col} already exists — skipped")
     logger.info("[MIGRATION] Column check complete")
 except Exception as _e:
     logger.error(f"[MIGRATION] Column migration failed: {_e}")
@@ -86,11 +88,11 @@ if not settings.DEBUG:
     allowed_hosts.append("*.onrender.com")
     # Also allow localhost for health checks
     allowed_hosts.extend(["localhost", "127.0.0.1"])
-    
+
     # Remove duplicates and None values
     allowed_hosts = list(set([h for h in allowed_hosts if h]))
     logger.info(f"Trusted Hosts: {allowed_hosts}")
-    
+
     app.add_middleware(
         TrustedHostMiddleware,
         allowed_hosts=allowed_hosts
@@ -102,35 +104,37 @@ if not settings.DEBUG:
 async def log_requests(request: Request, call_next):
     start_time = time.time()
     request_id = f"{datetime.now().timestamp()}"
-    
+
     # Log request
     logger.info(f"[{request_id}] {request.method} {request.url.path}")
-    
+
     try:
         response = await call_next(request)
         process_time = time.time() - start_time
-        
+
         # Log response
         logger.info(
             f"[{request_id}] {request.method} {request.url.path} - "
             f"Status: {response.status_code} - Duration: {process_time:.3f}"
         )
-        
+
         return response
     except Exception as e:
         process_time = time.time() - start_time
-        logger.error(f"[{request_id}] Error: {str(e)} - Duration: {process_time:.3f}s")
+        logger.error(
+            f"[{request_id}] Error: {str(e)} - Duration: {process_time:.3f}s")
         raise
 
 
 @app.middleware("http")
 async def add_security_headers(request: Request, call_next):
-    # Skip security headers for CORS preflight — let CORSMiddleware own the response
+    # Skip security headers for CORS preflight — let CORSMiddleware own the
+    # response
     if request.method == "OPTIONS":
         return await call_next(request)
 
     response = await call_next(request)
-    
+
     # Add security headers (non-preflight requests only)
     response.headers["X-Content-Type-Options"] = "nosniff"
     response.headers["X-Frame-Options"] = "DENY"
@@ -138,7 +142,7 @@ async def add_security_headers(request: Request, call_next):
     response.headers["Strict-Transport-Security"] = "max-age=31536000; includeSubDomains"
     response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
     response.headers["Permissions-Policy"] = "geolocation=(), microphone=(), camera=()"
-    
+
     return response
 
 
@@ -161,7 +165,10 @@ app.add_middleware(
 
 # Register routers
 app.include_router(auth_router, tags=["Authentication"])
-app.include_router(email_verification_router, prefix="/auth", tags=["Email Verification"])
+app.include_router(
+    email_verification_router,
+    prefix="/auth",
+    tags=["Email Verification"])
 app.include_router(transactions_router, tags=["Transactions"])
 app.include_router(dashboard_router, tags=["Dashboard"])
 app.include_router(insights_router, tags=["Insights"])
@@ -207,16 +214,16 @@ async def health_check():
             content={
                 "status": "unhealthy",
                 "timestamp": datetime.now().isoformat(),
-                "error": str(e) if settings.DEBUG else "Database connection failed"
-            }
-        )
+                "error": str(e) if settings.DEBUG else "Database connection failed"})
 
-#ma
+# ma
+
+
 @app.exception_handler(Exception)
 async def general_exception_handler(request: Request, exc: Exception):
     """Global exception handler for production error responses"""
     logger.error(f"Unhandled exception: {str(exc)}", exc_info=True)
-    
+
     if settings.DEBUG:
         return JSONResponse(
             status_code=500,
@@ -238,4 +245,3 @@ if __name__ == "__main__":
         reload=settings.DEBUG,
         log_level=settings.LOG_LEVEL.lower()
     )
-    

@@ -49,16 +49,19 @@ def send_verification(data: EmailRequest, db: Session = Depends(get_db)):
 
     # Return 200 even for unknown emails to prevent user enumeration
     if not user or user.is_verified:
-        return {"message": "If this email is registered and unverified, a code has been sent."}
+        return {
+            "message": "If this email is registered and unverified, a code has been sent."}
 
     code = generate_verification_code()
     user.verification_code = code
     user.verification_expires_at = datetime.utcnow() + timedelta(minutes=10)
     db.commit()
 
-    send_email(data.email, code)  # Failure is logged in send_email; don't leak status to caller
+    # Failure is logged in send_email; don't leak status to caller
+    send_email(data.email, code)
 
-    return {"message": "If this email is registered and unverified, a code has been sent."}
+    return {
+        "message": "If this email is registered and unverified, a code has been sent."}
 
 
 @router.post("/verify-email")
@@ -67,13 +70,15 @@ def verify_email(data: VerifyRequest, db: Session = Depends(get_db)):
     user = db.query(User).filter(User.email == data.email).first()
 
     if not user:
-        raise HTTPException(status_code=400, detail="Invalid or expired verification code")
+        raise HTTPException(status_code=400,
+                            detail="Invalid or expired verification code")
 
     if user.is_verified:
         raise HTTPException(status_code=400, detail="Email already verified")
 
     if not _is_code_valid(user, data.code):
-        raise HTTPException(status_code=400, detail="Invalid or expired verification code")
+        raise HTTPException(status_code=400,
+                            detail="Invalid or expired verification code")
 
     user.is_verified = True
     user.verification_code = None
@@ -94,4 +99,5 @@ def verify_email(data: VerifyRequest, db: Session = Depends(get_db)):
         },
         "message": "Email verified successfully. You are now logged in.",
     }
-    # Note: The response includes user info for convenience, but be mindful of what you return in production.
+    # Note: The response includes user info for convenience, but be mindful of
+    # what you return in production.

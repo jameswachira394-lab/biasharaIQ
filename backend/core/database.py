@@ -1,4 +1,4 @@
-from sqlalchemy import create_engine, event, text
+from sqlalchemy import create_engine, event
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 from core.config import settings
@@ -17,15 +17,17 @@ def sanitize_db_url(url: str) -> str:
         return url
     if url.startswith("postgres://"):
         url = url.replace("postgres://", "postgresql://", 1)
-    
+
     try:
         parsed = urlparse(url)
-        if parsed.hostname and parsed.hostname.startswith("dpg-") and "." not in parsed.hostname:
+        if parsed.hostname and parsed.hostname.startswith(
+                "dpg-") and "." not in parsed.hostname:
             try:
                 socket.gethostbyname(parsed.hostname)
             except socket.gaierror:
                 region = os.getenv("RENDER_REGION", "oregon")
-                ext_hostname = f"{parsed.hostname}.{region}-postgres.render.com"
+                ext_hostname = f"{
+                    parsed.hostname}.{region}-postgres.render.com"
                 logger.warning(
                     f"Internal DB hostname '{parsed.hostname}' could not be resolved. "
                     f"Falling back to external hostname '{ext_hostname}'."
@@ -38,7 +40,13 @@ def sanitize_db_url(url: str) -> str:
                         user_pass += f":{parsed.password}"
                     user_pass += "@"
                 new_netloc = f"{user_pass}{ext_hostname}{port_str}"
-                url = urlunparse((parsed.scheme, new_netloc, parsed.path, parsed.params, parsed.query, parsed.fragment))
+                url = urlunparse(
+                    (parsed.scheme,
+                     new_netloc,
+                     parsed.path,
+                     parsed.params,
+                     parsed.query,
+                     parsed.fragment))
     except Exception as e:
         logger.warning(f"Failed to parse or resolve DB hostname: {e}")
     return url

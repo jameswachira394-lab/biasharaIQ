@@ -1,9 +1,10 @@
 from datetime import datetime, timedelta
 from sqlalchemy.orm import Session
-from models.models import User, Subscription, Payment, UserPlan, SubscriptionStatus
+from models.models import User, Subscription, UserPlan, SubscriptionStatus
 import logging
 
 logger = logging.getLogger(__name__)
+
 
 class SubscriptionService:
     @staticmethod
@@ -22,7 +23,7 @@ class SubscriptionService:
         user.subscription_status = SubscriptionStatus.active
         user.subscription_start = start_date
         user.subscription_end = end_date
-        
+
         # Create Subscription record
         subscription = Subscription(
             user_id=user_id,
@@ -32,11 +33,11 @@ class SubscriptionService:
             started_at=start_date,
             expires_at=end_date
         )
-        
+
         db.add(subscription)
         db.commit()
         db.refresh(user)
-        
+
         logger.info(f"User {user_id} upgraded to {plan} until {end_date}")
         return user
 
@@ -51,7 +52,8 @@ class SubscriptionService:
             return user
 
         if user.subscription_end and user.subscription_end < datetime.utcnow():
-            logger.info(f"User {user_id} subscription expired. Downgrading to FREE.")
+            logger.info(
+                f"User {user_id} subscription expired. Downgrading to FREE.")
             user.plan = UserPlan.free
             user.subscription_status = SubscriptionStatus.expired
             db.commit()
@@ -74,5 +76,5 @@ class SubscriptionService:
         """Check if user can add more transactions."""
         if user.plan == UserPlan.pro:
             return True
-        
+
         return user.monthly_transaction_count < 200

@@ -23,67 +23,68 @@ logger = logging.getLogger(__name__)
 # Order matters: more specific rules should come first
 CATEGORY_RULES = [
     # Income / Sales
-    ("funds received",           "Sales"),
-    ("customer payment",         "Sales"),
-    ("received from",            "Sales"),
-    ("payment received",         "Sales"),
+    ("funds received", "Sales"),
+    ("customer payment", "Sales"),
+    ("received from", "Sales"),
+    ("payment received", "Sales"),
     # Payroll
-    ("salary",                   "Salary"),
-    ("payroll",                  "Salary"),
+    ("salary", "Salary"),
+    ("payroll", "Salary"),
     # Bank Transfers
-    ("kcb m-pesa",               "Bank Transfer"),
-    ("kcb mpesa",                "Bank Transfer"),
-    ("equity",                   "Bank Transfer"),
-    ("ncba",                     "Bank Transfer"),
-    ("coop",                     "Bank Transfer"),
-    ("cooperative bank",         "Bank Transfer"),
-    ("family bank",              "Bank Transfer"),
-    ("stanbic",                  "Bank Transfer"),
-    ("dtb",                      "Bank Transfer"),
-    ("i&m",                      "Bank Transfer"),
-    ("absa",                     "Bank Transfer"),
+    ("kcb m-pesa", "Bank Transfer"),
+    ("kcb mpesa", "Bank Transfer"),
+    ("equity", "Bank Transfer"),
+    ("ncba", "Bank Transfer"),
+    ("coop", "Bank Transfer"),
+    ("cooperative bank", "Bank Transfer"),
+    ("family bank", "Bank Transfer"),
+    ("stanbic", "Bank Transfer"),
+    ("dtb", "Bank Transfer"),
+    ("i&m", "Bank Transfer"),
+    ("absa", "Bank Transfer"),
     # Bills / Utilities
-    ("pay bill",                 "Bills"),
-    ("paybill",                  "Bills"),
-    ("kplc",                     "Bills"),
-    ("kenya power",              "Bills"),
-    ("nairobi water",            "Bills"),
-    ("dstv",                     "Bills"),
-    ("zuku",                     "Bills"),
-    ("safaricom home",           "Bills"),
-    ("gotv",                     "Bills"),
+    ("pay bill", "Bills"),
+    ("paybill", "Bills"),
+    ("kplc", "Bills"),
+    ("kenya power", "Bills"),
+    ("nairobi water", "Bills"),
+    ("dstv", "Bills"),
+    ("zuku", "Bills"),
+    ("safaricom home", "Bills"),
+    ("gotv", "Bills"),
     # Airtime / Data
-    ("airtime",                  "Airtime"),
-    ("data bundle",              "Airtime"),
-    ("okoa",                     "Airtime"),
+    ("airtime", "Airtime"),
+    ("data bundle", "Airtime"),
+    ("okoa", "Airtime"),
     # M-Pesa Savings / Loans
-    ("m-shwari",                 "Savings"),
-    ("mshwari",                  "Savings"),
-    ("lock savings",             "Savings"),
-    ("fuliza",                   "Loans"),
-    ("kcb m-pesa loan",          "Loans"),
+    ("m-shwari", "Savings"),
+    ("mshwari", "Savings"),
+    ("lock savings", "Savings"),
+    ("fuliza", "Loans"),
+    ("kcb m-pesa loan", "Loans"),
     # Shopping / Merchant
-    ("buy goods",                "Shopping"),
-    ("merchant payment",         "Shopping"),
-    ("lipa na mpesa",            "Shopping"),
-    ("till",                     "Shopping"),
+    ("buy goods", "Shopping"),
+    ("merchant payment", "Shopping"),
+    ("lipa na mpesa", "Shopping"),
+    ("till", "Shopping"),
     # Cash / Agent
-    ("agent withdrawal",         "Cash Withdrawal"),
-    ("agent deposit",            "Cash Deposit"),
-    ("withdraw cash",            "Cash Withdrawal"),
+    ("agent withdrawal", "Cash Withdrawal"),
+    ("agent deposit", "Cash Deposit"),
+    ("withdraw cash", "Cash Withdrawal"),
     # Transfers
-    ("transfer to",              "Transfer"),
-    ("transfer from",            "Transfer"),
-    ("sent to",                  "Transfer"),
-    ("customer transfer",        "Transfer"),
+    ("transfer to", "Transfer"),
+    ("transfer from", "Transfer"),
+    ("sent to", "Transfer"),
+    ("customer transfer", "Transfer"),
     # Charges / Fees
-    ("charge",                   "Charges"),
-    ("transaction cost",         "Charges"),
-    ("fee",                      "Charges"),
+    ("charge", "Charges"),
+    ("transaction cost", "Charges"),
+    ("fee", "Charges"),
     # Reversals
-    ("reversal",                 "Refund"),
-    ("reversed",                 "Refund"),
+    ("reversal", "Refund"),
+    ("reversed", "Refund"),
 ]
+
 
 def detect_category(description: str, tx_type: str = "expense") -> str:
     """
@@ -100,6 +101,7 @@ def detect_category(description: str, tx_type: str = "expense") -> str:
 # ─────────────────────────────────────────────
 # Shared helpers
 # ─────────────────────────────────────────────
+
 
 def _clean_amount(raw: str) -> Optional[Decimal]:
     try:
@@ -147,7 +149,10 @@ def _extract_pdf_text(file_bytes: bytes, password: str = "") -> str:
 # M-Pesa PDF parser
 # ─────────────────────────────────────────────
 
-MPESA_DATE_FORMATS = ["%d/%m/%Y %H:%M:%S", "%d/%m/%Y %H:%M", "%d-%m-%Y %H:%M:%S"]
+MPESA_DATE_FORMATS = [
+    "%d/%m/%Y %H:%M:%S",
+    "%d/%m/%Y %H:%M",
+    "%d-%m-%Y %H:%M:%S"]
 
 MPESA_ROW_RE = re.compile(
     r"(\d{1,2}[\/\-]\d{1,2}[\/\-]\d{4}\s+\d{1,2}:\d{2}(?::\d{2})?)"
@@ -188,7 +193,9 @@ def _candidate_passwords(phone: Optional[str]) -> list[str]:
     return passwords
 
 
-def parse_mpesa_pdf(file_bytes: bytes, phone: Optional[str] = None) -> list[dict]:
+def parse_mpesa_pdf(
+        file_bytes: bytes,
+        phone: Optional[str] = None) -> list[dict]:
     """
     Parse a password-protected M-Pesa statement PDF.
     `phone` should be the subscriber's phone number (e.g. '0712345678').
@@ -222,7 +229,9 @@ def parse_mpesa_pdf(file_bytes: bytes, phone: Optional[str] = None) -> list[dict
             "Please provide your M-Pesa phone number so we can unlock it."
         )
 
-    logger.info("[PARSER] Opened M-Pesa PDF with password format (len=%d)", len(used_password))
+    logger.info(
+        "[PARSER] Opened M-Pesa PDF with password format (len=%d)",
+        len(used_password))
 
     transactions = []
     with pdf_obj:
@@ -243,7 +252,9 @@ def parse_mpesa_pdf(file_bytes: bytes, phone: Optional[str] = None) -> list[dict
                     if tx:
                         transactions.append(tx)
 
-    logger.info("[PARSER] M-Pesa: extracted %d transactions", len(transactions))
+    logger.info(
+        "[PARSER] M-Pesa: extracted %d transactions",
+        len(transactions))
     return transactions
 
 
@@ -263,8 +274,10 @@ def _parse_mpesa_row(row: list) -> Optional[dict]:
         if not date:
             return None
 
-        paid_in = _clean_amount(paid_in_raw) if paid_in_raw != "-" else Decimal("0")
-        withdrawn = _clean_amount(withdrawn_raw) if withdrawn_raw != "-" else Decimal("0")
+        paid_in = _clean_amount(
+            paid_in_raw) if paid_in_raw != "-" else Decimal("0")
+        withdrawn = _clean_amount(
+            withdrawn_raw) if withdrawn_raw != "-" else Decimal("0")
 
         if not paid_in and not withdrawn:
             return None
@@ -295,8 +308,10 @@ def _mpesa_match_to_dict(match: re.Match) -> Optional[dict]:
         paid_in_raw = match.group(4)
         withdrawn_raw = match.group(5)
 
-        paid_in = _clean_amount(paid_in_raw) if paid_in_raw != "-" else Decimal("0")
-        withdrawn = _clean_amount(withdrawn_raw) if withdrawn_raw != "-" else Decimal("0")
+        paid_in = _clean_amount(
+            paid_in_raw) if paid_in_raw != "-" else Decimal("0")
+        withdrawn = _clean_amount(
+            withdrawn_raw) if withdrawn_raw != "-" else Decimal("0")
 
         amount = paid_in if paid_in > 0 else -withdrawn
         tx_type = "income" if amount > 0 else "expense"
@@ -318,11 +333,40 @@ def _mpesa_match_to_dict(match: re.Match) -> Optional[dict]:
 # ─────────────────────────────────────────────
 
 BANK_COLUMN_ALIASES = {
-    "date": ["date", "value date", "trans date", "transaction date", "posting date", "completion time", "completion date", "time", "date/time", "transaction time"],
-    "description": ["description", "details", "narration", "particulars", "remarks", "reference"],
-    "debit": ["debit", "dr", "withdrawals", "withdrawn", "debit amount"],
-    "credit": ["credit", "cr", "deposits", "paid in", "credit amount"],
-    "balance": ["balance", "running balance", "closing balance"],
+    "date": [
+        "date",
+        "value date",
+        "trans date",
+        "transaction date",
+        "posting date",
+        "completion time",
+        "completion date",
+        "time",
+        "date/time",
+        "transaction time"],
+    "description": [
+        "description",
+        "details",
+        "narration",
+        "particulars",
+        "remarks",
+        "reference"],
+    "debit": [
+        "debit",
+        "dr",
+        "withdrawals",
+        "withdrawn",
+        "debit amount"],
+    "credit": [
+        "credit",
+        "cr",
+        "deposits",
+        "paid in",
+        "credit amount"],
+    "balance": [
+        "balance",
+        "running balance",
+        "closing balance"],
 }
 
 BANK_DATE_FORMATS = [
@@ -333,7 +377,10 @@ BANK_DATE_FORMATS = [
 ]
 
 
-def parse_bank_statement_pdf(file_bytes: bytes, bank_name: str = "generic", password: str = "") -> list[dict]:
+def parse_bank_statement_pdf(
+        file_bytes: bytes,
+        bank_name: str = "generic",
+        password: str = "") -> list[dict]:
     try:
         import pdfplumber
     except ImportError:
@@ -342,7 +389,8 @@ def parse_bank_statement_pdf(file_bytes: bytes, bank_name: str = "generic", pass
     from pdfminer.pdfdocument import PDFPasswordIncorrect
 
     try:
-        pdf_context = pdfplumber.open(io.BytesIO(file_bytes), password=password)
+        pdf_context = pdfplumber.open(
+            io.BytesIO(file_bytes), password=password)
     except PDFPasswordIncorrect:
         raise ValueError(
             "This bank statement PDF is password-protected. "
@@ -368,7 +416,10 @@ def parse_bank_statement_pdf(file_bytes: bytes, bank_name: str = "generic", pass
                     if tx:
                         transactions.append(tx)
 
-    logger.info("[PARSER] Bank (%s): extracted %d transactions", bank_name, len(transactions))
+    logger.info(
+        "[PARSER] Bank (%s): extracted %d transactions",
+        bank_name,
+        len(transactions))
     return transactions
 
 
@@ -441,9 +492,15 @@ CSV_DATE_FORMATS = BANK_DATE_FORMATS + ["%m/%d/%Y", "%Y/%m/%d"]
 def parse_csv(file_bytes: bytes) -> list[dict]:
     try:
         try:
-            df = pd.read_csv(io.BytesIO(file_bytes), encoding="utf-8", skip_blank_lines=True)
+            df = pd.read_csv(
+                io.BytesIO(file_bytes),
+                encoding="utf-8",
+                skip_blank_lines=True)
         except UnicodeDecodeError:
-            df = pd.read_csv(io.BytesIO(file_bytes), encoding="latin-1", skip_blank_lines=True)
+            df = pd.read_csv(
+                io.BytesIO(file_bytes),
+                encoding="latin-1",
+                skip_blank_lines=True)
 
         df.columns = [str(c).lower().strip() for c in df.columns]
 
@@ -464,7 +521,9 @@ def parse_csv(file_bytes: bytes) -> list[dict]:
             if tx:
                 transactions.append(tx)
 
-        logger.info("[PARSER] CSV: extracted %d transactions", len(transactions))
+        logger.info(
+            "[PARSER] CSV: extracted %d transactions",
+            len(transactions))
         return transactions
 
     except Exception as e:
@@ -485,9 +544,11 @@ def _parse_csv_row(row: pd.Series, headers: dict) -> Optional[dict]:
         credit = Decimal("0")
 
         if "debit" in headers:
-            debit = _clean_amount(str(row.get(headers["debit"], "0"))) or Decimal("0")
+            debit = _clean_amount(
+                str(row.get(headers["debit"], "0"))) or Decimal("0")
         if "credit" in headers:
-            credit = _clean_amount(str(row.get(headers["credit"], "0"))) or Decimal("0")
+            credit = _clean_amount(
+                str(row.get(headers["credit"], "0"))) or Decimal("0")
 
         if debit == 0 and credit == 0 and "amount" in row.index:
             raw = str(row["amount"]).strip()
@@ -547,7 +608,9 @@ def parse_excel(file_bytes: bytes) -> list[dict]:
                 tx["source"] = "excel"
                 transactions.append(tx)
 
-        logger.info("[PARSER] Excel: extracted %d transactions", len(transactions))
+        logger.info(
+            "[PARSER] Excel: extracted %d transactions",
+            len(transactions))
         return transactions
 
     except Exception as e:
@@ -559,25 +622,25 @@ def parse_excel(file_bytes: bytes) -> list[dict]:
 # Invoice parser (PDF + image via Gemini)
 # ─────────────────────────────────────────────
 
-def parse_invoice(file_bytes: bytes, mime_type: str = "application/pdf") -> list[dict]:
+def parse_invoice(
+        file_bytes: bytes,
+        mime_type: str = "application/pdf") -> list[dict]:
     """
     Parse an invoice or receipt using the Veryfi Lens API.
     Requires CLIENT_ID, CLIENT_SECRET, CLIENT_API, CLIENT_USERNAME in environment.
     """
     import os
-    import base64
 
-    client_id     = os.environ.get("CLIENT_ID", "")
+    client_id = os.environ.get("CLIENT_ID", "")
     client_secret = os.environ.get("CLIENT_SECRET", "")
-    api_key       = os.environ.get("CLIENT_API", "")
-    username      = os.environ.get("CLIENT_USERNAME", "")
+    api_key = os.environ.get("CLIENT_API", "")
+    username = os.environ.get("CLIENT_USERNAME", "")
 
     if not all([client_id, client_secret, api_key, username]):
         raise ValueError(
             "Invoice/image parsing requires Veryfi credentials. "
             "Please set CLIENT_ID, CLIENT_SECRET, CLIENT_API, and CLIENT_USERNAME "
-            "in your environment, or upload a CSV/PDF bank statement instead."
-        )
+            "in your environment, or upload a CSV/PDF bank statement instead.")
 
     try:
         from veryfi import Client as VeryfiClient
@@ -592,7 +655,7 @@ def parse_invoice(file_bytes: bytes, mime_type: str = "application/pdf") -> list
         "image/webp": ".webp",
     }
     file_ext = ext_map.get(mime_type, ".pdf")
-    file_name = f"document{file_ext}"
+    f"document{file_ext}"
 
     try:
         veryfi_client = VeryfiClient(
@@ -601,15 +664,15 @@ def parse_invoice(file_bytes: bytes, mime_type: str = "application/pdf") -> list
             username=username,
             api_key=api_key,
         )
-        
+
         import tempfile
         import os
-        
+
         # Write bytes to a temporary file for the Veryfi SDK to process
         with tempfile.NamedTemporaryFile(suffix=file_ext, delete=False) as temp_file:
             temp_file.write(file_bytes)
             temp_file_path = temp_file.name
-            
+
         try:
             response = veryfi_client.process_document(temp_file_path)
         finally:
@@ -617,15 +680,19 @@ def parse_invoice(file_bytes: bytes, mime_type: str = "application/pdf") -> list
                 if os.path.exists(temp_file_path):
                     os.remove(temp_file_path)
             except Exception as cleanup_err:
-                logger.warning("[PARSER] Failed to remove temp file %s: %s", temp_file_path, cleanup_err)
+                logger.warning(
+                    "[PARSER] Failed to remove temp file %s: %s",
+                    temp_file_path,
+                    cleanup_err)
     except Exception as e:
         logger.error("[PARSER] Veryfi API call failed: %s", e)
         raise ValueError(f"Failed to process document with Veryfi: {e}")
 
     # Extract key fields from Veryfi response
-    date_str  = response.get("date") or response.get("invoice_date") or ""
-    vendor    = (response.get("vendor") or {}).get("name") or response.get("bill_to") or "Unknown Vendor"
-    total     = response.get("total") or response.get("total_amount") or 0.0
+    date_str = response.get("date") or response.get("invoice_date") or ""
+    vendor = (response.get("vendor") or {}).get(
+        "name") or response.get("bill_to") or "Unknown Vendor"
+    total = response.get("total") or response.get("total_amount") or 0.0
     invoice_no = response.get("invoice_number") or ""
     description = response.get("description") or vendor
 
@@ -646,7 +713,10 @@ def parse_invoice(file_bytes: bytes, mime_type: str = "application/pdf") -> list
         logger.warning("[PARSER] Veryfi returned zero amount for document")
         return []
 
-    logger.info("[PARSER] Veryfi invoice: vendor=%s amount=%.2f", vendor, float(amount))
+    logger.info(
+        "[PARSER] Veryfi invoice: vendor=%s amount=%.2f",
+        vendor,
+        float(amount))
     return [
         {
             "date": date.isoformat(),
@@ -695,7 +765,8 @@ def parse_document(
         elif doc_type == "invoice":
             return parse_invoice(file_bytes, mime_type), "invoice"
         else:
-            return parse_bank_statement_pdf(file_bytes, password=password), "bank"
+            return parse_bank_statement_pdf(
+                file_bytes, password=password), "bank"
 
     if mime_type in ("image/jpeg", "image/png", "image/webp"):
         return parse_invoice(file_bytes, mime_type), "invoice"
@@ -725,9 +796,20 @@ def _detect_pdf_type(
         try:
             with pdfplumber.open(io.BytesIO(file_bytes), password=pwd) as pdf:
                 text = (pdf.pages[0].extract_text() or "").lower()
-                if any(kw in text for kw in ["safaricom", "m-pesa", "mpesa", "fuliza"]):
+                if any(
+                    kw in text for kw in [
+                        "safaricom",
+                        "m-pesa",
+                        "mpesa",
+                        "fuliza"]):
                     return "mpesa"
-                if any(kw in text for kw in ["invoice", "invoice no", "bill to", "amount due", "tax invoice"]):
+                if any(
+                    kw in text for kw in [
+                        "invoice",
+                        "invoice no",
+                        "bill to",
+                        "amount due",
+                        "tax invoice"]):
                     return "invoice"
                 return "bank"
         except PDFPasswordIncorrect:
@@ -738,5 +820,6 @@ def _detect_pdf_type(
 
     # All passwords failed — it's almost certainly a password-protected M-Pesa PDF
     # (Safaricom is the main source of password-protected statements in Kenya)
-    logger.warning("[PARSER] Could not open PDF with any password — assuming mpesa")
+    logger.warning(
+        "[PARSER] Could not open PDF with any password — assuming mpesa")
     return "mpesa"

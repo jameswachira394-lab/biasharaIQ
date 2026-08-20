@@ -14,17 +14,17 @@ class Settings(BaseSettings):
     DATABASE_URL: str = "postgresql://localhost/biasharaiq"
     DB_POOL_SIZE: int = 20
     DB_MAX_OVERFLOW: int = 10
-    
+
     # Security
     SECRET_KEY: str = "dev-secret-key-change-in-production-min-32-chars"
     ALGORITHM: str = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 10080  # 7 days
-    
+
     # API Configuration
     ENVIRONMENT: str = "development"
     DEBUG: bool = False
     IS_PRODUCTION: bool = False
-    
+
     # API Keys
     GEMINI_API_KEY: str = ""
     POLLINATIONS_API_KEY: str = ""
@@ -35,12 +35,12 @@ class Settings(BaseSettings):
     CLIENT_SECRET: str = ""
     CLIENT_API: str = ""
     CLIENT_USERNAME: str = ""
-    
+
     # Frontend Configuration
     FRONTEND_URL: str = "http://localhost:3000"
-    
+
     CORS_ORIGINS: str = "http://localhost:3000,http://127.0.0.1:3000,http://localhost:5173,https://biashara-iq.vercel.app,http://biashara-iq.vercel.app,https://localhost,capacitor://localhost"
-    
+
     # Logging
     LOG_LEVEL: str = "INFO"
 
@@ -61,10 +61,10 @@ class Settings(BaseSettings):
     SENDER_EMAIL: str = "biasharaiq@yahoo.com"
     SENDER_NAME: str = "Biashara IQ"
 
-
     @property
     def cors_origins_list(self) -> List[str]:
-        origins = [o.strip() for o in self.CORS_ORIGINS.split(",") if o.strip()]
+        origins = [o.strip()
+                   for o in self.CORS_ORIGINS.split(",") if o.strip()]
         # Prevent wildcard in production
         if not self.DEBUG and "*" in origins:
             raise ValueError("Wildcard CORS not allowed in production")
@@ -73,11 +73,15 @@ class Settings(BaseSettings):
     def model_post_init(self, __context):
         """Update DEBUG and IS_PRODUCTION based on ENVIRONMENT"""
         object.__setattr__(self, 'DEBUG', self.ENVIRONMENT == "development")
-        object.__setattr__(self, 'IS_PRODUCTION', self.ENVIRONMENT == "production")
-        
+        object.__setattr__(
+            self,
+            'IS_PRODUCTION',
+            self.ENVIRONMENT == "production")
+
         # Dynamically build DATABASE_URL if not set in env
         import os
-        if not os.getenv("DATABASE_URL") or self.DATABASE_URL == "postgresql://localhost/biasharaiq":
+        if not os.getenv(
+                "DATABASE_URL") or self.DATABASE_URL == "postgresql://localhost/biasharaiq":
             db_user = os.getenv("DB_USER")
             db_pass = os.getenv("DB_PASSWORD")
             db_host = os.getenv("DB_HOST")
@@ -85,13 +89,14 @@ class Settings(BaseSettings):
             db_name = os.getenv("DB_NAME")
             if db_user and db_pass and db_host and db_name:
                 object.__setattr__(
-                    self, 
-                    'DATABASE_URL', 
-                    f"postgresql://{db_user}:{db_pass}@{db_host}:{db_port}/{db_name}"
-                )
-        
+                    self,
+                    'DATABASE_URL',
+                    f"postgresql://{db_user}:{db_pass}@{db_host}:{db_port}/{db_name}")
+
         if self.DATABASE_URL.startswith("postgres://"):
-            object.__setattr__(self, 'DATABASE_URL', self.DATABASE_URL.replace("postgres://", "postgresql://", 1))
+            object.__setattr__(
+                self, 'DATABASE_URL', self.DATABASE_URL.replace(
+                    "postgres://", "postgresql://", 1))
 
     class Config:
         env_file = backend_dir / ".env"

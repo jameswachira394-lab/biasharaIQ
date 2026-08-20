@@ -1,4 +1,7 @@
 
+from middleware.auth import hash_password
+from models.models import Base, User, Transaction, Category, TransactionType
+from models.database import SessionLocal, engine
 import os
 import sys
 import random
@@ -10,9 +13,6 @@ load_dotenv()
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 # Single import statement for all models and dependencies
-from models.database import SessionLocal, engine
-from models.models import Base, User, Transaction, Category, TransactionType
-from middleware.auth import hash_password
 
 
 DEMO_EMAIL = "demo@biasharaiq.com"
@@ -65,10 +65,11 @@ def seed():
     db = SessionLocal()
 
     try:
-        # ── User ──────────────────────────────────────────────────────────────
+        # ── User ─────────────────────────────────────────────────────────────
         existing = db.query(User).filter(User.email == DEMO_EMAIL).first()
         if existing:
-            print(f"[SKIP] Demo user already exists ({DEMO_EMAIL}). Skipping user creation.")
+            print(
+                f"[SKIP] Demo user already exists ({DEMO_EMAIL}). Skipping user creation.")
             user = existing
         else:
             user = User(
@@ -84,17 +85,29 @@ def seed():
 
             # Default categories
             for name in EXPENSE_CATEGORIES:
-                db.add(Category(user_id=user.id, name=name, type=TransactionType.expense, is_default=True))
+                db.add(
+                    Category(
+                        user_id=user.id,
+                        name=name,
+                        type=TransactionType.expense,
+                        is_default=True))
             for name in INCOME_CATEGORIES:
-                db.add(Category(user_id=user.id, name=name, type=TransactionType.income, is_default=True))
+                db.add(
+                    Category(
+                        user_id=user.id,
+                        name=name,
+                        type=TransactionType.income,
+                        is_default=True))
 
             db.commit()
             print(f"[OK] Created demo user: {DEMO_EMAIL} / {DEMO_PASSWORD}")
 
-        # ── Transactions ──────────────────────────────────────────────────────
-        existing_count = db.query(Transaction).filter(Transaction.user_id == user.id).count()
+        # ── Transactions ─────────────────────────────────────────────────────
+        existing_count = db.query(Transaction).filter(
+            Transaction.user_id == user.id).count()
         if existing_count > 0:
-            print(f"[SKIP] {existing_count} transactions already exist. Skipping transaction seed.")
+            print(
+                f"[SKIP] {existing_count} transactions already exist. Skipping transaction seed.")
         else:
             now = datetime.utcnow()
             transaction_count = 0
@@ -107,34 +120,52 @@ def seed():
                 weekday = date.weekday()  # 0=Mon, 6=Sun
 
                 # Income: 2-5 entries per day (more on weekends)
-                income_count = random.randint(3, 6) if weekday >= 5 else random.randint(2, 4)
+                income_count = random.randint(
+                    3, 6) if weekday >= 5 else random.randint(
+                    2, 4)
                 for _ in range(income_count):
                     cat, low, high, desc = random.choice(INCOME_TEMPLATES)
                     # Slow months have lower income
                     multiplier = 0.75 if day_offset > 60 else 1.0
-                    amount = round(random.uniform(low * multiplier, high * multiplier), -1)
-                    batch.append(Transaction(
-                        user_id=user.id,
-                        amount=amount,
-                        type=TransactionType.income,
-                        category=cat,
-                        date=date.replace(hour=random.randint(8, 20), minute=random.randint(0, 59)),
-                        description=desc,
-                    ))
+                    amount = round(
+                        random.uniform(
+                            low * multiplier, high * multiplier), -1)
+                    batch.append(
+                        Transaction(
+                            user_id=user.id,
+                            amount=amount,
+                            type=TransactionType.income,
+                            category=cat,
+                            date=date.replace(
+                                hour=random.randint(
+                                    8,
+                                    20),
+                                minute=random.randint(
+                                    0,
+                                    59)),
+                            description=desc,
+                        ))
 
                 # Expenses: 1-3 per day
                 expense_count = random.randint(1, 3)
                 for _ in range(expense_count):
                     cat, low, high, desc = random.choice(EXPENSE_TEMPLATES)
                     amount = round(random.uniform(low, high), -1)
-                    batch.append(Transaction(
-                        user_id=user.id,
-                        amount=amount,
-                        type=TransactionType.expense,
-                        category=cat,
-                        date=date.replace(hour=random.randint(8, 18), minute=random.randint(0, 59)),
-                        description=desc,
-                    ))
+                    batch.append(
+                        Transaction(
+                            user_id=user.id,
+                            amount=amount,
+                            type=TransactionType.expense,
+                            category=cat,
+                            date=date.replace(
+                                hour=random.randint(
+                                    8,
+                                    18),
+                                minute=random.randint(
+                                    0,
+                                    59)),
+                            description=desc,
+                        ))
 
                 # Monthly fixed costs on day 1
                 if date.day == 1:
@@ -143,11 +174,17 @@ def seed():
                         ("Salaries", 12000, "Employee salary - Kamau"),
                         ("Loan Repayment", 5000, "Equity Bank microfinance"),
                     ]:
-                        batch.append(Transaction(
-                            user_id=user.id, amount=amount,
-                            type=TransactionType.expense, category=cat,
-                            date=date.replace(hour=9, minute=0), description=desc,
-                        ))
+                        batch.append(
+                            Transaction(
+                                user_id=user.id,
+                                amount=amount,
+                                type=TransactionType.expense,
+                                category=cat,
+                                date=date.replace(
+                                    hour=9,
+                                    minute=0),
+                                description=desc,
+                            ))
 
                 # Add batch to database when it reaches batch_size
                 if len(batch) >= batch_size:
@@ -162,9 +199,10 @@ def seed():
                 db.commit()
                 transaction_count += len(batch)
 
-            print(f"[OK] Created {transaction_count} transactions spanning 90 days")
+            print(
+                f"[OK] Created {transaction_count} transactions spanning 90 days")
 
-        # ── Summary ───────────────────────────────────────────────────────────
+        # ── Summary ──────────────────────────────────────────────────────────
         from sqlalchemy import func
         income = db.query(func.sum(Transaction.amount)).filter(
             Transaction.user_id == user.id,
@@ -183,7 +221,8 @@ def seed():
         print(f"   Total Out:  KES {expenses:,.0f}")
         print(f"   Net Profit: KES {income - expenses:,.0f}")
         print("----------------------------------------------------")
-        print("\n[OK] Seed complete. Start the server and log in with the credentials above.")
+        print(
+            "\n[OK] Seed complete. Start the server and log in with the credentials above.")
 
     except Exception as e:
         db.rollback()

@@ -33,17 +33,21 @@ class User(Base):
     phone = Column(String, nullable=True)
     business_type = Column(String, nullable=True)
     currency = Column(String, default="KES")
-    
+
     # Subscription fields
-    # Use SQLAlchemy Enum columns mapped to Python enums for consistent comparisons
+    # Use SQLAlchemy Enum columns mapped to Python enums for consistent
+    # comparisons
     plan = Column(Enum(UserPlan), default=UserPlan.free, nullable=False)
-    subscription_status = Column(Enum(SubscriptionStatus), default=SubscriptionStatus.active, nullable=False)
+    subscription_status = Column(
+        Enum(SubscriptionStatus),
+        default=SubscriptionStatus.active,
+        nullable=False)
     subscription_start = Column(DateTime, nullable=True)
     subscription_end = Column(DateTime, nullable=True)
     monthly_transaction_count = Column(Integer, default=0)
     ai_queries_count = Column(Integer, default=0)
     ai_queries_reset_date = Column(DateTime, nullable=True)
-    
+
     created_at = Column(DateTime, default=datetime.utcnow)
     is_active = Column(Boolean, default=True)
     is_verified = Column(Boolean, default=False)
@@ -52,12 +56,30 @@ class User(Base):
     reset_token_hash = Column(String(128), nullable=True)
     reset_token_expires_at = Column(DateTime, nullable=True)
 
-    transactions = relationship("Transaction", back_populates="user", cascade="all, delete-orphan")
-    insights = relationship("Insight", back_populates="user", cascade="all, delete-orphan")
-    categories = relationship("Category", back_populates="user", cascade="all, delete-orphan")
-    subscriptions = relationship("Subscription", back_populates="user", cascade="all, delete-orphan")
-    payments = relationship("Payment", back_populates="user", cascade="all, delete-orphan")
-    uploaded_documents = relationship("UploadedDocument", back_populates="user", cascade="all, delete-orphan")
+    transactions = relationship(
+        "Transaction",
+        back_populates="user",
+        cascade="all, delete-orphan")
+    insights = relationship(
+        "Insight",
+        back_populates="user",
+        cascade="all, delete-orphan")
+    categories = relationship(
+        "Category",
+        back_populates="user",
+        cascade="all, delete-orphan")
+    subscriptions = relationship(
+        "Subscription",
+        back_populates="user",
+        cascade="all, delete-orphan")
+    payments = relationship(
+        "Payment",
+        back_populates="user",
+        cascade="all, delete-orphan")
+    uploaded_documents = relationship(
+        "UploadedDocument",
+        back_populates="user",
+        cascade="all, delete-orphan")
 
 
 class Transaction(Base):
@@ -70,11 +92,17 @@ class Transaction(Base):
     category = Column(String, nullable=False)
     date = Column(DateTime, nullable=False)
     description = Column(Text, nullable=True)
-    source = Column(String, default="manual")  # "manual", "mpesa", "bank", "csv", "invoice"
-    import_batch_id = Column(String, nullable=True)  # groups transactions from same upload
-    status = Column(String, default="confirmed")  # "pending_review" | "confirmed"
+    # "manual", "mpesa", "bank", "csv", "invoice"
+    source = Column(String, default="manual")
+    # groups transactions from same upload
+    import_batch_id = Column(String, nullable=True)
+    # "pending_review" | "confirmed"
+    status = Column(String, default="confirmed")
     created_at = Column(DateTime, default=datetime.utcnow)
-    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    updated_at = Column(
+        DateTime,
+        default=datetime.utcnow,
+        onupdate=datetime.utcnow)
 
     user = relationship("User", back_populates="transactions")
 
@@ -115,12 +143,14 @@ class UploadedDocument(Base):
     id = Column(Integer, primary_key=True, index=True)
     user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
     filename = Column(String, nullable=False)
-    file_type = Column(String, nullable=False)  # "mpesa", "bank", "csv", "invoice"
+    # "mpesa", "bank", "csv", "invoice"
+    file_type = Column(String, nullable=False)
     storage_url = Column(String, nullable=False)  # Cloudinary or S3 URL
     parsed_at = Column(DateTime, default=datetime.utcnow)
     transaction_count = Column(Integer, default=0)
     batch_id = Column(String, unique=True, index=True)  # links to transactions
-    status = Column(String, default="pending_review")  # "pending_review" | "confirmed" | "cancelled"
+    # "pending_review" | "confirmed" | "cancelled"
+    status = Column(String, default="pending_review")
     summary = Column(Text, nullable=True)  # JSON string with summary data
     created_at = Column(DateTime, default=datetime.utcnow)
 
@@ -145,7 +175,10 @@ class Category(Base):
     __tablename__ = "categories"
 
     id = Column(Integer, primary_key=True, index=True)
-    user_id = Column(Integer, ForeignKey("users.id"), nullable=True)  # null = global
+    user_id = Column(
+        Integer,
+        ForeignKey("users.id"),
+        nullable=True)  # null = global
     name = Column(String, nullable=False)
     type = Column(Enum(TransactionType), nullable=False)
     icon = Column(String, nullable=True)

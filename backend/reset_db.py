@@ -7,7 +7,9 @@ from dotenv import load_dotenv
 load_dotenv()
 
 # Parse DATABASE_URL
-db_url = os.getenv("DATABASE_URL", "postgresql://postgres:james8080@localhost/biasharaiq")
+db_url = os.getenv(
+    "DATABASE_URL",
+    "postgresql://postgres:james8080@localhost/biasharaiq")
 # Extract connection params
 db_parts = db_url.replace("postgresql://", "").split("@")
 user_pass = db_parts[0].split(":")
@@ -28,7 +30,9 @@ conn.autocommit = True
 cursor = conn.cursor()
 
 print(f"🔄 Dropping database {db_name}...")
-cursor.execute(sql.SQL("DROP DATABASE IF EXISTS {}").format(sql.Identifier(db_name)))
+cursor.execute(
+    sql.SQL("DROP DATABASE IF EXISTS {}").format(
+        sql.Identifier(db_name)))
 
 print(f"✨ Creating database {db_name}...")
 cursor.execute(sql.SQL("CREATE DATABASE {}").format(sql.Identifier(db_name)))
@@ -55,4 +59,4 @@ cursor.close()
 conn.close()
 
 print("✅ Database reset complete!")
-#hehehe
+# hehehe

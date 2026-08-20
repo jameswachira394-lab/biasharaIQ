@@ -1,9 +1,8 @@
 from sqlalchemy.orm import Session
-from sqlalchemy import func, and_
+from sqlalchemy import func
 from models.models import Transaction, TransactionType
 from datetime import datetime, timedelta
-from typing import Dict, List, Optional
-from collections import defaultdict
+from typing import List, Optional
 
 
 class FinancialEngine:
@@ -13,8 +12,12 @@ class FinancialEngine:
         self.db = db
         self.user_id = user_id
 
-    def _base_query(self, start_date: Optional[datetime] = None, end_date: Optional[datetime] = None):
-        q = self.db.query(Transaction).filter(Transaction.user_id == self.user_id)
+    def _base_query(
+            self,
+            start_date: Optional[datetime] = None,
+            end_date: Optional[datetime] = None):
+        q = self.db.query(Transaction).filter(
+            Transaction.user_id == self.user_id)
         if start_date:
             q = q.filter(Transaction.date >= start_date)
         if end_date:
@@ -55,36 +58,53 @@ class FinancialEngine:
         daily_rate = self.get_daily_spending_rate()
 
         if daily_rate <= 0:
-            return {"days": None, "risk_level": "safe", "message": "No recent spending detected."}
+            return {"days": None, "risk_level": "safe",
+                    "message": "No recent spending detected."}
 
         if balance <= 0:
-            return {"days": 0, "risk_level": "critical", "message": "Business is operating at a loss."}
+            return {"days": 0, "risk_level": "critical",
+                    "message": "Business is operating at a loss."}
 
         days = balance / daily_rate
 
         if days > 30:
             risk_level = "safe"
-            message = f"Business can sustain for {int(days)} days at current spending."
+            message = f"Business can sustain for {
+                int(days)} days at current spending."
         elif days > 14:
             risk_level = "warning"
-            message = f"Only {int(days)} days of runway left. Review expenses soon."
+            message = f"Only {
+                int(days)} days of runway left. Review expenses soon."
         else:
             risk_level = "critical"
-            message = f"CRITICAL: Only {int(days)} days of cash remaining. Act now."
+            message = f"CRITICAL: Only {
+                int(days)} days of cash remaining. Act now."
 
-        return {"days": round(days, 1), "risk_level": risk_level, "message": message}
+        return {
+            "days": round(
+                days,
+                1),
+            "risk_level": risk_level,
+            "message": message}
 
-    def get_category_breakdown(self, transaction_type: str = "expense", start_date=None, end_date=None) -> List[dict]:
+    def get_category_breakdown(
+            self,
+            transaction_type: str = "expense",
+            start_date=None,
+            end_date=None) -> List[dict]:
         """Returns expenses/income broken down by category."""
         t_type = TransactionType.expense if transaction_type == "expense" else TransactionType.income
         rows = (
-            self._base_query(start_date, end_date)
-            .filter(Transaction.type == t_type)
-            .with_entities(Transaction.category, func.sum(Transaction.amount).label("total"))
-            .group_by(Transaction.category)
-            .order_by(func.sum(Transaction.amount).desc())
-            .all()
-        )
+            self._base_query(
+                start_date,
+                end_date) .filter(
+                Transaction.type == t_type) .with_entities(
+                Transaction.category,
+                func.sum(
+                    Transaction.amount).label("total")) .group_by(
+                        Transaction.category) .order_by(
+                            func.sum(
+                                Transaction.amount).desc()) .all())
         total = sum(r.total for r in rows) or 1
         return [
             {
@@ -101,24 +121,22 @@ class FinancialEngine:
         start_date = end_date - timedelta(weeks=weeks)
 
         txns = (
-            self.db.query(Transaction.type, Transaction.amount, Transaction.date)
-            .filter(
+            self.db.query(
+                Transaction.type,
+                Transaction.amount,
+                Transaction.date) .filter(
                 Transaction.user_id == self.user_id,
                 Transaction.date >= start_date,
                 Transaction.date <= end_date,
-            )
-            .all()
-        )
+            ) .all())
 
         result = []
         for i in range(weeks - 1, -1, -1):
             w_end = end_date - timedelta(weeks=i)
             w_start = w_end - timedelta(weeks=1)
 
-            income = sum(
-                t.amount for t in txns
-                if t.type == TransactionType.income and w_start <= t.date <= w_end
-            )
+            income = sum(t.amount for t in txns if t.type ==
+                         TransactionType.income and w_start <= t.date <= w_end)
             expenses = sum(
                 t.amount for t in txns
                 if t.type == TransactionType.expense and w_start <= t.date <= w_end
@@ -146,13 +164,15 @@ class FinancialEngine:
             "income": income,
             "expenses": expenses,
             "profit": profit,
-            "profit_margin": round((profit / income * 100) if income > 0 else 0, 1)
-        }
+            "profit_margin": round(
+                (profit / income * 100) if income > 0 else 0,
+                1)}
 
     def get_full_metrics(self) -> dict:
         """Complete financial snapshot for dashboard."""
         now = datetime.utcnow()
-        month_start = now.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
+        month_start = now.replace(
+            day=1, hour=0, minute=0, second=0, microsecond=0)
 
         # All-time
         total_income = self.get_total_income()
@@ -169,8 +189,10 @@ class FinancialEngine:
         daily_rate = self.get_daily_spending_rate()
 
         # Breakdowns
-        expense_breakdown = self.get_category_breakdown("expense", month_start, now)
-        income_breakdown = self.get_category_breakdown("income", month_start, now)
+        expense_breakdown = self.get_category_breakdown(
+            "expense", month_start, now)
+        income_breakdown = self.get_category_breakdown(
+            "income", month_start, now)
 
         return {
             "all_time": {

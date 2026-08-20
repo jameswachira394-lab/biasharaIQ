@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.orm import Session
 from pydantic import BaseModel
-from typing import Optional, List
+from typing import Optional
 from datetime import datetime
 from models.database import get_db
 from models.models import User, Transaction, TransactionType
@@ -45,10 +45,10 @@ def create_transaction(
         description=req.description
     )
     db.add(txn)
-    
+
     # Increment monthly transaction count
     SubscriptionService.increment_transaction_count(db, current_user.id)
-    
+
     db.commit()
     db.refresh(txn)
     return txn
@@ -76,7 +76,8 @@ def list_transactions(
         q = q.filter(Transaction.date <= end_date)
 
     total = q.count()
-    items = q.order_by(Transaction.date.desc()).offset(offset).limit(limit).all()
+    items = q.order_by(Transaction.date.desc()).offset(
+        offset).limit(limit).all()
     return {"total": total, "items": items}
 
 

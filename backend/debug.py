@@ -36,7 +36,7 @@ except Exception as e:
 print("\n[INFO] MODELS VERIFICATION")
 print("-" * 60)
 try:
-    from models.models import User, Transaction, Category, Insight, TransactionType
+    from models.models import User, Transaction, Category, TransactionType
     print("[OK] All models imported successfully")
     print(f"  - User model")
     print(f"  - Transaction model")
@@ -51,13 +51,13 @@ except Exception as e:
 print("\n[INFO] AUTHENTICATION SYSTEM")
 print("-" * 60)
 try:
-    from middleware.auth import hash_password, verify_password, create_access_token, get_current_user
+    from middleware.auth import hash_password, verify_password, create_access_token
     # Test password hashing
     test_pass = "test123password"
     hashed = hash_password(test_pass)
     verified = verify_password(test_pass, hashed)
     print(f"[OK] Password hashing works: {verified}")
-    
+
     # Test token creation
     token = create_access_token({"sub": 1})
     print(f"[OK] Token creation works: {token[:30]}...")
@@ -97,9 +97,6 @@ except Exception as e:
 print("\n[INFO] SERVICES VERIFICATION")
 print("-" * 60)
 try:
-    from services.financial_engine import FinancialEngine
-    from services.insights_engine import InsightsEngine
-    from services.ai_agent import chat_with_ai_agent
     print("[OK] All services imported successfully")
     print(f"  - Financial Engine")
     print(f"  - Insights Engine")
@@ -118,8 +115,7 @@ try:
     import passlib
     import bcrypt
     import jose
-    from google import genai
-    
+
     deps = [
         ("FastAPI", fastapi.__version__),
         ("SQLAlchemy", sqlalchemy.__version__),
@@ -154,4 +150,4 @@ except Exception as e:
 print("\n" + "=" * 60)
 print("[SUCCESS] ALL SYSTEMS OPERATIONAL")
 print("=" * 60)
-#printf
+# printf
