@@ -14,7 +14,6 @@ RUN npm config set registry https://registry.npmjs.org/ && \
     npm config set fetch-retry-mintimeout 20000 && \
     npm config set fetch-retry-maxtimeout 120000
 COPY package.json package-lock.json* ./
-RUN npm ci --prefer-offline --no-audit
 COPY . .
 
 ARG NEXT_PUBLIC_API_URL=https://biasharaiq.onrender.com
