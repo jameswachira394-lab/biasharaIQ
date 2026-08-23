@@ -296,8 +296,8 @@ def chat_with_ai_agent(
             response_text = response_text[:MAX_RESPONSE_LENGTH] + "..."
 
         logger.info(
-            f"[AI] User {user_id} ({intent_name}): {
-                len(response_text)} char response")
+            f"[AI] User {user_id} ({intent_name}): {len(response_text)} char response"
+        )
 
         # Increment usage count
         user.ai_queries_count += 1
