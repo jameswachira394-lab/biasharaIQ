@@ -69,16 +69,13 @@ class FinancialEngine:
 
         if days > 30:
             risk_level = "safe"
-            message = f"Business can sustain for {
-                int(days)} days at current spending."
+            message = f"Business can sustain for {int(days)} days at current spending."
         elif days > 14:
             risk_level = "warning"
-            message = f"Only {
-                int(days)} days of runway left. Review expenses soon."
+            message = f"Only {int(days)} days of runway left. Review expenses soon."
         else:
             risk_level = "critical"
-            message = f"CRITICAL: Only {
-                int(days)} days of cash remaining. Act now."
+            message = f"CRITICAL: Only {int(days)} days of cash remaining. Act now."
 
         return {
             "days": round(

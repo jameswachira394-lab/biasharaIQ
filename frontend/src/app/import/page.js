@@ -8,7 +8,7 @@ import AppLayout from '@/components/ui/AppLayout'
 import Toast from '@/components/ui/Toast'
 import axios from 'axios'
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'
+const API_URL = (process.env.NEXT_PUBLIC_API_URL || 'https://biasharaiq.onrender.com').trim()
 
 const CATEGORIES = [
     'Sales', 'Income', 'Bills', 'Transfer', 'Bank Transfer',
