@@ -25,10 +25,11 @@ class Settings(BaseSettings):
     DEBUG: bool = False
     IS_PRODUCTION: bool = False
 
-    # API Keys
+    # API Keys & Auth
     GEMINI_API_KEY: str = ""
     POLLINATIONS_API_KEY: str = ""
     CLOUDINARY_URL: str = ""  # cloudinary://key:secret@cloud_name
+    GOOGLE_CLIENT_ID: str = ""
 
     # Veryfi Lens document parser credentials
     CLIENT_ID: str = ""

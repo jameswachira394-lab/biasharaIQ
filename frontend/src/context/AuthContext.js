@@ -52,6 +52,15 @@ export function AuthProvider({ children }) {
     return userData
   }
 
+  const loginWithGoogle = async (credential) => {
+    const res = await authApi.googleAuth(credential)
+    const { access_token, user: userData } = res.data
+    localStorage.setItem('biasharaiq_token', access_token)
+    localStorage.setItem('biasharaiq_user', JSON.stringify(userData))
+    setUser(userData)
+    return userData
+  }
+
   const logout = () => {
     localStorage.removeItem('biasharaiq_token')
     localStorage.removeItem('biasharaiq_user')
@@ -66,7 +75,7 @@ export function AuthProvider({ children }) {
   }
 
   return (
-    <AuthContext.Provider value={{ user, loading, login, register, logout, updateUser }}>
+    <AuthContext.Provider value={{ user, loading, login, loginWithGoogle, register, logout, updateUser }}>
       {children}
     </AuthContext.Provider>
   )

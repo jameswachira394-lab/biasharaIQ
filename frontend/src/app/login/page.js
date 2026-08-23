@@ -1,9 +1,9 @@
 'use client'
 import { useState, useEffect, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
-import Link from 'next/link'
 import { useAuth } from '@/context/AuthContext'
 import { TrendingUp, Eye, EyeOff, AlertCircle, CheckCircle } from 'lucide-react'
+import GoogleAuthButton from '@/components/GoogleAuthButton'
 
 function LoginForm() {
   const [email, setEmail] = useState('')
@@ -78,6 +78,19 @@ function LoginForm() {
               {error}
             </div>
           )}
+
+          <div className="mb-6">
+            <GoogleAuthButton onError={(msg) => setError(msg)} buttonText="Continue with Google" />
+          </div>
+
+          <div className="relative my-6 text-center">
+            <div className="absolute inset-0 flex items-center">
+              <div className="w-full border-t border-semantic-border" />
+            </div>
+            <span className="relative bg-cream-100 px-3 text-xs text-semantic-textSecondary uppercase font-medium">
+              OR
+            </span>
+          </div>
 
           <form onSubmit={handleSubmit} className="space-y-5">
             <div>

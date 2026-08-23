@@ -27,7 +27,9 @@ class User(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     email = Column(String, unique=True, index=True, nullable=False)
-    password_hash = Column(String, nullable=False)
+    password_hash = Column(String, nullable=True)
+    google_id = Column(String, unique=True, index=True, nullable=True)
+    auth_provider = Column(String, default="email", nullable=False)
     business_name = Column(String, nullable=False)
     owner_name = Column(String, nullable=True)
     phone = Column(String, nullable=True)

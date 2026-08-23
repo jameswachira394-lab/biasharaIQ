@@ -103,13 +103,92 @@ def register(req: RegisterRequest, db: Session = Depends(get_db)):
     }
 
 
+@router.post("/google")
+def google_auth(req: GoogleAuthRequest, db: Session = Depends(get_db)):
+    """
+    Authenticate or register a user via Google OAuth ID token.
+    Verifies the token with Google before logging in or creating account.
+    """
+    token = req.credential
+    id_info = None
+
+    # Try verifying via google-auth library
+    try:
+        from google.oauth2 import id_token
+        from google.auth.transport import requests as google_requests
+
+        target_client_id = settings.GOOGLE_CLIENT_ID if getattr(settings, "GOOGLE_CLIENT_ID", None) else None
+        id_info = id_token.verify_oauth2_token(token, google_requests.Request(), target_client_id)
+    except Exception:
+        # Fallback to direct HTTP verification with Google's tokeninfo API
+        try:
+            import httpx
+            resp = httpx.get(f"https://oauth2.googleapis.com/tokeninfo?id_token={token}", timeout=5.0)
+            if resp.status_code == 200:
+                id_info = resp.json()
+        except Exception as http_err:
+            raise HTTPException(status_code=401, detail=f"Google token verification failed: {str(http_err)}")
+
+    if not id_info or "sub" not in id_info or "email" not in id_info:
+        raise HTTPException(status_code=401, detail="Invalid Google token claims")
+
+    google_id = str(id_info["sub"])
+    email = str(id_info["email"]).lower()
+    name = id_info.get("name") or email.split("@")[0]
+
+    # Find existing user by google_id or email
+    user = db.query(User).filter((User.google_id == google_id) | (User.email == email)).first()
+
+    if user:
+        if not user.google_id:
+            user.google_id = google_id
+        if not user.is_verified:
+            user.is_verified = True
+        db.commit()
+    else:
+        # Create new user
+        user = User(
+            email=email,
+            password_hash=None,
+            google_id=google_id,
+            auth_provider="google",
+            business_name=f"{name}'s Business",
+            owner_name=name,
+            is_verified=True,
+        )
+        db.add(user)
+        db.flush()
+
+        # Add default categories
+        for cat_name in DEFAULT_EXPENSE_CATEGORIES:
+            db.add(Category(user_id=user.id, name=cat_name, type=TransactionType.expense, is_default=True))
+        for cat_name in DEFAULT_INCOME_CATEGORIES:
+            db.add(Category(user_id=user.id, name=cat_name, type=TransactionType.income, is_default=True))
+
+        db.commit()
+        db.refresh(user)
+
+    token = create_access_token({"sub": str(user.id)})
+    return {
+        "access_token": token,
+        "token_type": "bearer",
+        "user": {
+            "id": user.id,
+            "email": user.email,
+            "business_name": user.business_name,
+            "owner_name": user.owner_name,
+            "is_verified": True,
+        },
+    }
+
+
 @router.post("/login")
 def login(req: LoginRequest, db: Session = Depends(get_db)):
     """Login with email and password. Email must be verified first."""
     user = db.query(User).filter(User.email == req.email).first()
 
     # Check credentials
-    if not user or not verify_password(req.password, user.password_hash):
+    if not user or not user.password_hash or not verify_password(req.password, user.password_hash):
         raise HTTPException(
             status_code=401,
             detail="Invalid email or password")
