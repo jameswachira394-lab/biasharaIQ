@@ -12,9 +12,7 @@ try:
     # Test 2: Classify sample intent
     intent = classify_intent("Why am I losing money?")
     assert intent == Intent.PROFITABILITY
-    print(
-        f"✓ Intent classification works: 'Why am I losing money?' → {
-            intent.value}")
+    print(f"✓ Intent classification works: 'Why am I losing money?' → {intent.value}")
 
     # Test 3: Test all intents
     test_cases = [
@@ -40,10 +38,7 @@ try:
             print(f"✓ '{msg}' → {actual.value}")
             passed += 1
         else:
-            print(
-                f"✗ '{msg}' → {
-                    actual.value} (expected {
-                    expected_intent.value})")
+            print(f"✗ '{msg}' → {actual.value} (expected {expected_intent.value})")
 
     print(f"\nIntent classification: {passed}/{len(test_cases)} tests passed")
 
@@ -71,9 +66,8 @@ try:
         print("✓ AI agent module (refactored) available")
     except (ModuleNotFoundError, ImportError) as e:
         if any(pkg in str(e) for pkg in ["sqlalchemy", "redis", "genai"]):
-            print(
-                f"⚠ AI agent requires production dependencies: {
-                    str(e).split(':')[0]}")
+            err_pkg = str(e).split(':')[0]
+            print(f"⚠ AI agent requires production dependencies: {err_pkg}")
         else:
             raise
 

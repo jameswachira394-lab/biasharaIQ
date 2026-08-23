@@ -154,8 +154,7 @@ def _categorize_batch(
 
     system = CATEGORIZE_SYSTEM
     if user_categories:
-        system += f"\n\nThis user's custom categories: {
-            ', '.join(user_categories)}"
+        system += f"\n\nThis user's custom categories: {', '.join(user_categories)}"
 
     prompt = f"Categorize these transactions:\n{json.dumps(items, indent=2)}"
 

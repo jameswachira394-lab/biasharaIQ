@@ -41,8 +41,7 @@ class MpesaService:
             missing_config.append("MPESA_CALLBACK_URL")
 
         if missing_config:
-            error_msg = f"Missing M-Pesa configuration: {
-                ', '.join(missing_config)}. Please check your .env file."
+            error_msg = f"Missing M-Pesa configuration: {', '.join(missing_config)}. Please check your .env file."
             logger.error(error_msg)
             # Don't raise exception here - let it fail gracefully during
             # payment attempt
@@ -56,8 +55,7 @@ class MpesaService:
             return None
 
         try:
-            api_url = f"{
-                self.base_url}/oauth/v1/generate?grant_type=client_credentials"
+            api_url = f"{self.base_url}/oauth/v1/generate?grant_type=client_credentials"
             response = requests.get(
                 api_url,
                 auth=(self.consumer_key, self.consumer_secret),
@@ -75,9 +73,7 @@ class MpesaService:
                     "M-Pesa authentication failed: Invalid credentials (check MPESA_CONSUMER_KEY and MPESA_CONSUMER_SECRET)")
             else:
                 logger.error(
-                    f"M-Pesa authentication failed with status {
-                        e.response.status_code}: {
-                        e.response.text}")
+                    f"M-Pesa authentication failed with status {e.response.status_code}: {e.response.text}")
             return None
         except Exception as e:
             logger.error(

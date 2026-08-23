@@ -399,13 +399,11 @@ class RiskDetectorEngine:
         if days < 30:
             return {
                 "severity": "critical",
-                "message": f"Only {
-                    int(days)} days of cash runway"}
+                "message": f"Only {int(days)} days of cash runway"}
         elif days < 90:
             return {
                 "severity": "warning",
-                "message": f"Cash runway declining ({
-                    int(days)} days left)"}
+                "message": f"Cash runway declining ({int(days)} days left)"}
 
         return None
 
@@ -483,9 +481,9 @@ class RiskDetectorEngine:
 
         if top_category_pct > 50:
             return {
-                "severity": "warning", "message": f"{
-                    rows[0].category} accounts for {
-                    top_category_pct:.0f}% of expenses", }
+                "severity": "warning",
+                "message": f"{rows[0].category} accounts for {top_category_pct:.0f}% of expenses",
+            }
 
         return None
 

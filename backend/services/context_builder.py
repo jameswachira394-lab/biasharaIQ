@@ -221,10 +221,8 @@ CONTEXT: Provide helpful financial insights for the business. Be specific, data-
         lines = []
         for exp in expenses:
             lines.append(
-                f"  • {
-                    exp['category']}: KES {
-                    exp['amount']:,.0f} ({
-                    exp['percentage']:.1f}%)")
+                f"  • {exp['category']}: KES {exp['amount']:,.0f} ({exp['percentage']:.1f}%)"
+            )
         return "\n".join(lines)
 
     @staticmethod
@@ -235,10 +233,8 @@ CONTEXT: Provide helpful financial insights for the business. Be specific, data-
 
         lines = []
         for cat in categories[:5]:
-            growth_str = f"(↑{
-                cat['growth']:.0f}%)" if cat["growth"] > 0 else f"(↓{
-                abs(
-                    cat['growth']):.0f}%)"
+            growth_val = cat['growth']
+            growth_str = f"(↑{growth_val:.0f}%)" if growth_val > 0 else f"(↓{abs(growth_val):.0f}%)"
             lines.append(
                 f"  • {cat['category']}: KES {cat['amount']:,.0f} {growth_str}"
             )
