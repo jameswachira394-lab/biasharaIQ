@@ -2,24 +2,20 @@ FROM python:3.11-slim
 
 WORKDIR /app
 
-# Configure apt-get for better network resilience
-RUN apt-get update -o Acquire::http::Timeout=120 \
-    -o Acquire::http::ConnectionAttemptDelayMsec=1000 \
-    -o Acquire::http::AllowRedirect=true || \
-    apt-get update -o Acquire::http::Timeout=120
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1 \
+    PIP_NO_CACHE_DIR=1 \
+    PIP_DEFAULT_TIMEOUT=120 \
+    PIP_DISABLE_PIP_VERSION_CHECK=1
 
-RUN apt-get install -y --no-install-recommends \
-    gcc libpq-dev curl \
-    && rm -rf /var/lib/apt/lists/*
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+    gcc libpq-dev curl && \
+    rm -rf /var/lib/apt/lists/*
 
 COPY requirements.txt .
 
-RUN pip install --upgrade pip setuptools wheel && \
-    pip install --no-cache-dir \
-    --default-timeout=1000 \
-    --retries 10 \
-    --index-url https://pypi.org/simple/ \
-    -r requirements.txt
+RUN pip install --no-cache-dir -r requirements.txt
 
 COPY . .
 
