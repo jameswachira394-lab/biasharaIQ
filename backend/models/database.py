@@ -28,8 +28,7 @@ def sanitize_db_url(url: str) -> str:
                 socket.gethostbyname(parsed.hostname)
             except socket.gaierror:
                 region = os.getenv("RENDER_REGION", "oregon")
-                ext_hostname = f"{
-                    parsed.hostname}.{region}-postgres.render.com"
+                ext_hostname = f"{parsed.hostname}.{region}-postgres.render.com"
                 logger.warning(
                     f"Internal DB hostname '{parsed.hostname}' could not be resolved. "
                     f"Falling back to external hostname '{ext_hostname}'."
@@ -98,9 +97,8 @@ if ENVIRONMENT == "development":
     @event.listens_for(engine, "checkout")
     def receive_checkout(dbapi_conn, connection_record, connection_proxy):
         logger.debug(
-            f"Pool size: {
-                engine.pool.size()}, Checked out: {
-                engine.pool.checkedout()}")
+            f"Pool size: {engine.pool.size()}, Checked out: {engine.pool.checkedout()}"
+        )
 
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 

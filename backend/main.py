@@ -13,6 +13,7 @@ from models.database import engine, SessionLocal
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.trustedhost import TrustedHostMiddleware
+from fastapi.middleware.gzip import GZipMiddleware
 from fastapi.responses import JSONResponse
 from sqlalchemy import text
 from dotenv import load_dotenv
@@ -162,6 +163,9 @@ app.add_middleware(
     expose_headers=["*"],
     max_age=3600,
 )
+
+# Compress all responses larger than 1KB for faster load times
+app.add_middleware(GZipMiddleware, minimum_size=1000)
 
 # Register routers
 app.include_router(auth_router, tags=["Authentication"])

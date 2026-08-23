@@ -169,8 +169,7 @@ async def upload_document(
             "doc_type": doc_type,
             "transaction_count": len(saved_transactions),
             "status": "pending_review",
-            "message": f"Extracted {
-                len(saved_transactions)} transactions — please review and confirm",
+            "message": f"Extracted {len(saved_transactions)} transactions — please review and confirm",
             "transactions": saved_transactions,
         }
 
@@ -181,8 +180,7 @@ async def upload_document(
         logger.error("[UPLOAD] Unexpected error: %s", e, exc_info=True)
         raise HTTPException(
             status_code=500,
-            detail=f"Failed to process document: {
-                str(e)}")
+            detail=f"Failed to process document: {str(e)}")
 
 
 # ─────────────────────────────────────────────
