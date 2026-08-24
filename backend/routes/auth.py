@@ -8,6 +8,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel, EmailStr
 from sqlalchemy.orm import Session
 
+from core.config import settings
 from middleware.auth import hash_password, verify_password, create_access_token
 from models.database import get_db
 from models.models import User, Category, TransactionType
@@ -26,6 +27,10 @@ DEFAULT_INCOME_CATEGORIES = [
     "Product Sales", "Service Fees", "Delivery Income", "Commission",
     "Rental Income", "Online Sales", "Other",
 ]
+
+
+class GoogleAuthRequest(BaseModel):
+    credential: str
 
 
 class RegisterRequest(BaseModel):
