@@ -42,6 +42,8 @@ except Exception as e:
 _COLUMN_MIGRATIONS = [
     ("users", "reset_token_hash", "VARCHAR(128)"),
     ("users", "reset_token_expires_at", "TIMESTAMP"),
+    ("users", "google_id", "VARCHAR"),
+    ("users", "auth_provider", "VARCHAR DEFAULT 'email'"),
 ]
 try:
     with engine.connect() as _conn:
