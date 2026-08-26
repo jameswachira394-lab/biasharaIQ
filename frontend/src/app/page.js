@@ -93,11 +93,11 @@ export default function Home() {
       </section>
 
       {/* ABOUT SOFTWARE DESCRIPTION */}
-      <section style={{ backgroundColor: '#FFFDF8', padding: '60px 20px' }}>
+      <section style={{ padding: '60px 20px' }}>
         <div className="container">
           <div style={{ maxWidth: '850px', margin: '0 auto', textAlign: 'center' }}>
             <span className="trust-badge" style={{ marginBottom: '16px' }}>🚀 What is BiasharaIQ?</span>
-            <h2 style={{ fontSize: '2.4rem', fontWeight: '800', color: '#3C2A1E', marginBottom: '20px' }}>
+            <h2 style={{ fontSize: '2.4rem', fontWeight: '800', color: '#8B5E3C', marginBottom: '20px' }}>
               The Ultimate Financial Management & Bookkeeping Software
             </h2>
             <p style={{ fontSize: '1.15rem', color: 'var(--text-secondary)', lineHeight: '1.8', marginBottom: '24px' }}>
@@ -115,7 +115,7 @@ export default function Home() {
         <div className="container">
           <div style={{ maxWidth: '700px', margin: '0 auto', textAlign: 'center' }}>
             <span className="trust-badge" style={{ marginBottom: '16px' }}>⚠️ The struggle is real</span>
-            <h2>Running a business shouldn&apos;t feel like guessing.</h2>
+            <h2 style={{ color: '#2C1810' }}>Running a business shouldn&apos;t feel like guessing.</h2>
           </div>
           <div className="features-grid" style={{ marginTop: '48px', gridTemplateColumns: '1fr', gap: '20px' }}>
             <div className="landing-card" style={{ display: 'flex', alignItems: 'center', gap: '16px', flexWrap: 'wrap' }}>
@@ -138,7 +138,7 @@ export default function Home() {
       <section>
         <div className="container text-center">
           <h2>BiasharaIQ gives you clarity and control.</h2>
-          <p style={{ maxWidth: '680px', margin: '0 auto 32px' }}>Stop drowning in receipts. Start making confident decisions.</p>
+          <p style={{ maxWidth: '680px', margin: '0 auto 32px', color: 'var(--text-secondary)' }}>Stop drowning in receipts. Start making confident decisions.</p>
           <div className="features-grid">
             <div className="landing-card"><span style={{ fontSize: '2rem' }}>💰</span><h3>Track every shilling</h3><p>Money in & out — simple, fast, and accurate.</p></div>
             <div className="landing-card"><span style={{ fontSize: '2rem' }}>📈</span><h3>See your real profit instantly</h3><p>Real-time profit calculation, no waiting until end of month.</p></div>
@@ -149,14 +149,33 @@ export default function Home() {
       </section>
 
       {/* SECTION 4: CORE FEATURES */}
-      <section style={{ backgroundColor: '#3C2A1E' }}>
+      <section style={{ backgroundColor: '#3C2A1E', color: '#F5EFE6' }}>
         <div className="container">
-          <div className="text-center"><h2>Everything you need to thrive</h2><p>Powerful, yet simple tools.</p></div>
+          <div className="text-center">
+            <h2 style={{ color: '#F5EFE6' }}>Everything you need to thrive</h2>
+            <p style={{ color: '#C4A484' }}>Powerful, yet simple tools.</p>
+          </div>
           <div className="features-grid">
-            <div className="landing-card"><span style={{ fontSize: '2rem' }}>🎯</span><h3>Profit Tracking</h3><p>“See exactly how much your business makes.” Gross vs net profit updated live.</p></div>
-            <div className="landing-card"><span style={{ fontSize: '2rem' }}>⚠️</span><h3>Cash Flow Alerts</h3><p>“Know when your money is running out before it’s too late.” Smart notifications on your phone.</p></div>
-            <div className="landing-card"><span style={{ fontSize: '2rem' }}>🔍</span><h3>Expense Insights</h3><p>“Identify where your money is being wasted.” Categorize and spot spending spikes.</p></div>
-            <div className="landing-card"><span style={{ fontSize: '2rem' }}>🤖</span><h3>AI Assistant</h3><p>“Ask questions and get smart answers about your business.” No more spreadsheets guesswork.</p></div>
+            <div className="landing-card" style={{ background: '#2C1810', borderColor: 'rgba(196, 164, 132, 0.25)' }}>
+              <span style={{ fontSize: '2rem' }}>🎯</span>
+              <h3 style={{ color: '#F5EFE6' }}>Profit Tracking</h3>
+              <p style={{ color: '#C4A484' }}>“See exactly how much your business makes.” Gross vs net profit updated live.</p>
+            </div>
+            <div className="landing-card" style={{ background: '#2C1810', borderColor: 'rgba(196, 164, 132, 0.25)' }}>
+              <span style={{ fontSize: '2rem' }}>⚠️</span>
+              <h3 style={{ color: '#F5EFE6' }}>Cash Flow Alerts</h3>
+              <p style={{ color: '#C4A484' }}>“Know when your money is running out before it’s too late.” Smart notifications on your phone.</p>
+            </div>
+            <div className="landing-card" style={{ background: '#2C1810', borderColor: 'rgba(196, 164, 132, 0.25)' }}>
+              <span style={{ fontSize: '2rem' }}>🔍</span>
+              <h3 style={{ color: '#F5EFE6' }}>Expense Insights</h3>
+              <p style={{ color: '#C4A484' }}>“Identify where your money is being wasted.” Categorize and spot spending spikes.</p>
+            </div>
+            <div className="landing-card" style={{ background: '#2C1810', borderColor: 'rgba(196, 164, 132, 0.25)' }}>
+              <span style={{ fontSize: '2rem' }}>🤖</span>
+              <h3 style={{ color: '#F5EFE6' }}>AI Assistant</h3>
+              <p style={{ color: '#C4A484' }}>“Ask questions and get smart answers about your business.” No more spreadsheets guesswork.</p>
+            </div>
           </div>
         </div>
       </section>
@@ -167,11 +186,11 @@ export default function Home() {
           <div className="ai-bubble">
             <div className="ask-badge">✨ AI-Powered Intelligence</div>
             <h2 style={{ marginTop: '8px' }}>Your Business, Explained by AI.</h2>
-            <p style={{ fontSize: '1.1rem' }}>Just ask: <strong>“Why is my profit low?”</strong> or <strong>“Where am I losing money?”</strong> and get clear answers based on your data — in seconds.</p>
-            <div style={{ background: 'rgba(139, 94, 60, 0.08)', borderRadius: '60px', padding: '12px 24px', marginTop: '24px', fontStyle: 'italic', borderLeft: '4px solid #8B5E3C' }}>
+            <p style={{ fontSize: '1.1rem', color: 'var(--text-secondary)' }}>Just ask: <strong>“Why is my profit low?”</strong> or <strong>“Where am I losing money?”</strong> and get clear answers based on your data — in seconds.</p>
+            <div style={{ background: 'rgba(139, 94, 60, 0.08)', borderRadius: '60px', padding: '12px 24px', marginTop: '24px', fontStyle: 'italic', borderLeft: '4px solid #8B5E3C', color: '#6F4A2D' }}>
               “M-Pesa & cash transactions analyzed. You lost KSh 8,200 on idle stock and unrecorded expenses last month.”
             </div>
-            <p className="mt-4" style={{ marginBottom: 0 }}><strong>No guesswork. Just real insights.</strong></p>
+            <p className="mt-4" style={{ marginBottom: 0, color: '#8B5E3C' }}><strong>No guesswork. Just real insights.</strong></p>
           </div>
         </div>
       </section>
@@ -193,9 +212,9 @@ export default function Home() {
         <div className="container">
           <div className="download-grid">
             <div className="download-content">
-              <span className="trust-badge" style={{ marginBottom: '16px' }}>📱 Now Available on Android</span>
-              <h2>Take BiasharaIQ Everywhere.</h2>
-              <p style={{ fontSize: '1.1rem', marginBottom: '24px', color: 'var(--text-secondary)' }}>
+              <span className="trust-badge" style={{ marginBottom: '16px', background: 'rgba(196, 164, 132, 0.2)', color: '#F5EFE6', borderColor: 'rgba(196, 164, 132, 0.4)' }}>📱 Now Available on Android</span>
+              <h2 style={{ color: '#F5EFE6' }}>Take BiasharaIQ Everywhere.</h2>
+              <p style={{ fontSize: '1.1rem', marginBottom: '24px', color: '#C4A484' }}>
                 Track your business finances on the go. Get instant profit updates, cash flow alerts, 
                 and AI insights — right from your phone.
               </p>
@@ -213,7 +232,7 @@ export default function Home() {
                 </svg>
                 Download for Android
               </a>
-              <p className="download-hint">Android 5.0+ required • Allow &quot;Install from unknown sources&quot; in settings</p>
+              <p className="download-hint" style={{ color: '#A67B5B' }}>Android 5.0+ required • Allow &quot;Install from unknown sources&quot; in settings</p>
             </div>
             <div className="download-visual">
               <div className="phone-mockup">
@@ -257,7 +276,7 @@ export default function Home() {
         <div className="container social-proof">
           <div className="trust-badge" style={{ marginBottom: '24px' }}>🇰🇪 Trusted by Over 1,000+ Businesses</div>
           <div className="landing-card" style={{ maxWidth: '750px', margin: '0 auto', padding: '32px' }}>
-            <p style={{ fontWeight: 500, fontSize: '1.1rem', lineHeight: '1.7' }}>
+            <p style={{ fontWeight: 500, fontSize: '1.1rem', lineHeight: '1.7', color: '#2C1810' }}>
               &quot;Designed for real-world biashara — from retail shops and service providers to boutique owners. Over 1,000+ businesses rely on BiasharaIQ daily to track real profit, avoid cash surprises, and sleep better.&quot;
             </p>
             <p style={{ marginTop: '16px', color: '#8B5E3C', fontWeight: 'bold' }}>— BiasharaIQ Business Community</p>
@@ -269,7 +288,7 @@ export default function Home() {
       <section>
         <div className="container text-center">
           <h2>Simple, transparent pricing</h2>
-          <p>Start free, upgrade when you need advanced insights.</p>
+          <p style={{ color: 'var(--text-secondary)' }}>Start free, upgrade when you need advanced insights.</p>
           <div className="pricing-row">
             <div className="pricing-card">
               <h3>Free Plan</h3>
@@ -288,23 +307,23 @@ export default function Home() {
       </section>
 
       {/* SECTION 10: FINAL CTA */}
-      <section style={{ background: 'linear-gradient(135deg, #8B5E3C, #6F4A2D)' }}>
+      <section style={{ background: 'linear-gradient(135deg, #3C2A1E 0%, #2C1810 100%)', color: '#F5EFE6' }}>
         <div className="container text-center">
-          <h2>Stop guessing. Start understanding your business.</h2>
-          <p style={{ marginBottom: '32px', maxWidth: '600px', marginLeft: 'auto', marginRight: 'auto' }}>
+          <h2 style={{ color: '#F5EFE6' }}>Stop guessing. Start understanding your business.</h2>
+          <p style={{ marginBottom: '32px', maxWidth: '600px', marginLeft: 'auto', marginRight: 'auto', color: '#C4A484' }}>
             Join over 1,000+ business owners who finally know where their money goes and make confident financial decisions every day.
           </p>
           <Link href="/login" className="btn btn-primary-landing btn-block-mobile" style={{ padding: '14px 40px', fontSize: '1.2rem' }}>Get Started Free →</Link>
-          <p style={{ marginTop: '24px', fontSize: '0.85rem' }}>No setup fee. Cancel anytime.</p>
+          <p style={{ marginTop: '24px', fontSize: '0.85rem', color: '#A67B5B' }}>No setup fee. Cancel anytime.</p>
         </div>
       </section>
 
-      {/* SECTION 10: FOOTER */}
+      {/* FOOTER */}
       <footer>
         <div className="container">
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', marginBottom: '16px' }}>
             <Image src="/biasharaiq.png" alt="BiasharaIQ Logo" width={32} height={32} style={{ borderRadius: '6px' }} />
-            <span style={{ fontWeight: 'bold', fontSize: '1rem', color: '#8B5E3C' }}>BiasharaIQ</span>
+            <span style={{ fontWeight: 'bold', fontSize: '1rem', color: '#C4A484' }}>BiasharaIQ</span>
           </div>
           <div className="footer-links">
             <a href="#">About</a>
@@ -312,7 +331,7 @@ export default function Home() {
             <a href="#">Privacy</a>
             <a href="#">Terms</a>
           </div>
-          <div className="text-center" style={{ fontSize: '0.8rem' }}>
+          <div className="text-center" style={{ fontSize: '0.8rem', color: '#A67B5B' }}>
             © 2025 BiasharaIQ — clarity & control for your biashara.
           </div>
         </div>
