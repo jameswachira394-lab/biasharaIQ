@@ -149,32 +149,32 @@ export default function Home() {
       </section>
 
       {/* SECTION 4: CORE FEATURES */}
-      <section style={{ backgroundColor: '#3C2A1E', color: '#F5EFE6' }}>
+      <section style={{ backgroundColor: 'rgba(139, 94, 60, 0.05)', borderTop: '1px solid var(--border)', borderBottom: '1px solid var(--border)' }}>
         <div className="container">
           <div className="text-center">
-            <h2 style={{ color: '#F5EFE6' }}>Everything you need to thrive</h2>
-            <p style={{ color: '#C4A484' }}>Powerful, yet simple tools.</p>
+            <h2 style={{ color: '#2C1810' }}>Everything you need to thrive</h2>
+            <p style={{ color: 'var(--text-secondary)' }}>Powerful, yet simple tools.</p>
           </div>
           <div className="features-grid">
-            <div className="landing-card" style={{ background: '#2C1810', borderColor: 'rgba(196, 164, 132, 0.25)' }}>
+            <div className="landing-card">
               <span style={{ fontSize: '2rem' }}>🎯</span>
-              <h3 style={{ color: '#F5EFE6' }}>Profit Tracking</h3>
-              <p style={{ color: '#C4A484' }}>“See exactly how much your business makes.” Gross vs net profit updated live.</p>
+              <h3>Profit Tracking</h3>
+              <p>“See exactly how much your business makes.” Gross vs net profit updated live.</p>
             </div>
-            <div className="landing-card" style={{ background: '#2C1810', borderColor: 'rgba(196, 164, 132, 0.25)' }}>
+            <div className="landing-card">
               <span style={{ fontSize: '2rem' }}>⚠️</span>
-              <h3 style={{ color: '#F5EFE6' }}>Cash Flow Alerts</h3>
-              <p style={{ color: '#C4A484' }}>“Know when your money is running out before it’s too late.” Smart notifications on your phone.</p>
+              <h3>Cash Flow Alerts</h3>
+              <p>“Know when your money is running out before it’s too late.” Smart notifications on your phone.</p>
             </div>
-            <div className="landing-card" style={{ background: '#2C1810', borderColor: 'rgba(196, 164, 132, 0.25)' }}>
+            <div className="landing-card">
               <span style={{ fontSize: '2rem' }}>🔍</span>
-              <h3 style={{ color: '#F5EFE6' }}>Expense Insights</h3>
-              <p style={{ color: '#C4A484' }}>“Identify where your money is being wasted.” Categorize and spot spending spikes.</p>
+              <h3>Expense Insights</h3>
+              <p>“Identify where your money is being wasted.” Categorize and spot spending spikes.</p>
             </div>
-            <div className="landing-card" style={{ background: '#2C1810', borderColor: 'rgba(196, 164, 132, 0.25)' }}>
+            <div className="landing-card">
               <span style={{ fontSize: '2rem' }}>🤖</span>
-              <h3 style={{ color: '#F5EFE6' }}>AI Assistant</h3>
-              <p style={{ color: '#C4A484' }}>“Ask questions and get smart answers about your business.” No more spreadsheets guesswork.</p>
+              <h3>AI Assistant</h3>
+              <p>“Ask questions and get smart answers about your business.” No more spreadsheets guesswork.</p>
             </div>
           </div>
         </div>
@@ -212,9 +212,9 @@ export default function Home() {
         <div className="container">
           <div className="download-grid">
             <div className="download-content">
-              <span className="trust-badge" style={{ marginBottom: '16px', background: 'rgba(196, 164, 132, 0.2)', color: '#F5EFE6', borderColor: 'rgba(196, 164, 132, 0.4)' }}>📱 Now Available on Android</span>
-              <h2 style={{ color: '#F5EFE6' }}>Take BiasharaIQ Everywhere.</h2>
-              <p style={{ fontSize: '1.1rem', marginBottom: '24px', color: '#C4A484' }}>
+              <span className="trust-badge" style={{ marginBottom: '16px' }}>📱 Now Available on Android</span>
+              <h2>Take BiasharaIQ Everywhere.</h2>
+              <p style={{ fontSize: '1.1rem', marginBottom: '24px', color: 'var(--text-secondary)' }}>
                 Track your business finances on the go. Get instant profit updates, cash flow alerts, 
                 and AI insights — right from your phone.
               </p>
@@ -232,7 +232,7 @@ export default function Home() {
                 </svg>
                 Download for Android
               </a>
-              <p className="download-hint" style={{ color: '#A67B5B' }}>Android 5.0+ required • Allow &quot;Install from unknown sources&quot; in settings</p>
+              <p className="download-hint">Android 5.0+ required • Allow &quot;Install from unknown sources&quot; in settings</p>
             </div>
             <div className="download-visual">
               <div className="phone-mockup">
@@ -307,14 +307,14 @@ export default function Home() {
       </section>
 
       {/* SECTION 10: FINAL CTA */}
-      <section style={{ background: 'linear-gradient(135deg, #3C2A1E 0%, #2C1810 100%)', color: '#F5EFE6' }}>
+      <section style={{ background: 'linear-gradient(135deg, #8B5E3C 0%, #6F4A2D 100%)', color: '#FFFFFF' }}>
         <div className="container text-center">
-          <h2 style={{ color: '#F5EFE6' }}>Stop guessing. Start understanding your business.</h2>
-          <p style={{ marginBottom: '32px', maxWidth: '600px', marginLeft: 'auto', marginRight: 'auto', color: '#C4A484' }}>
+          <h2 style={{ color: '#FFFFFF' }}>Stop guessing. Start understanding your business.</h2>
+          <p style={{ marginBottom: '32px', maxWidth: '600px', marginLeft: 'auto', marginRight: 'auto', color: 'rgba(255, 255, 255, 0.9)' }}>
             Join over 1,000+ business owners who finally know where their money goes and make confident financial decisions every day.
           </p>
-          <Link href="/login" className="btn btn-primary-landing btn-block-mobile" style={{ padding: '14px 40px', fontSize: '1.2rem' }}>Get Started Free →</Link>
-          <p style={{ marginTop: '24px', fontSize: '0.85rem', color: '#A67B5B' }}>No setup fee. Cancel anytime.</p>
+          <Link href="/login" className="btn btn-primary-landing btn-block-mobile" style={{ padding: '14px 40px', fontSize: '1.2rem', background: '#FFFFFF', color: '#8B5E3C', fontWeight: 'bold' }}>Get Started Free →</Link>
+          <p style={{ marginTop: '24px', fontSize: '0.85rem', color: 'rgba(255, 255, 255, 0.8)' }}>No setup fee. Cancel anytime.</p>
         </div>
       </section>
 
