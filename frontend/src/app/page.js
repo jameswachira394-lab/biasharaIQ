@@ -37,14 +37,15 @@ export default function Home() {
               <Image src="/biasharaiq.png" alt="BiasharaIQ Logo" width={64} height={64} style={{ borderRadius: '8px' }} />
               <h2 style={{ margin: 0, fontSize: '1.5rem', fontWeight: 'bold', color: '#8B5E3C' }}>BiasharaIQ</h2>
             </div>
+            <span className="trust-badge" style={{ marginBottom: '16px' }}>✨ Trusted by over 1,000+ businesses</span>
             <h1>Know Where Your Money Goes. Control Your Business.</h1>
-            <p style={{ fontSize: '1.2rem', marginBottom: '2rem' }}>
-              BiasharaIQ helps small businesses track profit, manage cash flow, and avoid running out of money.
+            <p style={{ fontSize: '1.2rem', marginBottom: '2rem', lineHeight: '1.6' }}>
+              BiasharaIQ is an all-in-one financial intelligence and bookkeeping platform built for small businesses. Track real-time profit, manage cash flow, detect spending leaks, and make smart decisions with AI.
             </p>
             <div className="btn-group">
               <Link href="/login" className="btn btn-primary-landing">Get Started Free →</Link>
             </div>
-            <p style={{ marginTop: '1rem', fontSize: '0.8rem', color: 'var(--text-secondary)' }}>No credit card required • Free plan available</p>
+            <p style={{ marginTop: '1rem', fontSize: '0.85rem', color: 'var(--text-secondary)' }}>Over 1,000+ businesses trust BiasharaIQ • No credit card required • Free plan available</p>
           </div>
           <div className="hero-visual">
             <div className="dashboard-mock">
@@ -63,6 +64,48 @@ export default function Home() {
                 📊 Real‑time dashboard • Track every shilling
               </div>
             </div>
+          </div>
+        </div>
+      </section>
+
+      {/* STATS COUNTER BAR */}
+      <section style={{ backgroundColor: 'rgba(139, 94, 60, 0.08)', padding: '32px 20px', borderTop: '1px solid var(--border)', borderBottom: '1px solid var(--border)' }}>
+        <div className="container">
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '24px', textAlign: 'center' }}>
+            <div>
+              <div style={{ fontSize: '2.5rem', fontWeight: '800', color: '#8B5E3C' }}>1,000+</div>
+              <div style={{ fontSize: '0.95rem', color: 'var(--text-secondary)', fontWeight: '600' }}>Active Businesses</div>
+            </div>
+            <div>
+              <div style={{ fontSize: '2.5rem', fontWeight: '800', color: '#8B5E3C' }}>KSh 50M+</div>
+              <div style={{ fontSize: '0.95rem', color: 'var(--text-secondary)', fontWeight: '600' }}>Transactions Tracked</div>
+            </div>
+            <div>
+              <div style={{ fontSize: '2.5rem', fontWeight: '800', color: '#8B5E3C' }}>99%</div>
+              <div style={{ fontSize: '0.95rem', color: 'var(--text-secondary)', fontWeight: '600' }}>Cash Flow Clarity</div>
+            </div>
+            <div>
+              <div style={{ fontSize: '2.5rem', fontWeight: '800', color: '#8B5E3C' }}>24/7</div>
+              <div style={{ fontSize: '0.95rem', color: 'var(--text-secondary)', fontWeight: '600' }}>AI Financial Insights</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ABOUT SOFTWARE DESCRIPTION */}
+      <section style={{ backgroundColor: '#FFFDF8', padding: '60px 20px' }}>
+        <div className="container">
+          <div style={{ maxWidth: '850px', margin: '0 auto', textAlign: 'center' }}>
+            <span className="trust-badge" style={{ marginBottom: '16px' }}>🚀 What is BiasharaIQ?</span>
+            <h2 style={{ fontSize: '2.4rem', fontWeight: '800', color: '#3C2A1E', marginBottom: '20px' }}>
+              The Ultimate Financial Management & Bookkeeping Software
+            </h2>
+            <p style={{ fontSize: '1.15rem', color: 'var(--text-secondary)', lineHeight: '1.8', marginBottom: '24px' }}>
+              BiasharaIQ is an intuitive, AI-powered financial management software tailored specifically for small and growing businesses. Designed to convert financial complexity into effortless clarity, BiasharaIQ enables business owners to log income and expenses, compute net profits automatically, forecast cash runway before funds run low, and eliminate wasteful spending with intelligent AI recommendations.
+            </p>
+            <p style={{ fontSize: '1.05rem', color: '#8B5E3C', fontWeight: '600' }}>
+              Trusted by over 1,000+ businesses to take complete control of their financial health and fuel long-term business growth.
+            </p>
           </div>
         </div>
       </section>
@@ -210,12 +253,14 @@ export default function Home() {
       </section>
 
       {/* SECTION 8: TRUST / SOCIAL PROOF */}
-      <section style={{ paddingTop: '32px' }}>
+      <section style={{ paddingTop: '40px', paddingBottom: '40px' }}>
         <div className="container social-proof">
-          <div className="trust-badge" style={{ marginBottom: '24px' }}>🇰🇪 Built for small businesses in Kenya</div>
-          <div className="landing-card" style={{ maxWidth: '700px', margin: '0 auto' }}>
-            <p style={{ fontWeight: 500, fontSize: '1rem' }}>&quot;Designed for real-world biashara — from mama mboga to boutique owners. Already helping 500+ businesses track profit and sleep better.&quot;</p>
-            <p style={{ marginTop: '12px', color: '#8B5E3C' }}>— BiasharaIQ early access community</p>
+          <div className="trust-badge" style={{ marginBottom: '24px' }}>🇰🇪 Trusted by Over 1,000+ Businesses</div>
+          <div className="landing-card" style={{ maxWidth: '750px', margin: '0 auto', padding: '32px' }}>
+            <p style={{ fontWeight: 500, fontSize: '1.1rem', lineHeight: '1.7' }}>
+              &quot;Designed for real-world biashara — from retail shops and service providers to boutique owners. Over 1,000+ businesses rely on BiasharaIQ daily to track real profit, avoid cash surprises, and sleep better.&quot;
+            </p>
+            <p style={{ marginTop: '16px', color: '#8B5E3C', fontWeight: 'bold' }}>— BiasharaIQ Business Community</p>
           </div>
         </div>
       </section>
@@ -242,11 +287,13 @@ export default function Home() {
         </div>
       </section>
 
-      {/* SECTION 9: FINAL CTA */}
+      {/* SECTION 10: FINAL CTA */}
       <section style={{ background: 'linear-gradient(135deg, #8B5E3C, #6F4A2D)' }}>
         <div className="container text-center">
           <h2>Stop guessing. Start understanding your business.</h2>
-          <p style={{ marginBottom: '32px', maxWidth: '550px', marginLeft: 'auto', marginRight: 'auto' }}>Join hundreds of Kenyan entrepreneurs who finally know where their money goes.</p>
+          <p style={{ marginBottom: '32px', maxWidth: '600px', marginLeft: 'auto', marginRight: 'auto' }}>
+            Join over 1,000+ business owners who finally know where their money goes and make confident financial decisions every day.
+          </p>
           <Link href="/login" className="btn btn-primary-landing btn-block-mobile" style={{ padding: '14px 40px', fontSize: '1.2rem' }}>Get Started Free →</Link>
           <p style={{ marginTop: '24px', fontSize: '0.85rem' }}>No setup fee. Cancel anytime.</p>
         </div>
