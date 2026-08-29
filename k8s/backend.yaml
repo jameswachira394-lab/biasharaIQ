@@ -1,0 +1,126 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: biasharaiq-backend
+  namespace: biasharaiq
+  labels:
+    app.kubernetes.io/name: biasharaiq
+    app.kubernetes.io/component: backend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: biasharaiq-backend
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  template:
+    metadata:
+      labels:
+        app: biasharaiq-backend
+        app.kubernetes.io/component: backend
+    spec:
+      initContainers:
+        - name: wait-for-db
+          image: postgres:16-alpine
+          imagePullPolicy: IfNotPresent
+          command:
+            - /bin/sh
+            - -c
+            - |
+              until pg_isready -h biasharaiq-db -U "${POSTGRES_USER}" -d "${POSTGRES_DB}"; do
+                echo "waiting for PostgreSQL..."
+                sleep 2
+              done
+          env:
+            - name: POSTGRES_USER
+              valueFrom:
+                secretKeyRef:
+                  name: biasharaiq-db-secret
+                  key: POSTGRES_USER
+            - name: POSTGRES_DB
+              valueFrom:
+                secretKeyRef:
+                  name: biasharaiq-db-secret
+                  key: POSTGRES_DB
+            - name: PGPASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: biasharaiq-db-secret
+                  key: POSTGRES_PASSWORD
+      containers:
+        - name: backend
+          image: biasharaiq-backend:latest
+          imagePullPolicy: IfNotPresent
+          command:
+            - /bin/sh
+            - -c
+            - |
+              python migrate_db.py
+              exec gunicorn main:app --workers=4 --worker-class=uvicorn.workers.UvicornWorker --bind=0.0.0.0:8000 --access-logfile=- --error-logfile=- --log-level=info --timeout=120 --keep-alive=5
+          ports:
+            - containerPort: 8000
+              name: http
+          envFrom:
+            - secretRef:
+                name: biasharaiq-backend-secret
+          env:
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: biasharaiq-db-secret
+                  key: DATABASE_URL
+            - name: REDIS_URL
+              valueFrom:
+                secretKeyRef:
+                  name: biasharaiq-backend-secret
+                  key: REDIS_URL
+          volumeMounts:
+            - name: backend-storage
+              mountPath: /app/storage
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8000
+            initialDelaySeconds: 30
+            periodSeconds: 15
+            timeoutSeconds: 5
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 8000
+            initialDelaySeconds: 10
+            periodSeconds: 5
+            timeoutSeconds: 5
+            failureThreshold: 6
+          resources:
+            requests:
+              cpu: "250m"
+              memory: "512Mi"
+            limits:
+              cpu: "1000m"
+              memory: "1Gi"
+      volumes:
+        - name: backend-storage
+          persistentVolumeClaim:
+            claimName: backend-storage-pvc
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: biasharaiq-backend
+  namespace: biasharaiq
+  labels:
+    app.kubernetes.io/name: biasharaiq
+    app.kubernetes.io/component: backend
+spec:
+  selector:
+    app: biasharaiq-backend
+  ports:
+    - name: http
+      port: 8000
+      targetPort: 8000
+  type: ClusterIP

@@ -1,0 +1,253 @@
+from core.config import settings
+from routes.uploads import router as uploads_router
+from routes.subscriptions import router as subscriptions_router
+from routes.routes import (
+    dashboard_router, insights_router, ai_router,
+    reports_router, categories_router, profile_router
+)
+from routes.transactions import router as transactions_router
+from routes.email_verification import router as email_verification_router
+from routes.auth import router as auth_router
+from models.models import Base
+from models.database import engine, SessionLocal
+from fastapi import FastAPI, Request
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.middleware.trustedhost import TrustedHostMiddleware
+from fastapi.middleware.gzip import GZipMiddleware
+from fastapi.responses import JSONResponse
+from sqlalchemy import text
+from dotenv import load_dotenv
+import os
+import logging
+import time
+from datetime import datetime
+
+load_dotenv()
+
+
+logging.basicConfig(
+    level=getattr(logging, settings.LOG_LEVEL),
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+)
+logger = logging.getLogger(__name__)
+
+
+try:
+    Base.metadata.create_all(bind=engine)
+    logger.info("[SUCCESS] Database initialized successfully")
+except Exception as e:
+    logger.error(f"[FAIL] Failed to initialize database: {e}")
+
+# ── Inline migration: safely add columns that may not exist yet ────────────
+_COLUMN_MIGRATIONS = [
+    ("users", "reset_token_hash", "VARCHAR(128)"),
+    ("users", "reset_token_expires_at", "TIMESTAMP"),
+    ("users", "google_id", "VARCHAR"),
+    ("users", "auth_provider", "VARCHAR DEFAULT 'email'"),
+]
+try:
+    with engine.connect() as _conn:
+        for _table, _col, _col_type in _COLUMN_MIGRATIONS:
+            _exists = _conn.execute(
+                text(
+                    "SELECT 1 FROM information_schema.columns "
+                    "WHERE table_name=:t AND column_name=:c"
+                ),
+                {"t": _table, "c": _col},
+            ).fetchone()
+            if not _exists:
+                _conn.execute(
+                    text(
+                        f'ALTER TABLE {_table} ADD COLUMN IF NOT EXISTS "{_col}" {_col_type}'))
+                _conn.commit()
+                logger.info(f"[MIGRATION] Added column {_table}.{_col}")
+            else:
+                logger.debug(
+                    f"[MIGRATION] Column {_table}.{_col} already exists — skipped")
+    logger.info("[MIGRATION] Column check complete")
+except Exception as _e:
+    logger.error(f"[MIGRATION] Column migration failed: {_e}")
+
+app = FastAPI(
+    title="BiasharaIQ API",
+    description="Financial Intelligence Platform for Kenyan SMEs",
+    version="1.0.0",
+    docs_url="/docs" if settings.DEBUG else None,
+    redoc_url="/redoc" if settings.DEBUG else None,
+)
+
+
+if not settings.DEBUG:
+    from urllib.parse import urlparse
+    allowed_hosts = [
+        urlparse(o).hostname
+        for o in settings.cors_origins_list
+        if o and o != "*" and urlparse(o).hostname
+    ]
+    # Always allow Render's external hostname and subdomains
+    render_host = os.getenv("RENDER_EXTERNAL_HOSTNAME")
+    if render_host:
+        allowed_hosts.append(render_host)
+    allowed_hosts.append("*.onrender.com")
+    # Also allow localhost for health checks
+    allowed_hosts.extend(["localhost", "127.0.0.1"])
+
+    # Remove duplicates and None values
+    allowed_hosts = list(set([h for h in allowed_hosts if h]))
+    logger.info(f"Trusted Hosts: {allowed_hosts}")
+
+    app.add_middleware(
+        TrustedHostMiddleware,
+        allowed_hosts=allowed_hosts
+    )
+
+
+# Logging middleware
+@app.middleware("http")
+async def log_requests(request: Request, call_next):
+    start_time = time.time()
+    request_id = f"{datetime.now().timestamp()}"
+
+    # Log request
+    logger.info(f"[{request_id}] {request.method} {request.url.path}")
+
+    try:
+        response = await call_next(request)
+        process_time = time.time() - start_time
+
+        # Log response
+        logger.info(
+            f"[{request_id}] {request.method} {request.url.path} - "
+            f"Status: {response.status_code} - Duration: {process_time:.3f}"
+        )
+
+        return response
+    except Exception as e:
+        process_time = time.time() - start_time
+        logger.error(
+            f"[{request_id}] Error: {str(e)} - Duration: {process_time:.3f}s")
+        raise
+
+
+@app.middleware("http")
+async def add_security_headers(request: Request, call_next):
+    # Skip security headers for CORS preflight — let CORSMiddleware own the
+    # response
+    if request.method == "OPTIONS":
+        return await call_next(request)
+
+    response = await call_next(request)
+
+    # Add security headers (non-preflight requests only)
+    response.headers["X-Content-Type-Options"] = "nosniff"
+    response.headers["X-Frame-Options"] = "DENY"
+    response.headers["X-XSS-Protection"] = "1; mode=block"
+    response.headers["Strict-Transport-Security"] = "max-age=31536000; includeSubDomains"
+    response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
+    response.headers["Permissions-Policy"] = "geolocation=(), microphone=(), camera=()"
+
+    return response
+
+
+# CORSMiddleware MUST be added LAST so that it is outermost in the execution stack.
+# This guarantees CORS headers are attached to ALL responses, including preflights,
+# custom middleware errors, and 500 exception handler responses.
+cors_origins = settings.cors_origins_list
+logger.info(f"CORS Origins: {cors_origins}")
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=cors_origins,
+    allow_origin_regex=r"https://.*\.vercel\.app",
+    allow_credentials=True,
+    allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"],
+    allow_headers=["*"],
+    expose_headers=["*"],
+    max_age=3600,
+)
+
+# Compress all responses larger than 1KB for faster load times
+app.add_middleware(GZipMiddleware, minimum_size=1000)
+
+# Register routers
+app.include_router(auth_router, tags=["Authentication"])
+app.include_router(
+    email_verification_router,
+    prefix="/auth",
+    tags=["Email Verification"])
+app.include_router(transactions_router, tags=["Transactions"])
+app.include_router(dashboard_router, tags=["Dashboard"])
+app.include_router(insights_router, tags=["Insights"])
+app.include_router(ai_router, tags=["AI"])
+app.include_router(reports_router, tags=["Reports"])
+app.include_router(categories_router, tags=["Categories"])
+app.include_router(profile_router, tags=["Profile"])
+app.include_router(subscriptions_router)
+app.include_router(uploads_router)
+
+
+@app.get("/")
+async def root():
+    return {
+        "name": "BiasharaIQ API",
+        "version": "1.0.0",
+        "status": "running",
+        "environment": settings.ENVIRONMENT,
+        "docs": "/docs" if settings.DEBUG else None
+    }
+
+
+@app.get("/health")
+async def health_check():
+    """Comprehensive health check including database connectivity"""
+    try:
+        db = SessionLocal()
+        try:
+            db.execute(text("SELECT 1"))
+        finally:
+            db.close()
+
+        return {
+            "status": "healthy",
+            "timestamp": datetime.now().isoformat(),
+            "environment": settings.ENVIRONMENT,
+            "database": "connected"
+        }
+    except Exception as e:
+        logger.error(f"Health check failed: {str(e)}")
+        return JSONResponse(
+            status_code=503,
+            content={
+                "status": "unhealthy",
+                "timestamp": datetime.now().isoformat(),
+                "error": str(e) if settings.DEBUG else "Database connection failed"})
+
+# ma
+
+
+@app.exception_handler(Exception)
+async def general_exception_handler(request: Request, exc: Exception):
+    """Global exception handler for production error responses"""
+    logger.error(f"Unhandled exception: {str(exc)}", exc_info=True)
+
+    if settings.DEBUG:
+        return JSONResponse(
+            status_code=500,
+            content={"error": str(exc), "type": type(exc).__name__}
+        )
+    else:
+        return JSONResponse(
+            status_code=500,
+            content={"error": "Internal server error"}
+        )
+
+
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run(
+        "main:app",
+        host="0.0.0.0",
+        port=int(os.getenv("PORT", 8000)),
+        reload=settings.DEBUG,
+        log_level=settings.LOG_LEVEL.lower()
+    )
