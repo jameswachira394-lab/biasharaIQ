@@ -19,7 +19,7 @@ permissions:
 env:
  
   PYTHON_VERSION: '3.11'
-  NODE_VERSION: '22'   # bumped from 20 — @capacitor/cli requires >=
+  NODE_VERSION: '22'   
 
 jobs:
 
