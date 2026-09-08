@@ -20,9 +20,9 @@ env:
   NODE_VERSION: '22'
 
 jobs:
-  # ==========================================
+  
   # BACKEND CODE SCAN & SECURITY
-  # ==========================================
+  
   backend-scan:
     name: Backend — Linting, SAST & Security Scan
     runs-on: ubuntu-latest
@@ -72,9 +72,9 @@ jobs:
             echo "No backend tests found; skipping test execution."
           fi
 
-  # ==========================================
+  
   # FRONTEND CODE SCAN & TYPE CHECK
-  # ==========================================
+  
   frontend-scan:
     name: Frontend — Linting, Type Check & Dependency Audit
     runs-on: ubuntu-latest
@@ -117,9 +117,9 @@ jobs:
         run: |
           npm audit --audit-level=high || true
 
-  # ==========================================
+  
   # REPOSITORY SECRET & SECURITY SCAN
-  # ==========================================
+  
   security-scan:
     name: Repository — Trivy Vulnerability & Secret Scan
     runs-on: ubuntu-latest
