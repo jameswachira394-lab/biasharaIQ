@@ -112,8 +112,8 @@ async def mpesa_callback(request: Request, db: Session = Depends(get_db)):
             amount=payment.amount
         )
         logger.info(
-            f"Payment {checkout_id} successful. User {
-                payment.user_id} upgraded.")
+            f"Payment {checkout_id} successful. User {payment.user_id} upgraded."
+        )
     else:
         result_code = result.get("result_code")
         # 1032 is the result code for user cancellation
@@ -123,8 +123,8 @@ async def mpesa_callback(request: Request, db: Session = Depends(get_db)):
         else:
             payment.status = "failed"
             logger.warning(
-                f"Payment {checkout_id} failed with code {result_code}: {
-                    result.get('message')}")
+                f"Payment {checkout_id} failed with code {result_code}: {result.get('message')}"
+            )
 
         # Store callback's result description in mpesa_receipt for failure/cancellation cases
         # so frontend status API can retrieve and display the exact reason

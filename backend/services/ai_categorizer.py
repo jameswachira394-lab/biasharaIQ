@@ -265,10 +265,10 @@ def _generate_narrative(
     """
     direction = "surplus" if net >= 0 else "deficit"
     fallback = (
-        f"Imported {count} transactions from your {doc_type} statement. " f"Total income: KES {
-            total_income:,.2f}, total expenses: KES {
-            total_expenses:,.2f}. " f"Net {direction}: KES {
-                abs(net):,.2f}.")
+        f"Imported {count} transactions from your {doc_type} statement. "
+        f"Total income: KES {total_income:,.2f}, total expenses: KES {total_expenses:,.2f}. "
+        f"Net {direction}: KES {abs(net):,.2f}."
+    )
 
     if client is None:
         return fallback
