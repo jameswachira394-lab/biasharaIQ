@@ -186,7 +186,7 @@ app.include_router(subscriptions_router)
 app.include_router(uploads_router)
 
 
-@app.get("/")
+@app.api_route("/", methods=["GET", "HEAD"])
 async def root():
     return {
         "name": "BiasharaIQ API",
@@ -197,7 +197,7 @@ async def root():
     }
 
 
-@app.get("/health")
+@app.api_route("/health", methods=["GET", "HEAD"])
 async def health_check():
     """Comprehensive health check including database connectivity"""
     try:
