@@ -50,10 +50,14 @@ jobs:
 
       - name: Code Quality & Syntax Check (flake8)
         run: |
-          # Fail on syntax errors or undefined names
-          flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
-          # Informational linting check
-          flake8 . --count --max-line-length=120 --statistics || true
+          # Check Python syntax explicitly and fail only on blocking flake8 errors.
+          python -m compileall -q .
+          flake8 . \
+            --count \
+            --select=E9,F63,F7,F82 \
+            --exclude=.git,.venv,venv,__pycache__,build,dist \
+            --show-source \
+            --statistics
 
       - name: Security SAST Scan (bandit)
         run: |
