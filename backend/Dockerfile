@@ -15,7 +15,8 @@ RUN apt-get update && \
 
 COPY requirements.txt .
 
-RUN pip install --no-cache-dir -r requirements.txt
+RUN pip install --no-cache-dir --upgrade pip setuptools "wheel>=0.46.2" && \
+    pip install --no-cache-dir -r requirements.txt
 
 COPY . .
 
