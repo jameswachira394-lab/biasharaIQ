@@ -72,7 +72,7 @@ jobs:
 
   # ==========================================
   # BUILD & PUSH FRONTEND
-  # ==========================================
+  
 
   frontend:
     name: Frontend — Build, Scan & Push
