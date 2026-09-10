@@ -69,8 +69,6 @@ jobs:
 
   
   # BUILD & PUSH FRONTEND
-  
-
   frontend:
     name: Frontend — Build, Scan & Push
     runs-on: ubuntu-latest
