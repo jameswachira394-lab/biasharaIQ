@@ -65,9 +65,7 @@ jobs:
           tags: |
             ${{ env.REGISTRY }}/${{ env.REPO_LC }}-backend:${{ env.IMAGE_TAG }}
             ${{ env.REGISTRY }}/${{ env.REPO_LC }}-backend:latest
-
-
-  
+ 
   # BUILD & PUSH FRONTEND
   frontend:
     name: Frontend — Build, Scan & Push
