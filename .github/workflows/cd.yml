@@ -14,9 +14,7 @@ env:
   REGISTRY: ghcr.io
   IMAGE_TAG: ${{ github.sha }}
 
-jobs:
-
-  
+jobs: 
   # BUILD & PUSH BACKEND
   
   backend:
