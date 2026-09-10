@@ -16,7 +16,6 @@ env:
 
 jobs: 
   # BUILD & PUSH BACKEND
-  
   backend:
     name: Backend — Build, Scan & Push
     runs-on: ubuntu-latest
